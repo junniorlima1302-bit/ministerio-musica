@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Compromissos</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body onload="carregarCompromissos()">
+
+  <div class="container">
+    <h2>Compromissos do Mês</h2>
+
+    <textarea id="entrada" placeholder="Digite os compromissos...
+
+Use # para criar grupos"></textarea>
+
+    <button onclick="cadastrarTudo()">Cadastrar</button>
+    <button onclick="limparTudo()">Limpar Tudo</button>
+    <button onclick="excluirSelecionados()">Excluir Selecionados</button>
+
+    <div id="lista-compromissos"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

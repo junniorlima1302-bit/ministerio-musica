@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Disponibilidade</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h2>Enviar Disponibilidade</h2>
+
+    <div id="lista-disponibilidade"></div>
+
+    <br>
+
+    <button onclick="enviarDisponibilidade()">Enviar</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    carregarDisponibilidades();
+  </script>
+
+</body>
+</html>
+<script>
+  const nome = localStorage.getItem("nome");
+  const ministerio = localStorage.getItem("ministerio");
+
+  if (!nome || !ministerio) {
+    window.location.href = "identificacao.html";
+  }
+</script>

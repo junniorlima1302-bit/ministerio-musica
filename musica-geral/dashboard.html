@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h2>Painel da Coordenação</h2>
+
+    <button onclick="irPara('compromissos.html')">
+      Compromissos do Mês
+    </button>
+    <button onclick="irPara('disponibilidades.html')">
+  Ver Disponibilidades
+</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    async function verificarLogin() {
+      const { data } = await supabase.auth.getSession();
+
+      if (!data.session) {
+        window.location.href = "login.html";
+      }
+    }
+
+    verificarLogin();
+  </script>
+
+</body>
+</html> 

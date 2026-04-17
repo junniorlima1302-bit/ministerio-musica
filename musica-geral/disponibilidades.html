@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Disponibilidades</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body onload="carregarRespostas()">
+
+  <div class="container">
+    <h2>Disponibilidades dos Ministros</h2>
+
+    <!-- 🔥 FILTRO -->
+    <div id="filtros">
+      <select onchange="filtrarMinisterio(this.value)">
+        <option value="todos">Todos os Ministérios</option>
+        <option value="Música Geral">Música Geral</option>
+        <option value="Geral Eventos">Geral Eventos</option>
+      </select>
+    </div>
+
+    <!-- LISTA -->
+    <div id="lista-respostas"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

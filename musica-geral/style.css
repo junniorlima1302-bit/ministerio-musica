@@ -1,0 +1,507 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* BASE */
+body {
+  background: #f5f7fb;
+  font-family: Arial, sans-serif;
+}
+
+/* ===== CENTRALIZAÇÃO (USAR SÓ EM LOGIN/FORM) ===== */
+.page-center {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===== CARD ===== */
+.card {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+/* ===== CONTAINER PADRÃO ===== */
+.container {
+  max-width: 700px;
+  margin: 60px auto;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* TÍTULOS */
+h1, h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1b4580;
+}
+
+.container h3 {
+  margin-top: 25px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* INPUTS */
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* TEXTAREA */
+textarea {
+  width: 100%;
+  height: 140px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  resize: none;
+}
+
+/* BOTÕES */
+button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #1b4580;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+button.secundario {
+  background: #9ca3af;
+}
+
+/* ===== COMPROMISSOS ===== */
+
+#lista-compromissos {
+  margin-top: 25px;
+}
+
+.item-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.item-esquerda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.item-esquerda span {
+  white-space: nowrap;
+}
+
+.item-acoes {
+  display: flex;
+  gap: 6px;
+}
+
+.item-acoes button {
+  width: auto;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+.item-acoes button:first-child {
+  background: #3b82f6;
+}
+
+.item-acoes button:last-child {
+  background: #ef4444;
+}
+
+/* ===== DISPONIBILIDADE ===== */
+
+#lista-disponibilidade h3 {
+  margin-top: 20px;
+  color: #1b4580;
+}
+
+.item-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #f3f4f6;
+  cursor: pointer;
+  text-align: left;
+  transition: 0.2s;
+}
+
+.item-btn:hover {
+  background: #e5e7eb;
+}
+
+.item-btn.selecionado {
+  background: #1b4580;
+  color: white;
+  border-color: #1b4580;
+}
+
+/* ===== MINISTÉRIO ===== */
+
+.radio-item {
+  display: block;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-top: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+  text-align: center;
+}
+
+.radio-item:hover {
+  background: #f3f4f6;
+}
+
+/* ESCONDE RADIO */
+.radio-item input {
+  display: none;
+}
+
+/* TEXTO */
+.radio-item span {
+  display: block;
+}
+
+/* SELECIONADO */
+.radio-item input:checked + span {
+  background: #1b4580;
+  color: white;
+  border-radius: 8px;
+  padding: 12px;
+}/* ===== COMPROMISSOS - LAYOUT CORRETO ===== */
+
+.grupo {
+  margin-top: 25px;
+}
+
+.grupo-titulo {
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #1b4580;
+}
+
+/* LINHA */
+.item-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+/* LADO ESQUERDO */
+.item-esquerda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+/* CHECKBOX */
+.item-esquerda input {
+  width: auto;
+}
+
+/* TEXTO */
+.item-esquerda span {
+  flex: 1;
+}
+
+/* BOTÕES */
+.item-acoes {
+  display: flex;
+  gap: 6px;
+}
+
+.item-acoes button {
+  width: auto;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+/* CORES */
+.btn-editar {
+  background: #3b82f6;
+}
+
+.btn-excluir {
+  background: #ef4444;
+}/* LINHA DO ITEM (ALINHAMENTO PERFEITO) */
+.item-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* LADO ESQUERDO */
+.item-esquerda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+/* TEXTO */
+.item-esquerda span {
+  white-space: nowrap;        /* NÃO QUEBRA */
+  overflow: hidden;
+  text-overflow: ellipsis;    /* ... se for grande */
+}
+
+/* BOTÕES */
+.item-acoes {
+  display: flex;
+  gap: 6px;
+}
+
+/* BOTÕES PEQUENOS */
+.item-acoes button {
+  width: auto;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+/* EDITAR */
+.item-acoes button:first-child {
+  background: #3b82f6;
+}
+
+/* EXCLUIR */
+.item-acoes button:last-child {
+  background: #ef4444;
+}/* ===== COMPACTAR LISTA ===== */
+
+.item-linha {
+  margin-bottom: 6px; /* antes era maior */
+}
+
+/* TEXTO MENOR */
+.item-esquerda span {
+  font-size: 13px;
+}
+
+/* CHECKBOX MENOR */
+.item-esquerda input {
+  transform: scale(0.9);
+}
+
+/* BOTÕES MENORES */
+.item-acoes button {
+  padding: 4px 8px;
+  font-size: 11px;
+  border-radius: 5px;
+}
+
+/* DIMINUI ÍCONES (caso use emoji) */
+.item-acoes button {
+  line-height: 1;
+}
+
+/* BOTÃO + ADICIONAR ITEM */
+.grupo button {
+  padding: 8px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+/* TÍTULO DO GRUPO */
+.grupo h3 {
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+/* ===== FORÇA COMPACTO GLOBAL ===== */
+
+/* TEXTO GLOBAL */
+body {
+  font-size: 13px !important;
+}
+
+/* TÍTULOS */
+h1 {
+  font-size: 20px !important;
+}
+
+h2 {
+  font-size: 18px !important;
+}
+
+h3 {
+  font-size: 14px !important;
+}
+
+/* INPUTS */
+input, textarea {
+  font-size: 13px !important;
+  padding: 8px !important;
+}
+
+/* TEXTAREA */
+textarea {
+  height: 110px !important;
+}
+
+/* BOTÕES GERAIS */
+button {
+  padding: 8px !important;
+  font-size: 13px !important;
+  border-radius: 8px !important;
+}
+
+/* BOTÕES PEQUENOS (editar/excluir) */
+.item-acoes button {
+  padding: 4px 7px !important;
+  font-size: 11px !important;
+}
+
+/* CHECKBOX */
+.item-esquerda input {
+  transform: scale(0.85) !important;
+}
+
+/* TEXTOS DOS ITENS */
+.item-esquerda span {
+  font-size: 12px !important;
+}
+
+/* ESPAÇAMENTO GERAL */
+.container {
+  padding: 20px !important;
+}
+
+.item-linha {
+  margin-bottom: 6px !important;
+}
+
+/* BOTÃO DE SELEÇÃO (disponibilidade) */
+.item-btn {
+  padding: 10px !important;
+  font-size: 13px !important;
+}
+/* ===== GRID DE DISPONIBILIDADE ===== */
+
+#lista-disponibilidade {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* CADA GRUPO */
+.grupo-disponibilidade {
+  display: flex;
+  flex-direction: column;
+}
+
+/* GRID DOS ITENS */
+.grupo-itens {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 colunas */
+  gap: 8px;
+}
+
+/* BOTÕES */
+.item-btn {
+  padding: 10px;
+  font-size: 12px;
+  border-radius: 8px;
+  text-align: center;
+}#lista-respostas .grupo {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+#lista-respostas p {
+  margin-left: 10px;
+  font-size: 13px;
+}/* CONTAINER DOS NOMES */
+.nomes-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* TAG DE NOME */
+.nome-tag {
+  background: #e5e7eb;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  white-space: nowrap;
+}#filtros {
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+#filtros select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  cursor: pointer;
+}/* FILTRO */
+#filtros {
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+#filtros select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+}
+
+/* NOMES EM BLOCO */
+.nomes-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.nome-tag {
+  background: #e5e7eb;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
