@@ -453,25 +453,4 @@ async function carregarRespostas() {
       }
     });
   });
-});document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("form-login");
-
-  if (form) {
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      login();
-    });
-  }
-});let jaLogou = false;
-
-setInterval(() => {
-  if (jaLogou) return;
-
-  const usuario = document.getElementById("usuario")?.value;
-  const senha = document.getElementById("senha")?.value;
-
-  if (usuario && senha) {
-    jaLogou = true;
-    login();
-  }
-}, 1500);
+});
