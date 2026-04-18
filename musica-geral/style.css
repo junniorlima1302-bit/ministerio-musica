@@ -518,4 +518,16 @@ button {
 
 .btn-voltar:hover {
   text-decoration: underline;
+}html, body {
+  height: 100%;
+  overflow-x: hidden;
+}.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}input, textarea {
+  font-size: 16px;
+}html {
+  scroll-behavior: smooth;
 }
