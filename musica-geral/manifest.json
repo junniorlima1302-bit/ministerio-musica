@@ -1,7 +1,8 @@
 {
   "name": "Música Geral Fortaleza",
   "short_name": "Música",
-  "start_url": "/index.html",
+  "start_url": ".",
+  "scope": ".",
   "display": "standalone",
   "background_color": "#f5f7fb",
   "theme_color": "#1b4580",

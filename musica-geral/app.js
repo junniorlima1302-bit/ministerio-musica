@@ -440,4 +440,6 @@ async function carregarRespostas() {
 
     lista.appendChild(div);
   });
+}function voltarPagina() {
+  window.history.back();
 }
