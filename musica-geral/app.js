@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////
-// NORMALIZAR TEXTO (IMPORTANTE)
+// NORMALIZAR TEXTO
 //////////////////////////////////////////////////////
 
 function normalizar(texto) {
@@ -24,10 +24,8 @@ function irPara(pagina) {
 
 function voltarSistema() {
   let historico = JSON.parse(localStorage.getItem("historico")) || [];
-
   const ultima = historico.pop();
   localStorage.setItem("historico", JSON.stringify(historico));
-
   window.location.href = ultima || "index.html";
 }
 
@@ -43,23 +41,52 @@ let filtroAtual = "todos";
 let filtroEvento = "todos";
 let filtroPessoa = "";
 
-function filtrarMinisterio(v) {
-  filtroAtual = normalizar(v);
-  carregarRespostas();
-}
+//////////////////////////////////////////////////////
+// EVENTOS DOM
+//////////////////////////////////////////////////////
 
-function filtrarEvento(v) {
-  filtroEvento = normalizar(v);
-  carregarRespostas();
-}
+document.addEventListener("DOMContentLoaded", () => {
 
-function filtrarPessoa(v) {
-  filtroPessoa = normalizar(v);
+  const selectMin = document.getElementById("filtroMinisterio");
+  const selectEv = document.getElementById("filtroEvento");
+  const inputBusca = document.getElementById("buscaNome");
+
+  if (selectMin) {
+    selectMin.addEventListener("change", () => {
+      filtroAtual = normalizar(selectMin.value);
+      carregarRespostas();
+    });
+  }
+
+  if (selectEv) {
+    selectEv.addEventListener("change", () => {
+      filtroEvento = normalizar(selectEv.value);
+      carregarRespostas();
+    });
+  }
+
+  if (inputBusca) {
+    inputBusca.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        aplicarBusca();
+      }
+    });
+  }
+
+});
+
+//////////////////////////////////////////////////////
+// BUSCA
+//////////////////////////////////////////////////////
+
+function aplicarBusca() {
+  const input = document.getElementById("buscaNome");
+  filtroPessoa = normalizar(input.value);
   carregarRespostas();
 }
 
 //////////////////////////////////////////////////////
-// CARREGAR RESPOSTAS (CORRIGIDO)
+// CARREGAR RESPOSTAS
 //////////////////////////////////////////////////////
 
 async function carregarRespostas() {
@@ -100,8 +127,8 @@ async function carregarRespostas() {
     eventos[chave].push(item);
   });
 
-  // Atualizar select de eventos (sem resetar)
-  const selectEvento = document.querySelector("select[onchange='filtrarEvento(this.value)']");
+  // Preencher select de eventos (sem resetar)
+  const selectEvento = document.getElementById("filtroEvento");
 
   if (selectEvento && selectEvento.options.length <= 1) {
     eventosUnicos.forEach(ev => {
@@ -135,7 +162,9 @@ async function carregarRespostas() {
 
       if (pessoa.editado_por) {
         const data = new Date(pessoa.editado_em).toLocaleString("pt-BR");
-        info = `<div class="editado-info">Editado por ${pessoa.editado_por} em ${data}</div>`;
+        info = `<div class="editado-info">
+          Editado por ${pessoa.editado_por} em ${data}
+        </div>`;
       }
 
       tag.innerHTML = `
@@ -154,7 +183,7 @@ async function carregarRespostas() {
 }
 
 //////////////////////////////////////////////////////
-// EDITAR DISPONIBILIDADE (CLICANDO NO NOME)
+// EDITAR DISPONIBILIDADE
 //////////////////////////////////////////////////////
 
 async function editarDisponibilidade(id) {

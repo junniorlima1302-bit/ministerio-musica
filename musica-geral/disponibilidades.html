@@ -15,21 +15,24 @@
 
     <div id="filtros">
 
-      <select onchange="filtrarMinisterio(this.value)">
+      <select id="filtroMinisterio">
         <option value="todos">Todos Ministérios</option>
         <option value="Música Geral">Música Geral</option>
         <option value="Geral Eventos">Geral Eventos</option>
       </select>
 
-      <select onchange="filtrarEvento(this.value)">
-        <option value="todos">Todos Compromissos</option>
+      <select id="filtroEvento">
+        <option value="todos">Todos</option>
       </select>
 
-      <input 
-        type="text" 
-        placeholder="Buscar por nome"
-        oninput="filtrarPessoa(this.value)"
-      >
+      <div class="busca-box">
+        <input 
+          type="text" 
+          id="buscaNome"
+          placeholder="Buscar por nome"
+        >
+        <button onclick="aplicarBusca()">🔍</button>
+      </div>
 
     </div>
 

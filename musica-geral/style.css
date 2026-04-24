@@ -613,4 +613,48 @@ button {
   font-size: 12px;
   color: #888;
   margin-top: 4px;
+}#filtros {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+#filtros select,
+#filtros input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+.busca-box {
+  display: flex;
+  gap: 8px;
+}
+
+.busca-box button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #1b4580;
+  color: white;
+  cursor: pointer;
+}
+
+.nome-tag {
+  background: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.nome-tag:hover {
+  background: #f5f7fb;
+}
+
+.editado-info {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
 }
