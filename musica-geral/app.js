@@ -1,9 +1,26 @@
 //////////////////////////////////////////////////////
-// NAVEGAÇÃO
+// NAVEGAÇÃO (ATUALIZADA)
 //////////////////////////////////////////////////////
 
+let historico = JSON.parse(localStorage.getItem("historico")) || [];
+
 function irPara(pagina) {
+  historico.push(window.location.pathname);
+  localStorage.setItem("historico", JSON.stringify(historico));
   window.location.href = pagina;
+}
+
+function voltarSistema() {
+  let historico = JSON.parse(localStorage.getItem("historico")) || [];
+
+  const ultima = historico.pop();
+  localStorage.setItem("historico", JSON.stringify(historico));
+
+  if (ultima) {
+    window.location.href = ultima;
+  } else {
+    window.location.href = "index.html";
+  }
 }
 
 //////////////////////////////////////////////////////
@@ -22,7 +39,7 @@ function continuar() {
   localStorage.setItem("nome", nome);
   localStorage.setItem("ministerio", ministerioSelecionado.value);
 
-  window.location.href = "disponibilidade.html";
+  irPara("disponibilidade.html");
 }
 
 //////////////////////////////////////////////////////
@@ -41,9 +58,26 @@ async function fazerLogin() {
   if (error) {
     alert("Login inválido");
   } else {
-    window.location.href = "dashboard.html";
+    irPara("dashboard.html");
   }
 }
+
+//////////////////////////////////////////////////////
+// ENTER NO LOGIN (CORRIGIDO)
+//////////////////////////////////////////////////////
+
+document.addEventListener("DOMContentLoaded", () => {
+  const inputs = document.querySelectorAll("input");
+
+  inputs.forEach(input => {
+    input.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        fazerLogin(); // ✅ corrigido aqui
+      }
+    });
+  });
+});
 
 //////////////////////////////////////////////////////
 // CADASTRAR COMPROMISSOS
@@ -217,7 +251,7 @@ async function carregarCompromissos() {
 }
 
 //////////////////////////////////////////////////////
-// EXCLUIR SELECIONADOS
+// EXCLUIR / LIMPAR
 //////////////////////////////////////////////////////
 
 async function excluirSelecionados() {
@@ -232,10 +266,6 @@ async function excluirSelecionados() {
 
   carregarCompromissos();
 }
-
-//////////////////////////////////////////////////////
-// LIMPAR TUDO
-//////////////////////////////////////////////////////
 
 async function limparTudo() {
   if (!confirm("Deseja apagar tudo?")) return;
@@ -305,7 +335,7 @@ async function carregarDisponibilidades() {
 }
 
 //////////////////////////////////////////////////////
-// ENVIAR DISPONIBILIDADE (ATUALIZADO)
+// ENVIAR DISPONIBILIDADE
 //////////////////////////////////////////////////////
 
 async function enviarDisponibilidade() {
@@ -349,108 +379,17 @@ async function enviarDisponibilidade() {
   } else {
     alert("Disponibilidade enviada!");
 
-    // 🔥 limpa identificação
     localStorage.removeItem("nome");
     localStorage.removeItem("ministerio");
 
-    // 🔥 redireciona
-    window.location.href = "identificacao.html";
+    irPara("identificacao.html");
   }
 }
 
 //////////////////////////////////////////////////////
-// FILTRO
+// VOLTAR (SUBSTITUIR BOTÃO)
 //////////////////////////////////////////////////////
 
-let filtroAtual = "todos";
-
-function filtrarMinisterio(ministerio) {
-  filtroAtual = ministerio;
-  carregarRespostas();
+function voltarPagina() {
+  voltarSistema();
 }
-
-//////////////////////////////////////////////////////
-// VER RESPOSTAS
-//////////////////////////////////////////////////////
-
-async function carregarRespostas() {
-
-  const { data, error } = await supabase
-    .from("disponibilidades")
-    .select("*");
-
-  if (error) {
-    console.error(error);
-    alert(error.message);
-    return;
-  }
-
-  const lista = document.getElementById("lista-respostas");
-  lista.innerHTML = "";
-
-  let eventos = {};
-
-  data.forEach(item => {
-
-    if (
-      filtroAtual !== "todos" &&
-      item.ministerio &&
-      item.ministerio.toLowerCase().trim() !== filtroAtual.toLowerCase().trim()
-    ) {
-      return;
-    }
-
-    const chave = `${item.evento} - ${item.turno}`;
-
-    if (!eventos[chave]) {
-      eventos[chave] = [];
-    }
-
-    eventos[chave].push({
-      nome: item.nome_pessoa,
-      ministerio: item.ministerio
-    });
-
-  });
-
-  Object.keys(eventos).forEach(evento => {
-
-    const div = document.createElement("div");
-    div.className = "grupo";
-
-    const titulo = document.createElement("h3");
-    titulo.innerText = evento;
-
-    div.appendChild(titulo);
-
-    const containerNomes = document.createElement("div");
-    containerNomes.className = "nomes-container";
-
-    eventos[evento].forEach(pessoa => {
-
-      const tag = document.createElement("div");
-      tag.className = "nome-tag";
-
-      tag.innerText = `${pessoa.nome} (${pessoa.ministerio})`;
-
-      containerNomes.appendChild(tag);
-    });
-
-    div.appendChild(containerNomes);
-
-    lista.appendChild(div);
-  });
-}function voltarPagina() {
-  window.history.back();
-}document.addEventListener("DOMContentLoaded", () => {
-  const inputs = document.querySelectorAll("input");
-
-  inputs.forEach(input => {
-    input.addEventListener("keypress", function (e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        login(); // 👈 chama sua função de login
-      }
-    });
-  });
-});
