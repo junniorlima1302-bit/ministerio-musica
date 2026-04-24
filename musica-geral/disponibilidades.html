@@ -4,26 +4,35 @@
   <meta charset="UTF-8">
   <title>Disponibilidades</title>
   <link rel="stylesheet" href="style.css">
-  <meta name="theme-color" content="#1b4580">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 </head>
 
 <body onload="carregarRespostas()">
 
   <div class="container">
     <h2>Disponibilidades dos Ministros</h2>
-<button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
-    <!-- 🔥 FILTRO -->
+
+    <button onclick="voltarPagina()">← Voltar</button>
+
     <div id="filtros">
+
       <select onchange="filtrarMinisterio(this.value)">
-        <option value="todos">Todos os Ministérios</option>
+        <option value="todos">Todos Ministérios</option>
         <option value="Música Geral">Música Geral</option>
         <option value="Geral Eventos">Geral Eventos</option>
       </select>
+
+      <select onchange="filtrarEvento(this.value)">
+        <option value="todos">Todos Compromissos</option>
+      </select>
+
+      <input 
+        type="text" 
+        placeholder="Buscar por nome"
+        oninput="filtrarPessoa(this.value)"
+      >
+
     </div>
 
-    <!-- LISTA -->
     <div id="lista-respostas"></div>
   </div>
 

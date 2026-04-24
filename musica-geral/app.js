@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////
-// NAVEGAÇÃO (ATUALIZADA)
+// NAVEGAÇÃO
 //////////////////////////////////////////////////////
 
 let historico = JSON.parse(localStorage.getItem("historico")) || [];
@@ -21,6 +21,10 @@ function voltarSistema() {
   } else {
     window.location.href = "index.html";
   }
+}
+
+function voltarPagina() {
+  voltarSistema();
 }
 
 //////////////////////////////////////////////////////
@@ -62,10 +66,6 @@ async function fazerLogin() {
   }
 }
 
-//////////////////////////////////////////////////////
-// ENTER NO LOGIN (CORRIGIDO)
-//////////////////////////////////////////////////////
-
 document.addEventListener("DOMContentLoaded", () => {
   const inputs = document.querySelectorAll("input");
 
@@ -73,14 +73,14 @@ document.addEventListener("DOMContentLoaded", () => {
     input.addEventListener("keypress", function (e) {
       if (e.key === "Enter") {
         e.preventDefault();
-        fazerLogin(); // ✅ corrigido aqui
+        fazerLogin();
       }
     });
   });
 });
 
 //////////////////////////////////////////////////////
-// CADASTRAR COMPROMISSOS
+// COMPROMISSOS
 //////////////////////////////////////////////////////
 
 async function cadastrarTudo() {
@@ -111,11 +111,7 @@ async function cadastrarTudo() {
     }
   });
 
-  if (dados.length === 0) return;
-
-  const { error } = await supabase
-    .from("compromissos")
-    .insert(dados);
+  const { error } = await supabase.from("compromissos").insert(dados);
 
   if (error) {
     alert("Erro ao salvar");
@@ -125,23 +121,12 @@ async function cadastrarTudo() {
   }
 }
 
-//////////////////////////////////////////////////////
-// CARREGAR COMPROMISSOS
-//////////////////////////////////////////////////////
-
 async function carregarCompromissos() {
-
-  const { data, error } = await supabase
-    .from("compromissos")
-    .select("*")
-    .order("nome", { ascending: true });
-
-  if (error) {
-    console.error(error);
-    return;
-  }
+  const { data } = await supabase.from("compromissos").select("*");
 
   const lista = document.getElementById("lista-compromissos");
+  if (!lista) return;
+
   lista.innerHTML = "";
 
   let grupos = {};
@@ -152,143 +137,29 @@ async function carregarCompromissos() {
   });
 
   Object.keys(grupos).forEach(nome => {
+    const div = document.createElement("div");
+    div.innerHTML = `<h3>${nome}</h3>`;
 
-    const divGrupo = document.createElement("div");
-    divGrupo.className = "grupo";
-
-    const header = document.createElement("div");
-    header.className = "grupo-header";
-
-    const titulo = document.createElement("h3");
-    titulo.innerText = nome;
-
-    const btnAdd = document.createElement("span");
-    btnAdd.innerText = "+";
-    btnAdd.className = "btn-add-mini";
-
-    btnAdd.onclick = async () => {
-      const novo = prompt("Novo item:");
-      if (!novo) return;
-
-      await supabase
-        .from("compromissos")
-        .insert({
-          nome: nome,
-          turno: novo
-        });
-
-      carregarCompromissos();
-    };
-
-    header.appendChild(titulo);
-    header.appendChild(btnAdd);
-
-    divGrupo.appendChild(header);
-
-    const itensOrdenados = grupos[nome].sort((a, b) =>
-      a.turno.localeCompare(b.turno, undefined, { numeric: true })
-    );
-
-    itensOrdenados.forEach(item => {
-
-      const linha = document.createElement("div");
-      linha.className = "item-linha";
-
-      const esquerda = document.createElement("div");
-      esquerda.className = "item-esquerda";
-
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.dataset.id = item.id;
-
-      const texto = document.createElement("span");
-      texto.innerText = item.turno;
-
-      esquerda.appendChild(checkbox);
-      esquerda.appendChild(texto);
-
-      const acoes = document.createElement("div");
-      acoes.className = "item-acoes";
-
-      const btnEditar = document.createElement("button");
-      btnEditar.innerText = "✏️";
-
-      btnEditar.onclick = async () => {
-        const novo = prompt("Editar:", item.turno);
-        if (!novo) return;
-
-        await supabase
-          .from("compromissos")
-          .update({ turno: novo })
-          .eq("id", item.id);
-
-        carregarCompromissos();
-      };
-
-      const btnExcluir = document.createElement("button");
-      btnExcluir.innerText = "🗑️";
-
-      btnExcluir.onclick = async () => {
-        await supabase
-          .from("compromissos")
-          .delete()
-          .eq("id", item.id);
-
-        carregarCompromissos();
-      };
-
-      acoes.appendChild(btnEditar);
-      acoes.appendChild(btnExcluir);
-
-      linha.appendChild(esquerda);
-      linha.appendChild(acoes);
-
-      divGrupo.appendChild(linha);
+    grupos[nome].forEach(item => {
+      const p = document.createElement("p");
+      p.innerText = item.turno;
+      div.appendChild(p);
     });
 
-    lista.appendChild(divGrupo);
+    lista.appendChild(div);
   });
 }
 
 //////////////////////////////////////////////////////
-// EXCLUIR / LIMPAR
-//////////////////////////////////////////////////////
-
-async function excluirSelecionados() {
-  const checks = document.querySelectorAll("input[type='checkbox']:checked");
-
-  for (let check of checks) {
-    await supabase
-      .from("compromissos")
-      .delete()
-      .eq("id", check.dataset.id);
-  }
-
-  carregarCompromissos();
-}
-
-async function limparTudo() {
-  if (!confirm("Deseja apagar tudo?")) return;
-
-  await supabase
-    .from("compromissos")
-    .delete()
-    .neq("id", 0);
-
-  carregarCompromissos();
-}
-
-//////////////////////////////////////////////////////
-// DISPONIBILIDADE
+// DISPONIBILIDADE (SELEÇÃO)
 //////////////////////////////////////////////////////
 
 async function carregarDisponibilidades() {
-
-  const { data } = await supabase
-    .from("compromissos")
-    .select("*");
+  const { data } = await supabase.from("compromissos").select("*");
 
   const lista = document.getElementById("lista-disponibilidade");
+  if (!lista) return;
+
   lista.innerHTML = "";
 
   let grupos = {};
@@ -299,38 +170,30 @@ async function carregarDisponibilidades() {
   });
 
   Object.keys(grupos).forEach(nome => {
-
-    const grupoDiv = document.createElement("div");
-    grupoDiv.className = "grupo-disponibilidade";
+    const div = document.createElement("div");
 
     const titulo = document.createElement("h3");
     titulo.innerText = nome;
 
-    const grid = document.createElement("div");
-    grid.className = "grupo-itens";
+    div.appendChild(titulo);
 
     grupos[nome].forEach(turno => {
+      const btn = document.createElement("button");
+      btn.innerText = turno;
 
-      const botao = document.createElement("div");
-      botao.className = "item-btn";
-      botao.innerText = turno;
+      btn.dataset.valor = `${nome} | ${turno}`;
+      btn.dataset.selecionado = "false";
 
-      botao.dataset.valor = `${nome} | ${turno}`;
-      botao.dataset.selecionado = "false";
-
-      botao.onclick = () => {
-        const ativo = botao.dataset.selecionado === "true";
-        botao.dataset.selecionado = !ativo;
-        botao.classList.toggle("selecionado");
+      btn.onclick = () => {
+        const ativo = btn.dataset.selecionado === "true";
+        btn.dataset.selecionado = !ativo;
+        btn.classList.toggle("selecionado");
       };
 
-      grid.appendChild(botao);
+      div.appendChild(btn);
     });
 
-    grupoDiv.appendChild(titulo);
-    grupoDiv.appendChild(grid);
-
-    lista.appendChild(grupoDiv);
+    lista.appendChild(div);
   });
 }
 
@@ -339,7 +202,7 @@ async function carregarDisponibilidades() {
 //////////////////////////////////////////////////////
 
 async function enviarDisponibilidade() {
-  const itens = document.querySelectorAll(".item-btn");
+  const itens = document.querySelectorAll("button");
 
   let selecionados = [];
 
@@ -350,7 +213,7 @@ async function enviarDisponibilidade() {
   });
 
   if (selecionados.length === 0) {
-    alert("Selecione pelo menos um compromisso.");
+    alert("Selecione pelo menos um.");
     return;
   }
 
@@ -365,31 +228,124 @@ async function enviarDisponibilidade() {
     dados.push({
       nome_pessoa: nome,
       ministerio: ministerio,
-      evento: evento,
-      turno: turno
+      evento,
+      turno
     });
   });
 
-  const { error } = await supabase
-    .from("disponibilidades")
-    .insert(dados);
+  await supabase.from("disponibilidades").insert(dados);
 
-  if (error) {
-    alert(error.message);
-  } else {
-    alert("Disponibilidade enviada!");
-
-    localStorage.removeItem("nome");
-    localStorage.removeItem("ministerio");
-
-    irPara("identificacao.html");
-  }
+  alert("Enviado!");
+  irPara("identificacao.html");
 }
 
 //////////////////////////////////////////////////////
-// VOLTAR (SUBSTITUIR BOTÃO)
+// FILTROS
 //////////////////////////////////////////////////////
 
-function voltarPagina() {
-  voltarSistema();
+let filtroAtual = "todos";
+let filtroEvento = "todos";
+let filtroPessoa = "";
+
+function filtrarMinisterio(v) {
+  filtroAtual = v;
+  carregarRespostas();
+}
+
+function filtrarEvento(v) {
+  filtroEvento = v;
+  carregarRespostas();
+}
+
+function filtrarPessoa(v) {
+  filtroPessoa = v.toLowerCase();
+  carregarRespostas();
+}
+
+//////////////////////////////////////////////////////
+// CARREGAR RESPOSTAS (PAINEL)
+//////////////////////////////////////////////////////
+
+async function carregarRespostas() {
+  const { data } = await supabase.from("disponibilidades").select("*");
+
+  const lista = document.getElementById("lista-respostas");
+  if (!lista) return;
+
+  lista.innerHTML = "";
+
+  let eventos = {};
+  let eventosUnicos = new Set();
+
+  data.forEach(item => {
+
+    if (filtroAtual !== "todos" && item.ministerio !== filtroAtual) return;
+    if (filtroEvento !== "todos" && item.evento !== filtroEvento) return;
+    if (filtroPessoa && !item.nome_pessoa.toLowerCase().includes(filtroPessoa)) return;
+
+    const chave = `${item.evento} - ${item.turno}`;
+    eventosUnicos.add(item.evento);
+
+    if (!eventos[chave]) eventos[chave] = [];
+    eventos[chave].push(item);
+  });
+
+  const selectEvento = document.querySelector("select[onchange='filtrarEvento(this.value)']");
+  if (selectEvento) {
+    selectEvento.innerHTML = `<option value="todos">Todos</option>`;
+
+    eventosUnicos.forEach(ev => {
+      const opt = document.createElement("option");
+      opt.value = ev;
+      opt.textContent = ev;
+      selectEvento.appendChild(opt);
+    });
+  }
+
+  Object.keys(eventos).forEach(evento => {
+    const div = document.createElement("div");
+    div.innerHTML = `<h3>${evento}</h3>`;
+
+    eventos[evento].forEach(pessoa => {
+      let info = "";
+
+      if (pessoa.editado_por) {
+        const data = new Date(pessoa.editado_em).toLocaleString("pt-BR");
+        info = `<small>Editado por ${pessoa.editado_por} em ${data}</small>`;
+      }
+
+      const item = document.createElement("div");
+      item.innerHTML = `
+        ${pessoa.nome_pessoa} (${pessoa.ministerio})
+        ${info}
+        <button onclick="editarDisponibilidade('${pessoa.id}')">✏️</button>
+      `;
+
+      div.appendChild(item);
+    });
+
+    lista.appendChild(div);
+  });
+}
+
+//////////////////////////////////////////////////////
+// EDITAR DISPONIBILIDADE
+//////////////////////////////////////////////////////
+
+async function editarDisponibilidade(id) {
+  const novoTurno = prompt("Novo turno:");
+  if (!novoTurno) return;
+
+  const user = (await supabase.auth.getUser()).data.user;
+
+  await supabase
+    .from("disponibilidades")
+    .update({
+      turno: novoTurno,
+      editado_por: user?.email || "coordenação",
+      editado_em: new Date().toISOString()
+    })
+    .eq("id", id);
+
+  carregarRespostas();
 }
