@@ -4,34 +4,42 @@
   <meta charset="UTF-8">
   <title>Identificação</title>
   <link rel="stylesheet" href="style.css">
+
   <meta name="theme-color" content="#1b4580">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
 </head>
+
 <body>
 
   <div class="container">
     <h2>Identificação</h2>
-<button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+
+    <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+
     <input type="text" id="nome" placeholder="Seu nome">
 
     <h3>Selecione seu ministério:</h3>
 
     <label class="radio-item">
-  <input type="radio" name="ministerio" value="Música Geral">
-  <span>Música Geral</span>
-</label>
+      <input type="radio" name="ministerio" value="Música Geral">
+      <span>Música Geral</span>
+    </label>
 
-<label class="radio-item">
-  <input type="radio" name="ministerio" value="Geral Eventos">
-  <span>Geral Eventos</span>
-</label>
+    <label class="radio-item">
+      <input type="radio" name="ministerio" value="Geral Eventos">
+      <span>Geral Eventos</span>
+    </label>
 
     <br><br>
 
     <button onclick="continuar()">Continuar</button>
   </div>
 
+  <!-- 🔥 ESSA PARTE RESOLVE TUDO -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
   <script src="app.js"></script>
+
 </body>
 </html>
