@@ -172,21 +172,24 @@ textarea {
 .item-compromisso {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start; /* 👈 muda aqui */
   background: #f5f5f5;
   padding: 12px 16px;
   border-radius: 10px;
   width: 100%;
-  max-width: 500px; /* 👈 controla largura */
+  max-width: 500px;
+  gap: 15px; /* 👈 espaço entre checkbox e texto */
 }
 
+/* checkbox à esquerda */
 .item-compromisso input {
   transform: scale(1.2);
 }
 
+/* texto ocupa o resto */
 .item-compromisso span {
   flex: 1;
-  text-align: right;
+  text-align: left; /* 👈 muda pra esquerda */
   font-size: 14px;
 }
 
