@@ -767,4 +767,37 @@ button {
 .btn-disponibilidade {
   flex: 1 1 45%; /* 👈 isso faz ficar lado a lado */
   max-width: 200px;
+}/* ===== GRID PROFISSIONAL 4 COLUNAS ===== */
+
+.botoes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 🔥 4 por linha */
+  gap: 10px;
+}
+
+/* BOTÕES */
+.btn-disponibilidade {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+  color: #333;
+  cursor: pointer;
+  font-size: 12px;
+  text-align: center;
+  transition: 0.2s;
+  min-width: unset; /* remove travas antigas */
+}
+
+/* HOVER */
+.btn-disponibilidade:hover {
+  background: #eaeaea;
+}
+
+/* ATIVO */
+.btn-disponibilidade.ativo {
+  background: #1b4580;
+  color: white;
+  border: none;
+  box-shadow: 0 3px 8px rgba(27, 69, 128, 0.3);
 }
