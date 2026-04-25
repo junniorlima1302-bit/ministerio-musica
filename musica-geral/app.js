@@ -228,10 +228,12 @@ async function carregarCompromissos() {
       const div = document.createElement("div");
       div.className = "item-compromisso";
 
-      div.innerHTML = `
-        <input type="checkbox" value="${item.id}">
-        <span>${item.turno}</span>
-      `;
+     div.innerHTML = `
+  <label class="linha-compromisso">
+    <input type="checkbox" value="${item.id}">
+    <span>${item.turno}</span>
+  </label>
+`;
 
       container.appendChild(div);
     });
