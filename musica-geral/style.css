@@ -126,10 +126,14 @@ textarea {
   padding: 12px;
   border-radius: 10px;
   border: 1px solid #1b4580;
-  background: #b8c0cc;
+
+  background: #f5f7fa; /* 👈 mais claro */
+  color: #1b4580;      /* 👈 texto azul forte */
+
   text-align: center;
   font-size: 13px;
   cursor: pointer;
+  font-weight: 500;
 }
 
 .btn-disponibilidade:hover {
