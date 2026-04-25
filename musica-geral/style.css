@@ -755,4 +755,16 @@ button {
   color: white;
   border: none;
   box-shadow: 0 4px 10px rgba(27, 69, 128, 0.3);
+}/* container dos botões */
+.botoes {
+  display: flex;
+  flex-wrap: wrap; /* permite quebrar linha */
+  gap: 10px;
+  justify-content: center;
+}
+
+/* cada botão */
+.btn-disponibilidade {
+  flex: 1 1 45%; /* 👈 isso faz ficar lado a lado */
+  max-width: 200px;
 }
