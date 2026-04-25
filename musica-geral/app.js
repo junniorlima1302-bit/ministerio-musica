@@ -417,4 +417,30 @@ async function fazerLogin() {
   }
 
   window.location.href = "dashboard.html";
+}//////////////////////////////////////////////////////
+// CARREGAR COMPROMISSOS
+//////////////////////////////////////////////////////
+
+async function carregarCompromissos() {
+
+  const { data, error } = await supabase
+    .from("compromissos")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const lista = document.getElementById("lista-compromissos");
+  lista.innerHTML = "";
+
+  data.forEach(item => {
+    const div = document.createElement("div");
+    div.classList.add("item-compromisso");
+    div.innerText = item.texto;
+
+    lista.appendChild(div);
+  });
 }

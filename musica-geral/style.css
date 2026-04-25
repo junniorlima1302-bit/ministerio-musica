@@ -154,4 +154,13 @@ input {
 }.btn-voltar:hover {
   background: none !important;
   color: #1b4580;
+}textarea {
+  width: 100%;
+  min-height: 120px; /* 👈 altura boa */
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  resize: vertical;
+  font-size: 14px;
+  margin-bottom: 10px;
 }

@@ -4,28 +4,38 @@
   <meta charset="UTF-8">
   <title>Compromissos</title>
   <link rel="stylesheet" href="style.css">
+
   <meta name="theme-color" content="#1b4580">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
 </head>
 
 <body onload="carregarCompromissos()">
 
   <div class="container">
     <h2>Compromissos do Mês</h2>
+
     <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
 
-    <textarea id="entrada" placeholder="Digite os compromissos...
+    <!-- TEXTAREA MELHORADA -->
+    <textarea 
+      id="entrada" 
+      placeholder="Digite os compromissos...
 
-Use # para criar grupos"></textarea>
+Use ENTER para separar cada item
+Use # para criar grupos (opcional)"
+    ></textarea>
 
+    <!-- BOTÕES -->
     <button onclick="cadastrarTudo()">Cadastrar</button>
     <button onclick="limparTudo()">Limpar Tudo</button>
     <button onclick="excluirSelecionados()">Excluir Selecionados</button>
 
+    <!-- LISTA -->
     <div id="lista-compromissos"></div>
   </div>
 
+  <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="supabase.js"></script>
   <script src="app.js"></script>
