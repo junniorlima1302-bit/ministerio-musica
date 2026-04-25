@@ -151,4 +151,7 @@ input {
   .botoes {
     grid-template-columns: 1fr;
   }
+}.btn-voltar:hover {
+  background: none !important;
+  color: #1b4580;
 }
