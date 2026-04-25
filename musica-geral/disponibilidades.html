@@ -15,20 +15,18 @@
 
     <div id="filtros">
 
-      <select id="filtroMinisterio">
+      <select id="filtroMinisterio" onchange="aplicarBusca()">
         <option value="todos">Todos Ministérios</option>
         <option value="Música Geral">Música Geral</option>
         <option value="Geral Eventos">Geral Eventos</option>
       </select>
 
-      <select id="filtroEvento">
+      <select id="filtroEvento" onchange="aplicarBusca()">
         <option value="todos">Todos</option>
       </select>
 
       <div class="busca-box">
-        <input 
-          type="text" 
-          id="buscaNome"
+       <input type="text" id="buscaNome" oninput="aplicarBusca()"
           placeholder="Buscar por nome"
         >
         <button onclick="aplicarBusca()">🔍</button>
