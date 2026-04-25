@@ -342,4 +342,53 @@ async function enviarDisponibilidade() {
   alert("Disponibilidade enviada com sucesso!");
 
   window.location.href = "index.html";
+}//////////////////////////////////////////////////////
+// ENVIAR DISPONIBILIDADE
+//////////////////////////////////////////////////////
+
+async function enviarDisponibilidade() {
+
+  const nome = localStorage.getItem("nome");
+  const ministerio = localStorage.getItem("ministerio");
+
+  if (!nome || !ministerio) {
+    alert("Erro: identificação não encontrada.");
+    return;
+  }
+
+  const selecionados = document.querySelectorAll(".btn-disponibilidade.ativo");
+
+  if (selecionados.length === 0) {
+    alert("Selecione pelo menos uma disponibilidade.");
+    return;
+  }
+
+  let dados = [];
+
+  selecionados.forEach(btn => {
+    const valor = btn.dataset.valor;
+
+    const partes = valor.split("|");
+
+    dados.push({
+      nome_pessoa: nome,
+      ministerio: ministerio,
+      evento: partes[0].trim(),
+      turno: partes[1].trim()
+    });
+  });
+
+  const { error } = await supabase
+    .from("disponibilidades")
+    .insert(dados);
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao enviar.");
+    return;
+  }
+
+  alert("Disponibilidade enviada!");
+
+  window.location.href = "index.html";
 }
