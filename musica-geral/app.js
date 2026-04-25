@@ -160,7 +160,7 @@ async function fazerLogin() {
     return;
   }
 
-  window.location.href = "escala.html";
+  window.location.href = "dashboard.html";
 }
 
 //////////////////////////////////////////////////////
