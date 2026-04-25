@@ -231,4 +231,74 @@ async function editarDisponibilidade(id) {
     .eq("id", id);
 
   carregarRespostas();
+}//////////////////////////////////////////////////////
+// CARREGAR DISPONIBILIDADES (FALTAVA ISSO)
+//////////////////////////////////////////////////////
+
+async function carregarDisponibilidades() {
+
+  const { data, error } = await supabase
+    .from("compromissos")
+    .select("*");
+
+  if (error) {
+    console.error("Erro ao carregar compromissos:", error);
+    return;
+  }
+
+  const lista = document.getElementById("lista-disponibilidade");
+  if (!lista) return;
+
+  lista.innerHTML = "";
+
+  let grupos = {};
+
+  data.forEach(item => {
+    if (!grupos[item.nome]) grupos[item.nome] = [];
+    grupos[item.nome].push(item.turno);
+  });
+
+  Object.keys(grupos).forEach(nome => {
+
+    const divGrupo = document.createElement("div");
+
+    const titulo = document.createElement("h3");
+    titulo.innerText = nome;
+
+    divGrupo.appendChild(titulo);
+
+    grupos[nome].forEach(turno => {
+
+      const btn = document.createElement("button");
+
+      btn.innerText = turno;
+      btn.style.margin = "5px";
+      btn.style.padding = "10px";
+      btn.style.borderRadius = "8px";
+      btn.style.border = "none";
+      btn.style.cursor = "pointer";
+      btn.style.background = "#eee";
+
+      btn.dataset.valor = `${nome} | ${turno}`;
+      btn.dataset.selecionado = "false";
+
+      btn.onclick = () => {
+        const ativo = btn.dataset.selecionado === "true";
+
+        btn.dataset.selecionado = (!ativo).toString();
+
+        if (btn.dataset.selecionado === "true") {
+          btn.style.background = "#1b4580";
+          btn.style.color = "white";
+        } else {
+          btn.style.background = "#eee";
+          btn.style.color = "black";
+        }
+      };
+
+      divGrupo.appendChild(btn);
+    });
+
+    lista.appendChild(divGrupo);
+  });
 }
