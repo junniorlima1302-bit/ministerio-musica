@@ -268,4 +268,24 @@ textarea {
 .item-pessoa span {
   font-size: 12px;
   color: #666;
+}.titulo-grupo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.titulo-grupo button {
+  background: #1b4580;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.item-compromisso {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

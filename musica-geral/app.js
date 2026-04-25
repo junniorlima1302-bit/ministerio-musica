@@ -484,4 +484,18 @@ function aplicarBusca() {
 //////////////////////////////////////////////////////
 function voltarPagina() {
   window.history.back();
+}function adicionarEvento(grupo) {
+  const nome = prompt("Nome do novo evento:");
+  if (!nome) return;
+
+  // aqui você salva no Supabase
+  console.log("Adicionar no grupo:", grupo, nome);
+}
+
+function editarEvento(id) {
+  const novoNome = prompt("Editar evento:");
+  if (!novoNome) return;
+
+  // aqui você atualiza no Supabase
+  console.log("Editar evento:", id, novoNome);
 }
