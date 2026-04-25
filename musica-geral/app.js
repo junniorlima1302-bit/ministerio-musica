@@ -181,7 +181,7 @@ async function fazerLogin() {
     return;
   }
 
-  window.location.href = "compromissos.html";
+  window.location.href = "dashboard.html";
 }
 
 //////////////////////////////////////////////////////
