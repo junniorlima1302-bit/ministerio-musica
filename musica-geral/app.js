@@ -391,4 +391,32 @@ async function enviarDisponibilidade() {
   alert("Disponibilidade enviada!");
 
   window.location.href = "index.html";
+}//////////////////////////////////////////////////////
+// LOGIN
+//////////////////////////////////////////////////////
+
+async function fazerLogin() {
+
+  const email = document.getElementById("email")?.value;
+  const senha = document.getElementById("senha")?.value;
+
+  if (!email || !senha) {
+    alert("Preencha email e senha.");
+    return;
+  }
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: senha
+  });
+
+  if (error) {
+    console.error(error);
+    alert("Email ou senha inválidos.");
+    return;
+  }
+
+  alert("Login realizado com sucesso!");
+
+  window.location.href = "respostas.html";
 }
