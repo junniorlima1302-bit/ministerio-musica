@@ -141,19 +141,19 @@ textarea {
   color: white;
 }
 
-/* ===== COMPROMISSOS ===== */
+/* ===== COMPROMISSOS (ISOLADO) ===== */
 
-.grupo {
+.compromissos-page .grupo {
   margin-top: 30px;
 }
 
-.grupo h3 {
+.compromissos-page .grupo h3 {
   text-align: center;
   margin-bottom: 15px;
 }
 
 /* lista */
-.lista-itens {
+.compromissos-page .lista-itens {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -161,10 +161,10 @@ textarea {
 }
 
 /* card */
-.item-compromisso {
+.compromissos-page .item-compromisso {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* 👈 ESSENCIAL */
+  justify-content: flex-start;
   gap: 12px;
 
   width: 100%;
@@ -177,26 +177,13 @@ textarea {
 }
 
 /* checkbox */
-.item-compromisso input {
+.compromissos-page .item-compromisso input {
   transform: scale(1.2);
   margin: 0;
 }
 
 /* texto */
-.item-compromisso span {
+.compromissos-page .item-compromisso span {
   font-size: 14px;
   text-align: left;
-}
-
-/* RESPONSIVO */
-@media (max-width: 600px) {
-
-  .botoes {
-    grid-template-columns: 1fr;
-  }
-
-  .item-compromisso {
-    max-width: 100%;
-  }
-
 }
