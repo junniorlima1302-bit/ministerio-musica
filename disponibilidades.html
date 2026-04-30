@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Disponibilidades</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body onload="carregarRespostas()">
+
+  <div class="container">
+    <h2>Disponibilidades dos Ministros</h2>
+
+    <button onclick="voltarPagina()" class="btn-voltar">← Voltar</button>
+
+    <div id="filtros">
+
+      <select id="filtroMinisterio" onchange="aplicarBusca()">
+        <option value="todos">Todos Ministérios</option>
+        <option value="Música Geral">Música Geral</option>
+        <option value="Geral Eventos">Geral Eventos</option>
+      </select>
+
+      <select id="filtroEvento" onchange="aplicarBusca()">
+        <option value="todos">Todos</option>
+      </select>
+
+      <div class="busca-box">
+       <input type="text" id="buscaNome" oninput="aplicarBusca()"
+          placeholder="Buscar por nome"
+        >
+        <button onclick="aplicarBusca()">🔍</button>
+      </div>
+
+    </div>
+
+    <div id="lista-respostas"></div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

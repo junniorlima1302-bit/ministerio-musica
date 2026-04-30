@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#1b4580">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+<body>
+
+  <div class="container">
+    <h2>Área da Coordenação</h2>
+<button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+    <input type="email" id="email" placeholder="Email"><br><br>
+    <input type="password" id="senha" placeholder="Senha"><br><br>
+    
+    <button onclick="fazerLogin()">Entrar</button>
+  </div>
+
+  <!-- ORDEM IMPORTA -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

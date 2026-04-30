@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Usuários</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#1b4580">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    .usuario-item {
+      background: #f5f7fa;
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .usuario-info strong {
+      display: block;
+      font-size: 15px;
+      color: #1b4580;
+    }
+    .usuario-info span {
+      font-size: 12px;
+      color: #666;
+    }
+    .badge-papel {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      margin-top: 4px;
+    }
+    .badge-admin { background: #1b4580; color: white; }
+    .badge-agente { background: #dce6f5; color: #1b4580; }
+    .usuario-acoes { display: flex; gap: 8px; }
+    .usuario-acoes button {
+      width: auto;
+      padding: 6px 12px;
+      font-size: 12px;
+      margin-top: 0;
+      border-radius: 6px;
+    }
+    .btn-excluir-usuario { background: #c0392b; }
+    .btn-excluir-usuario:hover { background: #a93226; }
+    .btn-editar-usuario { background: #4a7fc1; }
+    .btn-editar-usuario:hover { background: #3a6aaa; }
+
+    .secao-novo {
+      background: #f0f4fb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 25px;
+    }
+    .secao-novo h3 {
+      margin-bottom: 15px;
+    }
+    .secao-novo input,
+    .secao-novo select {
+      width: 100%;
+      max-width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .minha-conta {
+      background: #eef3fb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 25px;
+    }
+    .minha-conta h3 { margin-bottom: 15px; }
+    .minha-conta input {
+      width: 100%;
+      max-width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Gerenciar Usuários</h2>
+    <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+
+    <div id="lista-usuarios"></div>
+
+    <!-- CADASTRAR NOVO -->
+    <div class="secao-novo">
+      <h3>Cadastrar novo usuário</h3>
+      <input type="text" id="novo-nome" placeholder="Nome completo">
+      <input type="email" id="novo-email" placeholder="Email">
+      <input type="password" id="novo-senha" placeholder="Senha">
+      <select id="novo-papel">
+        <option value="agente">Agente</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button onclick="cadastrarUsuario()">Cadastrar</button>
+    </div>
+
+    <!-- MINHA CONTA -->
+    <div class="minha-conta">
+      <h3>Minha conta</h3>
+      <input type="text" id="meu-nome" placeholder="Seu nome">
+      <input type="password" id="minha-senha" placeholder="Nova senha (deixe em branco para não alterar)">
+      <button onclick="salvarMinhaConta()">Salvar</button>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    let meuId = null;
+
+    async function iniciar() {
+      const { data: sessao } = await supabase.auth.getSession();
+      if (!sessao.session) { window.location.href = "login.html"; return; }
+
+      meuId = sessao.session.user.id;
+
+      const { data: eu } = await supabase
+        .from("usuarios").select("*").eq("id", meuId).single();
+
+      if (!eu || eu.papel !== "admin") {
+        alert("Acesso restrito ao administrador.");
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      document.getElementById("meu-nome").value = eu.nome;
+
+      carregarUsuarios();
+    }
+
+    async function carregarUsuarios() {
+      const { data, error } = await supabase
+        .from("usuarios").select("*").order("nome");
+
+      if (error) { console.error(error); return; }
+
+      const lista = document.getElementById("lista-usuarios");
+      lista.innerHTML = "";
+
+      data.forEach(u => {
+        const div = document.createElement("div");
+        div.className = "usuario-item";
+
+        div.innerHTML = `
+          <div class="usuario-info">
+            <strong>${u.nome}</strong>
+            <span>${u.email}</span>
+            <span class="badge-papel badge-${u.papel}">${u.papel}</span>
+          </div>
+          <div class="usuario-acoes">
+            ${u.id !== meuId ? `
+              <button class="btn-editar-usuario" onclick="alterarPapel('${u.id}', '${u.papel}', '${u.nome}')">
+                ✏️ Papel
+              </button>
+              <button class="btn-excluir-usuario" onclick="excluirUsuario('${u.id}', '${u.nome}')">
+                🗑️ Excluir
+              </button>
+            ` : `<span style="font-size:12px;color:#999;">Você</span>`}
+          </div>
+        `;
+
+        lista.appendChild(div);
+      });
+    }
+
+    async function cadastrarUsuario() {
+      const nome = document.getElementById("novo-nome").value.trim();
+      const email = document.getElementById("novo-email").value.trim();
+      const senha = document.getElementById("novo-senha").value;
+      const papel = document.getElementById("novo-papel").value;
+
+      if (!nome || !email || !senha) {
+        alert("Preencha todos os campos.");
+        return;
+      }
+
+      // Cria o usuário no Auth do Supabase
+      const { data, error } = await supabase.auth.admin.createUser({
+        email,
+        password: senha,
+        email_confirm: true
+      });
+
+      if (error) {
+        alert("Erro ao criar usuário: " + error.message);
+        return;
+      }
+
+      // Insere na tabela usuarios
+      const { error: erroInsert } = await supabase
+        .from("usuarios")
+        .insert({ id: data.user.id, nome, email, papel });
+
+      if (erroInsert) {
+        alert("Usuário criado no Auth mas erro ao salvar perfil: " + erroInsert.message);
+        return;
+      }
+
+      document.getElementById("novo-nome").value = "";
+      document.getElementById("novo-email").value = "";
+      document.getElementById("novo-senha").value = "";
+
+      alert("Usuário cadastrado com sucesso!");
+      carregarUsuarios();
+    }
+
+    async function alterarPapel(id, papelAtual, nome) {
+      const novoPapel = papelAtual === "admin" ? "agente" : "admin";
+      const confirmar = confirm(`Alterar papel de "${nome}" para ${novoPapel}?`);
+      if (!confirmar) return;
+
+      const { error } = await supabase
+        .from("usuarios")
+        .update({ papel: novoPapel })
+        .eq("id", id);
+
+      if (error) { alert("Erro ao alterar papel."); return; }
+
+      carregarUsuarios();
+    }
+
+    async function excluirUsuario(id, nome) {
+      const confirmar = confirm(`Excluir o usuário "${nome}"? Esta ação não pode ser desfeita.`);
+      if (!confirmar) return;
+
+      const { error } = await supabase
+        .from("usuarios")
+        .delete()
+        .eq("id", id);
+
+      if (error) { alert("Erro ao excluir usuário."); return; }
+
+      carregarUsuarios();
+    }
+
+    async function salvarMinhaConta() {
+      const novoNome = document.getElementById("meu-nome").value.trim();
+      const novaSenha = document.getElementById("minha-senha").value;
+
+      if (!novoNome) { alert("Preencha seu nome."); return; }
+
+      const { error: erroNome } = await supabase
+        .from("usuarios")
+        .update({ nome: novoNome })
+        .eq("id", meuId);
+
+      if (erroNome) { alert("Erro ao salvar nome."); return; }
+
+      if (novaSenha) {
+        const { error: erroSenha } = await supabase.auth.updateUser({
+          password: novaSenha
+        });
+        if (erroSenha) { alert("Erro ao atualizar senha."); return; }
+      }
+
+      alert("Dados salvos com sucesso!");
+    }
+
+    iniciar();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Compromissos</title>
+  <link rel="stylesheet" href="style.css">
+
+  <meta name="theme-color" content="#1b4580">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+
+<body class="compromissos-page" onload="carregarCompromissos()">
+
+  <div class="container compromissos-page">
+    <h2>Compromissos do Mês</h2>
+
+    <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+
+    <textarea id="entrada" placeholder="Digite os compromissos...
+
+Use ENTER para separar
+Use # para criar grupos
+
+Exemplo:
+# MISSAS DOMINICAIS
+DIA 3 - MISSA
+DIA 10 - MISSA"></textarea>
+
+    <button onclick="cadastrarTudo()">Cadastrar</button>
+    <button onclick="limparTudo()">Limpar Tudo</button>
+    <button onclick="excluirSelecionados()">Excluir Selecionados</button>
+
+    <div id="lista-compromissos"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js?v=2"></script>
+
+</body>
+</html>

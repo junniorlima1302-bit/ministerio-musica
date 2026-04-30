@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Identificação</title>
+  <link rel="stylesheet" href="style.css">
+
+  <meta name="theme-color" content="#1b4580">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+
+<body class="identificacao-page">
+
+  <div class="container">
+    <h2>Identificação</h2>
+
+    <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+
+    <input type="text" id="nome" placeholder="Seu nome">
+
+    <!-- ===== MINISTÉRIO ===== -->
+    <h3>Selecione seu ministério:</h3>
+
+    <div class="radio-group">
+      <label class="radio-item">
+        <input type="radio" name="ministerio" value="Música Geral">
+        <span>Música Geral</span>
+      </label>
+
+      <label class="radio-item">
+        <input type="radio" name="ministerio" value="Geral Eventos">
+        <span>Geral Eventos</span>
+      </label>
+    </div>
+
+    <!-- ===== TIPO ===== -->
+    <h3>Como você participa?</h3>
+
+    <div class="radio-group">
+      <label class="radio-item">
+        <input type="radio" name="tipo" value="canto" onchange="toggleInstrumento()">
+        <span>Canto</span>
+      </label>
+
+      <label class="radio-item">
+        <input type="radio" name="tipo" value="toco" onchange="toggleInstrumento()">
+        <span>Toco</span>
+      </label>
+    </div>
+
+    <!-- ===== CAMPO DINÂMICO ===== -->
+    <div id="campo-instrumento" style="display: none; margin-top: 10px;">
+      <input type="text" id="instrumento" placeholder="Qual instrumento você toca?">
+    </div>
+
+    <!-- BOTÃO -->
+    <button onclick="continuar()">Continuar</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,437 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* BODY */
+body {
+  background: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* CONTAINER */
+.container {
+  background: #fff;
+  width: 100%;
+  max-width: 900px;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* TÍTULOS */
+h1, h2 {
+  text-align: center;
+  color: #1b4580;
+  margin-bottom: 15px;
+}
+
+h3 {
+  text-align: center;
+  color: #1b4580;
+  margin: 25px 0 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* BOTÕES */
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #1b4580;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #163b6d;
+}
+
+/* BOTÃO VOLTAR */
+.btn-voltar {
+  background: none;
+  color: #1b4580;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.btn-voltar:hover {
+  text-decoration: underline;
+}
+
+/* INPUTS (SÓ TEXTO) */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  width: 100%;
+  max-width: 320px;
+  display: block;
+  margin: 0 auto 10px auto;
+}
+
+/* RADIO E CHECKBOX */
+input[type="radio"],
+input[type="checkbox"] {
+  width: auto;
+  display: inline-block;
+  margin: 0;
+}
+
+/* TEXTAREA */
+textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  resize: vertical;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* ========================= */
+/* ===== DISPONIBILIDADE ==== */
+/* ========================= */
+
+.botoes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.btn-disponibilidade {
+  padding: 12px;
+  border-radius: 10px;
+  border: 2px solid #d0d7e2;
+  background: #f5f7fa;
+  color: #1b4580;
+  text-align: center;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.btn-disponibilidade:hover {
+  background: #e4e9f2;
+}
+
+.btn-disponibilidade.ativo {
+  background: #1b4580;
+  color: white;
+  border: 2px solid #1b4580;
+  transform: scale(1.02);
+}
+
+/* ========================= */
+/* ===== COMPROMISSOS ====== */
+/* ========================= */
+
+.compromissos-page .grupo {
+  margin-top: 30px;
+}
+
+.compromissos-page .grupo h3 {
+  margin-bottom: 18px;
+  font-size: 16px;
+}
+
+.compromissos-page .lista-itens {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.compromissos-page .item-compromisso {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  background: #f8f9fb;
+  padding: 14px 18px;
+  border-radius: 12px;
+}
+
+.compromissos-page .linha-compromisso {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.compromissos-page .linha-compromisso input {
+  transform: scale(1.2);
+}
+
+.compromissos-page .linha-compromisso span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.compromissos-page .item-compromisso:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+/* ========================= */
+/* ===== AÇÕES POR ITEM ==== */
+/* ========================= */
+
+.acoes-item {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  justify-content: flex-end;
+}
+
+.btn-editar-item,
+.btn-excluir-item {
+  width: auto;
+  padding: 5px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  margin-top: 0;
+}
+
+.btn-editar-item {
+  background: #4a7fc1;
+}
+
+.btn-editar-item:hover {
+  background: #3a6aaa;
+}
+
+.btn-excluir-item {
+  background: #c0392b;
+}
+
+.btn-excluir-item:hover {
+  background: #a93226;
+}
+
+/* ========================= */
+/* ===== FILTROS ===== */
+/* ========================= */
+
+#filtros {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+/* selects */
+#filtros select {
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* caixa de busca */
+.busca-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 🔥 CORREÇÃO FINAL DO INPUT */
+.busca-box input {
+  height: 36px;
+  padding: 0 10px; /* remove problema */
+  margin: 0;
+  display: block;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 180px;
+}
+
+/* botão lupa */
+.busca-box button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 8px;
+  background: #1b4580;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.busca-box button span {
+  font-size: 14px;
+}
+
+/* ========================= */
+/* ===== RESPOSTAS ========= */
+/* ========================= */
+
+.item-resposta {
+  background: #f5f5f5;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+/* ========================= */
+/* ===== EVENTOS =========== */
+/* ========================= */
+
+.grupo-evento {
+  margin-top: 25px;
+}
+
+.grupo-evento h3 {
+  background: #1b4580;
+  color: white;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.lista-pessoas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.item-pessoa {
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.item-pessoa strong {
+  display: block;
+  font-size: 14px;
+}
+
+.item-pessoa span {
+  font-size: 12px;
+  color: #666;
+}
+.identificacao-page input[type="radio"] {
+  display: none;
+}
+.identificacao-page .radio-item {
+  display: inline-block;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.identificacao-page .radio-item span {
+  display: block;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 2px solid #1b4580;
+  background: #f5f7fa;
+  color: #1b4580;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+.identificacao-page .radio-item input:checked + span {
+  background: #1b4580;
+  color: white;
+}
+.identificacao-page .radio-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.identificacao-page #campo-instrumento input {
+  margin-top: 5px;
+}
+#popup-sucesso {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#popup-sucesso .conteudo {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 300px;
+  width: 80%;
+}
+#popup-justificativa .conteudo {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.justificativa-item {
+  margin-bottom: 20px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f5f7fa;
+}
+
+.justificativa-item p {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.justificativa-item textarea {
+  width: 100%;
+  min-height: 70px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  resize: vertical;
+}
+.titulo-justificativa {
+  text-align: center;
+  font-weight: bold;
+  font-size: 15px;
+  margin-bottom: 15px;
+}
+.acoes {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.btn-primary {
+  background: #1b4580;
+  color: white;
+}
+
+.btn-secondary {
+  background: #ccc;
+  color: #333;
+}

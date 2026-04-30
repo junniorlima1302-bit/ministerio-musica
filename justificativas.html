@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Justificativas</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#1b4580">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    .abas {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    .aba {
+      padding: 8px 20px;
+      border-radius: 20px;
+      border: 2px solid #1b4580;
+      background: white;
+      color: #1b4580;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      width: auto;
+      margin-top: 0;
+    }
+    .aba.ativa {
+      background: #1b4580;
+      color: white;
+    }
+    .card-pessoa {
+      background: #f5f7fa;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-top: 14px;
+    }
+    .card-pessoa h3 {
+      color: #1b4580;
+      font-size: 15px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .justificativa-linha {
+      background: white;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      border-left: 4px solid #1b4580;
+    }
+    .justificativa-linha .evento-nome {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1b4580;
+      margin-bottom: 4px;
+    }
+    .justificativa-linha .motivo {
+      font-size: 13px;
+      color: #333;
+    }
+    .card-evento {
+      margin-top: 20px;
+    }
+    .card-evento h3 {
+      background: #1b4580;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .pessoa-evento-item {
+      background: #f5f7fa;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      border-left: 4px solid #4a7fc1;
+    }
+    .pessoa-evento-item strong {
+      display: block;
+      font-size: 14px;
+      color: #1b4580;
+      margin-bottom: 4px;
+    }
+    .pessoa-evento-item span {
+      font-size: 13px;
+      color: #333;
+    }
+    #sem-dados {
+      text-align: center;
+      color: #999;
+      margin-top: 30px;
+      font-size: 14px;
+    }
+    .filtros-just {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+    }
+    .filtros-just select {
+      height: 36px;
+      padding: 0 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+      min-width: 200px;
+    }
+    .btn-limpar-filtro {
+      width: auto;
+      height: 36px;
+      padding: 0 14px;
+      margin-top: 0;
+      font-size: 12px;
+      border-radius: 8px;
+      background: #ccc;
+      color: #333;
+    }
+    .btn-limpar-filtro:hover { background: #bbb; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Justificativas</h2>
+    <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+
+    <div class="abas">
+      <button class="aba ativa" id="aba-pessoa" onclick="alternarAba('pessoa')">Por Pessoa</button>
+      <button class="aba" id="aba-evento" onclick="alternarAba('evento')">Por Evento</button>
+    </div>
+
+    <div class="filtros-just">
+      <select id="filtro-nome-just" onchange="renderizar()">
+        <option value="todos">Todas as pessoas</option>
+      </select>
+      <button class="btn-limpar-filtro" onclick="limparFiltro()">✕ Limpar</button>
+    </div>
+
+    <div id="conteudo-justificativas"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    let modoAtual = "pessoa";
+    let dadosJustificativas = [];
+
+    async function iniciar() {
+      const { data: sessao } = await supabase.auth.getSession();
+      if (!sessao.session) { window.location.href = "login.html"; return; }
+
+      const userId = sessao.session.user.id;
+      const { data: eu } = await supabase
+        .from("usuarios").select("papel").eq("id", userId).single();
+
+      if (!eu || eu.papel !== "admin") {
+        alert("Acesso restrito ao administrador.");
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      await carregarJustificativas();
+    }
+
+    async function carregarJustificativas() {
+      const { data, error } = await supabase
+        .from("disponibilidades")
+        .select("*")
+        .eq("ministerio", "Música Geral")
+        .not("justificativa", "is", null)
+        .neq("justificativa", "");
+
+      if (error) { console.error(error); return; }
+
+      dadosJustificativas = data;
+      popularFiltroNomes(data);
+      renderizar();
+    }
+
+    function popularFiltroNomes(data) {
+      const select = document.getElementById("filtro-nome-just");
+      const nomes = [...new Set(data.map(d => d.nome_pessoa))].sort();
+      select.innerHTML = `<option value="todos">Todas as pessoas</option>`;
+      nomes.forEach(nome => {
+        const opt = document.createElement("option");
+        opt.value = nome;
+        opt.textContent = nome;
+        select.appendChild(opt);
+      });
+    }
+
+    function getDadosFiltrados() {
+      const nomeSelecionado = document.getElementById("filtro-nome-just")?.value || "todos";
+      if (nomeSelecionado === "todos") return dadosJustificativas;
+      return dadosJustificativas.filter(d => d.nome_pessoa === nomeSelecionado);
+    }
+
+    function limparFiltro() {
+      document.getElementById("filtro-nome-just").value = "todos";
+      renderizar();
+    }
+
+    function alternarAba(modo) {
+      modoAtual = modo;
+      document.getElementById("aba-pessoa").classList.toggle("ativa", modo === "pessoa");
+      document.getElementById("aba-evento").classList.toggle("ativa", modo === "evento");
+      renderizar();
+    }
+
+    function renderizar() {
+      if (modoAtual === "pessoa") renderizarPorPessoa();
+      else renderizarPorEvento();
+    }
+
+    function renderizarPorPessoa() {
+      const container = document.getElementById("conteudo-justificativas");
+      container.innerHTML = "";
+
+      const dados = getDadosFiltrados();
+
+      if (dados.length === 0) {
+        container.innerHTML = `<p id="sem-dados">Nenhuma justificativa encontrada.</p>`;
+        return;
+      }
+
+      const porPessoa = {};
+      dados.forEach(item => {
+        if (!porPessoa[item.nome_pessoa]) porPessoa[item.nome_pessoa] = [];
+        porPessoa[item.nome_pessoa].push(item);
+      });
+
+      Object.keys(porPessoa).sort().forEach(nome => {
+        const card = document.createElement("div");
+        card.className = "card-pessoa";
+
+        const titulo = document.createElement("h3");
+        titulo.innerText = `👤 ${nome}`;
+        card.appendChild(titulo);
+
+        porPessoa[nome].forEach(item => {
+          const linha = document.createElement("div");
+          linha.className = "justificativa-linha";
+          linha.innerHTML = `
+            <div class="evento-nome">📅 ${item.evento} — ${item.turno}</div>
+            <div class="motivo">${item.justificativa}</div>
+          `;
+          card.appendChild(linha);
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function renderizarPorEvento() {
+      const container = document.getElementById("conteudo-justificativas");
+      container.innerHTML = "";
+
+      const dados = getDadosFiltrados();
+
+      if (dados.length === 0) {
+        container.innerHTML = `<p id="sem-dados">Nenhuma justificativa encontrada.</p>`;
+        return;
+      }
+
+      const porEvento = {};
+      dados.forEach(item => {
+        const chave = `${item.evento} — ${item.turno}`;
+        if (!porEvento[chave]) porEvento[chave] = [];
+        porEvento[chave].push(item);
+      });
+
+      Object.keys(porEvento).sort().forEach(chave => {
+        const card = document.createElement("div");
+        card.className = "card-evento";
+
+        const titulo = document.createElement("h3");
+        titulo.innerText = chave;
+        card.appendChild(titulo);
+
+        porEvento[chave].forEach(item => {
+          const linha = document.createElement("div");
+          linha.className = "pessoa-evento-item";
+          linha.innerHTML = `
+            <strong>👤 ${item.nome_pessoa}</strong>
+            <span>${item.justificativa}</span>
+          `;
+          card.appendChild(linha);
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    iniciar();
+  </script>
+
+</body>
+</html>
