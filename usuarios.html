@@ -195,25 +195,25 @@
         return;
       }
 
-      // Cria o usuário no Auth do Supabase
-      const { data, error } = await supabase.auth.admin.createUser({
-        email,
-        password: senha,
-        email_confirm: true
-      });
+      const { data: sessao } = await supabase.auth.getSession();
+      const token = sessao.session.access_token;
 
-      if (error) {
-        alert("Erro ao criar usuário: " + error.message);
-        return;
-      }
+      const response = await fetch(
+        "https://yasvanzqhvvpighfzttv.supabase.co/functions/v1/criar-usuario",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({ nome, email, senha, papel }),
+        }
+      );
 
-      // Insere na tabela usuarios
-      const { error: erroInsert } = await supabase
-        .from("usuarios")
-        .insert({ id: data.user.id, nome, email, papel });
+      const result = await response.json();
 
-      if (erroInsert) {
-        alert("Usuário criado no Auth mas erro ao salvar perfil: " + erroInsert.message);
+      if (!response.ok) {
+        alert("Erro: " + result.error);
         return;
       }
 
