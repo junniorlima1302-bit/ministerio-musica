@@ -59,7 +59,7 @@
     .btn-sair {
       display: block;
       text-align: center;
-      margin-top: 20px;
+      margin-top: 4px;
       font-size: 13px;
       color: #aaa;
       cursor: pointer;
@@ -70,6 +70,23 @@
     }
     .btn-sair:hover {
       color: #c0392b;
+      background: none;
+    }
+    .btn-inicio {
+      display: block;
+      text-align: center;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #1b4580;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 100%;
+      padding: 6px;
+      font-weight: 500;
+    }
+    .btn-inicio:hover {
+      text-decoration: underline;
       background: none;
     }
     .divider {
@@ -99,6 +116,7 @@
       </div>
 
       <hr class="divider">
+      <button class="btn-inicio" onclick="window.location.href='index.html'">🏠 Voltar ao Início</button>
       <button class="btn-sair" onclick="fazerLogout()">Sair</button>
 
     </div>
