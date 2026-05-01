@@ -279,7 +279,9 @@ textarea {
   height: 36px;
   padding: 0 10px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #a0b8d0;
+  background: white;
+  color: #1a2e4a;
 }
 
 /* caixa de busca */
@@ -292,11 +294,13 @@ textarea {
 /* 🔥 CORREÇÃO FINAL DO INPUT */
 .busca-box input {
   height: 36px;
-  padding: 0 10px; /* remove problema */
+  padding: 0 10px;
   margin: 0;
   display: block;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #a0b8d0;
+  background: white;
+  color: #1a2e4a;
   width: 180px;
 }
 
@@ -333,40 +337,49 @@ textarea {
 
 .grupo-evento {
   margin-top: 25px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.10);
 }
 
 .grupo-evento h3 {
-  background: #1b4580;
-  color: white;
-  padding: 8px;
-  border-radius: 8px;
+  background: #7a9ec4;
+  color: #1a2e4a;
+  padding: 12px 16px;
+  border-radius: 0;
   font-size: 14px;
+  font-weight: 700;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 0;
+  letter-spacing: 0.3px;
 }
 
 .lista-pessoas {
+  background: #cfd8e8;
+  padding: 12px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 10px;
 }
 
 .item-pessoa {
-  background: #f5f5f5;
+  background: rgba(255,255,255,0.65);
   padding: 10px;
   border-radius: 8px;
   text-align: center;
   font-size: 13px;
+  border: 1px solid rgba(255,255,255,0.9);
 }
 
 .item-pessoa strong {
   display: block;
   font-size: 14px;
+  color: #1a2e4a;
 }
 
 .item-pessoa span {
   font-size: 12px;
-  color: #666;
+  color: #3a5272;
 }
 .identificacao-page input[type="radio"] {
   display: none;
@@ -626,7 +639,7 @@ textarea {
   top: 6px;
   right: 6px;
   background: #c0392b;
-  color: white;
+  color: rgb(255, 255, 255);
   border-radius: 50%;
   width: 18px;
   height: 18px;
@@ -669,24 +682,30 @@ textarea {
 
 .compromissos-page .grupo {
   margin-top: 24px;
-  border: 1px solid #e8ecf2;
   border-radius: 14px;
   overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.10);
 }
 
 .compromissos-page .linha-grupo-titulo {
-  background: #1b4580;
+  background: #7a9ec4;
   padding: 12px 16px;
   border-radius: 0;
   margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .compromissos-page .linha-grupo-titulo h3 {
-  color: white;
+  color: #1a2e4a;
   font-size: 14px;
   margin: 0;
-  text-align: left;
-  font-weight: 600;
+  flex: 1;
+  text-align: center;
+  font-weight: 700;
   letter-spacing: 0.3px;
 }
 
@@ -701,10 +720,10 @@ textarea {
   width: 100%;
   max-width: 100%;
   margin: 0;
-  background: white;
+  background: #cfd8e8;
   padding: 12px 16px;
   border-radius: 0;
-  border-bottom: 1px solid #f0f2f5;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -713,11 +732,6 @@ textarea {
 
 .compromissos-page .item-compromisso:last-child {
   border-bottom: none;
-}
-
-.compromissos-page .item-compromisso:hover {
-  background: #f8f9fb;
-  box-shadow: none;
 }
 
 .compromissos-page .linha-compromisso {
@@ -730,7 +744,7 @@ textarea {
 .compromissos-page .linha-compromisso span {
   font-size: 14px;
   font-weight: 500;
-  color: #2c3e50;
+  color: #1a2e4a;
 }
 
 .compromissos-page .acoes-item {
@@ -746,27 +760,33 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1b4580 0%, #2d6bc4 100%);
+  background: linear-gradient(160deg, #0f2a5e 0%, #1b4580 50%, #2d6bc4 100%);
   padding: 20px;
 }
 
 .admin-box {
-  background: white;
+  background: #eaf0f8;
+  border: 1px solid #c4d4e8;
+  backdrop-filter: none;
   border-radius: 16px;
   padding: 30px 25px;
   width: 100%;
   max-width: 900px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
 }
 
 /* Título padrão */
 .admin-box h2 {
   text-align: center;
-  color: #1b4580;
+  color: #1a2e4a;
   margin-bottom: 15px;
 }
 
-/* botão voltar alinhado */
 .admin-box .btn-voltar {
   margin-bottom: 15px;
+  color: #1b4580;
+}
+
+.admin-box .btn-voltar:hover {
+  color: #1a2e4a;
 }

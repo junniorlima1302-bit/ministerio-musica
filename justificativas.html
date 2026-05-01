@@ -8,120 +8,65 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <style>
-    .abas {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      justify-content: center;
-    }
+    .abas { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
     .aba {
-      padding: 8px 20px;
-      border-radius: 20px;
-      border: 2px solid #1b4580;
-      background: white;
-      color: #1b4580;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-      width: auto;
-      margin-top: 0;
+      padding: 8px 20px; border-radius: 20px;
+      border: 2px solid #7a9ec4; background: transparent;
+      color: #1a2e4a; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: 0.2s; width: auto; margin-top: 0;
     }
-    .aba.ativa {
-      background: #1b4580;
-      color: white;
-    }
+    .aba.ativa { background: #7a9ec4; color: #1a2e4a; }
+    .aba:hover { background: rgba(122,158,196,0.25); }
+
     .card-pessoa {
-      background: #f5f7fa;
-      border-radius: 12px;
-      padding: 16px 20px;
-      margin-top: 14px;
+      border-radius: 14px; overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.10); margin-top: 14px;
     }
     .card-pessoa h3 {
-      color: #1b4580;
-      font-size: 15px;
-      margin-bottom: 10px;
-      text-align: left;
+      background: #7a9ec4; color: #1a2e4a; font-size: 14px;
+      font-weight: 700; margin: 0; padding: 12px 16px; text-align: left;
     }
     .justificativa-linha {
-      background: white;
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin-bottom: 8px;
-      border-left: 4px solid #1b4580;
+      background: #cfd8e8; padding: 10px 14px; margin-bottom: 0;
+      border-left: 4px solid #1b4580; border-bottom: 1px solid rgba(255,255,255,0.5);
     }
-    .justificativa-linha .evento-nome {
-      font-size: 12px;
-      font-weight: 600;
-      color: #1b4580;
-      margin-bottom: 4px;
-    }
-    .justificativa-linha .motivo {
-      font-size: 13px;
-      color: #333;
-    }
+    .justificativa-linha:last-child { border-bottom: none; }
+    .justificativa-linha .evento-nome { font-size: 12px; font-weight: 700; color: #1a2e4a; margin-bottom: 4px; }
+    .justificativa-linha .motivo { font-size: 13px; color: #2c3e50; }
+
     .card-evento {
-      margin-top: 20px;
+      border-radius: 14px; overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.10); margin-top: 20px;
     }
     .card-evento h3 {
-      background: #1b4580;
-      color: white;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 14px;
-      margin-bottom: 10px;
-      text-align: center;
+      background: #7a9ec4; color: #1a2e4a; padding: 12px 16px;
+      font-size: 14px; font-weight: 700; margin-bottom: 0; text-align: left;
     }
     .pessoa-evento-item {
-      background: #f5f7fa;
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin-bottom: 8px;
-      border-left: 4px solid #4a7fc1;
+      background: #cfd8e8; padding: 10px 14px; margin-bottom: 0;
+      border-left: 4px solid #4a7fc1; border-bottom: 1px solid rgba(255,255,255,0.5);
     }
-    .pessoa-evento-item strong {
-      display: block;
-      font-size: 14px;
-      color: #1b4580;
-      margin-bottom: 4px;
-    }
-    .pessoa-evento-item span {
-      font-size: 13px;
-      color: #333;
-    }
-    #sem-dados {
-      text-align: center;
-      color: #999;
-      margin-top: 30px;
-      font-size: 14px;
-    }
+    .pessoa-evento-item:last-child { border-bottom: none; }
+    .pessoa-evento-item strong { display: block; font-size: 14px; color: #1a2e4a; margin-bottom: 4px; }
+    .pessoa-evento-item span { font-size: 13px; color: #2c3e50; }
+
+    #sem-dados { text-align: center; color: #3a5272; margin-top: 30px; font-size: 14px; }
+
     .filtros-just {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
+      display: flex; gap: 10px; margin-bottom: 20px;
+      flex-wrap: wrap; align-items: center; justify-content: center;
     }
     .filtros-just select {
-      height: 36px;
-      padding: 0 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 13px;
-      min-width: 200px;
+      height: 36px; padding: 0 10px; border-radius: 8px;
+      border: 1px solid #a0b8d0; font-size: 13px; min-width: 200px;
+      background: white; color: #1a2e4a;
     }
     .btn-limpar-filtro {
-      width: auto;
-      height: 36px;
-      padding: 0 14px;
-      margin-top: 0;
-      font-size: 12px;
-      border-radius: 8px;
-      background: #ccc;
-      color: #333;
+      width: auto; height: 36px; padding: 0 14px; margin-top: 0;
+      font-size: 12px; border-radius: 8px;
+      background: #7a9ec4; color: #1a2e4a; font-weight: 600;
     }
-    .btn-limpar-filtro:hover { background: #bbb; }
+    .btn-limpar-filtro:hover { background: #6a8eb4; }
   </style>
 </head>
 <body>

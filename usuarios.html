@@ -8,84 +8,70 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <style>
+    .lista-usuarios-wrap {
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+      margin-bottom: 25px;
+    }
+    .lista-usuarios-header {
+      background: #7a9ec4;
+      padding: 12px 16px;
+    }
+    .lista-usuarios-header h3 {
+      color: #1a2e4a;
+      font-size: 14px;
+      margin: 0;
+      font-weight: 700;
+    }
     .usuario-item {
-      background: #f5f7fa;
+      background: #cfd8e8;
       padding: 14px 18px;
-      border-radius: 10px;
-      margin-top: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.5);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 10px;
     }
-    .usuario-info strong {
-      display: block;
-      font-size: 15px;
-      color: #1b4580;
-    }
-    .usuario-info span {
-      font-size: 12px;
-      color: #666;
-    }
+    .usuario-item:last-child { border-bottom: none; }
+    .usuario-info strong { display: block; font-size: 15px; color: #1a2e4a; }
+    .usuario-info span { font-size: 12px; color: #3a5272; }
     .badge-papel {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: bold;
-      margin-top: 4px;
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: bold; margin-top: 4px;
     }
-    .badge-admin { background: #1b4580; color: white; }
-    .badge-agente { background: #dce6f5; color: #1b4580; }
+    .badge-admin { background: rgba(27,69,128,0.15); color: #1a2e4a; }
+    .badge-agente { background: rgba(27,69,128,0.15); color: #1a2e4a; }
     .usuario-acoes { display: flex; gap: 8px; }
-    .usuario-acoes button {
-      width: auto;
-      padding: 6px 12px;
-      font-size: 12px;
-      margin-top: 0;
-      border-radius: 6px;
-    }
+    .usuario-acoes button { width: auto; padding: 6px 12px; font-size: 12px; margin-top: 0; border-radius: 6px; }
     .btn-excluir-usuario { background: #c0392b; }
     .btn-excluir-usuario:hover { background: #a93226; }
     .btn-editar-usuario { background: #4a7fc1; }
     .btn-editar-usuario:hover { background: #3a6aaa; }
 
-    .secao-novo {
-      background: #f0f4fb;
-      border-radius: 12px;
-      padding: 20px;
+    .secao-wrap {
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.10);
       margin-top: 25px;
     }
-    .secao-novo h3 {
-      margin-bottom: 15px;
+    .secao-header {
+      background: #7a9ec4;
+      padding: 12px 16px;
     }
-    .secao-novo input,
-    .secao-novo select {
-      width: 100%;
-      max-width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-      display: block;
+    .secao-header h3 {
+      color: #1a2e4a; font-size: 14px; margin: 0; font-weight: 700;
     }
-
-    .minha-conta {
-      background: #eef3fb;
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 25px;
+    .secao-body {
+      background: #cfd8e8;
+      padding: 16px;
     }
-    .minha-conta h3 { margin-bottom: 15px; }
-    .minha-conta input {
-      width: 100%;
-      max-width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-      display: block;
+    .secao-body input, .secao-body select {
+      width: 100%; max-width: 100%; padding: 10px;
+      border-radius: 8px; border: 1px solid #a0b8d0;
+      background: rgba(255,255,255,0.8); margin-bottom: 10px;
+      display: block; color: #1a2e4a; font-size: 14px;
     }
   </style>
 </head>
@@ -97,27 +83,32 @@
     <h2>Gerenciar Usuários</h2>
     <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
 
-    <div id="lista-usuarios"></div>
-
-    <!-- CADASTRAR NOVO -->
-    <div class="secao-novo">
-      <h3>Cadastrar novo usuário</h3>
-      <input type="text" id="novo-nome" placeholder="Nome completo">
-      <input type="email" id="novo-email" placeholder="Email">
-      <input type="password" id="novo-senha" placeholder="Senha">
-      <select id="novo-papel">
-        <option value="agente">Agente</option>
-        <option value="admin">Admin</option>
-      </select>
-      <button onclick="cadastrarUsuario()">Cadastrar</button>
+    <div class="lista-usuarios-wrap">
+      <div class="lista-usuarios-header"><h3>👥 Usuários cadastrados</h3></div>
+      <div id="lista-usuarios"></div>
     </div>
 
-    <!-- MINHA CONTA -->
-    <div class="minha-conta">
-      <h3>Minha conta</h3>
-      <input type="text" id="meu-nome" placeholder="Seu nome">
-      <input type="password" id="minha-senha" placeholder="Nova senha (deixe em branco para não alterar)">
-      <button onclick="salvarMinhaConta()">Salvar</button>
+    <div class="secao-wrap">
+      <div class="secao-header"><h3>➕ Cadastrar novo usuário</h3></div>
+      <div class="secao-body">
+        <input type="text" id="novo-nome" placeholder="Nome completo">
+        <input type="email" id="novo-email" placeholder="Email">
+        <input type="password" id="novo-senha" placeholder="Senha">
+        <select id="novo-papel">
+          <option value="agente">Agente</option>
+          <option value="admin">Admin</option>
+        </select>
+        <button onclick="cadastrarUsuario()">Cadastrar</button>
+      </div>
+    </div>
+
+    <div class="secao-wrap">
+      <div class="secao-header"><h3>🔑 Minha conta</h3></div>
+      <div class="secao-body">
+        <input type="text" id="meu-nome" placeholder="Seu nome">
+        <input type="password" id="minha-senha" placeholder="Nova senha (deixe em branco para não alterar)">
+        <button onclick="salvarMinhaConta()">Salvar</button>
+      </div>
     </div>
 
   </div>
