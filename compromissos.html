@@ -38,71 +38,70 @@
 
       /* Botões principais (Cadastrar, Limpar, Excluir) */
       button {
-        font-size: 15px;
-        padding: 14px;
-        min-height: 48px;
+        font-size: 14px;
+        padding: 11px;
+        min-height: 42px;
       }
 
-      /* Cabeçalho do grupo — título e botões em coluna */
+      /* Cabeçalho do grupo — título e botões em linha */
       .compromissos-page .linha-grupo-titulo {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-        padding: 12px;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 10px 12px;
       }
 
       .compromissos-page .linha-grupo-titulo h3 {
-        font-size: 14px;
-        text-align: center;
+        font-size: 13px;
+        text-align: left;
+        flex: 1;
       }
 
-      /* Botões Renomear e Adicionar maiores */
+      /* Botões Renomear e Adicionar compactos */
       .acoes-grupo {
-        justify-content: center;
-        gap: 8px;
+        justify-content: flex-end;
+        gap: 6px;
       }
 
       .btn-editar-grupo,
       .btn-adicionar-item {
-        flex: 1;
-        text-align: center;
-        padding: 10px 8px;
-        font-size: 13px;
-        min-height: 42px;
+        padding: 7px 10px;
+        font-size: 12px;
+        min-height: 34px;
+        width: auto;
       }
 
-      /* Item de compromisso — texto e botões em coluna */
+      /* Item de compromisso — texto e botões em linha */
       .compromissos-page .item-compromisso {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 12px;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
       }
 
       .compromissos-page .linha-compromisso {
-        width: 100%;
+        flex: 1;
       }
 
       .compromissos-page .linha-compromisso span {
-        font-size: 14px;
+        font-size: 13px;
         line-height: 1.4;
       }
 
-      /* Botões Editar e Excluir maiores e lado a lado */
+      /* Botões Editar e Excluir compactos */
       .compromissos-page .acoes-item {
         display: flex;
-        gap: 8px;
-        width: 100%;
-        justify-content: flex-end;
+        gap: 6px;
+        flex-shrink: 0;
       }
 
       .btn-editar-item,
       .btn-excluir-item {
-        flex: 1;
-        text-align: center;
-        padding: 10px 8px;
-        font-size: 13px;
-        min-height: 42px;
+        padding: 7px 10px;
+        font-size: 12px;
+        min-height: 34px;
+        width: auto;
       }
     }
   </style>
