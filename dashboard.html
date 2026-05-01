@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
   <link rel="stylesheet" href="style.css">
   <meta name="theme-color" content="#1b4580">
@@ -74,10 +75,10 @@
 
     .bloco:active { transform: translateY(0px); }
 
-    .bloco .icone { font-size: 30px; line-height: 1; }
+    .bloco .icone { font-size: 36px; line-height: 1; }
 
     .bloco .label {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 800;
       color: #1a2e4a;
       text-align: center;
@@ -85,7 +86,7 @@
     }
 
     .bloco .desc {
-      font-size: 10px;
+      font-size: 11px;
       color: #3a5272;
       text-align: center;
       line-height: 1.4;
@@ -104,12 +105,12 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      padding: 10px 22px;
+      padding: 12px 28px;
       background: white;
       border: 1.5px solid #a0b8d0;
       border-radius: 30px;
       color: #1a2e4a;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       font-family: 'Nunito', sans-serif;
       cursor: pointer;
@@ -128,7 +129,7 @@
       background: none;
       border: none;
       color: #7a9ec4;
-      font-size: 13px;
+      font-size: 14px;
       font-family: 'Nunito', sans-serif;
       cursor: pointer;
       padding: 4px 12px;
@@ -137,13 +138,29 @@
 
     .btn-sair:hover { color: #c0392b; background: none; }
 
-    @media (max-width: 420px) {
-      .grade { gap: 10px; }
-      .bloco { padding: 16px 8px 14px; }
-      .bloco .icone { font-size: 26px; }
-      .bloco .label { font-size: 11px; }
-      .bloco .desc { display: none; }
-      .topo h1 { font-size: 20px; }
+    /* ===== CELULAR ===== */
+    @media (max-width: 600px) {
+      body { padding: 40px 16px; }
+
+      .topo h1 { font-size: 22px; }
+      .topo { margin-bottom: 28px; }
+
+      .grade {
+        gap: 12px;
+        max-width: 100%;
+      }
+
+      .bloco {
+        padding: 20px 10px 16px;
+        border-radius: 14px;
+        gap: 8px;
+      }
+
+      .bloco .icone { font-size: 34px; }
+      .bloco .label { font-size: 13px; }
+      .bloco .desc { font-size: 11px; }
+
+      .btn-rodape { font-size: 14px; padding: 12px 24px; }
     }
   </style>
 </head>

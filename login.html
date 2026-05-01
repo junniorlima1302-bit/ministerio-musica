@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login</title>
   <link rel="stylesheet" href="style.css">
   <meta name="theme-color" content="#1b4580">
@@ -33,7 +34,6 @@
       font-weight: 800;
       color: #1a2e4a;
       letter-spacing: 1px;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.2);
     }
 
     .topo p {
@@ -48,13 +48,10 @@
       border-radius: 20px;
       padding: 32px 28px;
       width: 100%;
-      max-width: 360px;
-      backdrop-filter: blur(6px);
+      max-width: 400px;
     }
 
-    .campo {
-      margin-bottom: 16px;
-    }
+    .campo { margin-bottom: 16px; }
 
     .campo label {
       display: block;
@@ -68,12 +65,12 @@
 
     .campo input {
       width: 100%;
-      padding: 12px 14px;
+      padding: 14px 16px;
       background: rgba(255,255,255,0.7);
       border: 1px solid #a0b8d0;
       border-radius: 10px;
       color: #1a2e4a;
-      font-size: 14px;
+      font-size: 16px;
       font-family: 'Nunito', sans-serif;
       transition: 0.2s;
       outline: none;
@@ -92,18 +89,17 @@
 
     .btn-entrar {
       width: 100%;
-      padding: 14px;
+      padding: 16px;
       background: white;
       color: #1b4580;
       border: none;
       border-radius: 12px;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 800;
       font-family: 'Nunito', sans-serif;
       cursor: pointer;
       margin-top: 8px;
       transition: 0.2s;
-      letter-spacing: 0.3px;
     }
 
     .btn-entrar:hover {
@@ -116,7 +112,7 @@
       display: block;
       text-align: center;
       margin-top: 14px;
-      font-size: 12px;
+      font-size: 13px;
       color: #7a9ec4;
       cursor: pointer;
       background: none;
@@ -127,7 +123,7 @@
       padding: 4px;
     }
 
-    .btn-esqueci:hover { color: rgba(255,255,255,0.85); }
+    .btn-esqueci:hover { color: #1b4580; background: none; }
 
     .rodape {
       margin-top: 24px;
@@ -138,12 +134,12 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      padding: 10px 22px;
+      padding: 12px 28px;
       background: rgba(27,69,128,0.08);
       border: 1px solid #a0b8d0;
       border-radius: 30px;
       color: #1b4580;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       font-family: 'Nunito', sans-serif;
       cursor: pointer;
@@ -152,9 +148,26 @@
     }
 
     .btn-voltar:hover {
-      background: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.4);
       color: #1a2e4a;
       border-color: #7a9ec4;
+    }
+
+    /* ===== CELULAR ===== */
+    @media (max-width: 600px) {
+      body { padding: 40px 16px; }
+
+      .topo h1 { font-size: 22px; }
+      .topo { margin-bottom: 24px; }
+
+      .card {
+        padding: 28px 20px;
+        border-radius: 16px;
+        max-width: 100%;
+      }
+
+      .campo input { padding: 15px 14px; }
+      .btn-entrar { padding: 16px; font-size: 16px; }
     }
   </style>
 </head>
