@@ -12,7 +12,7 @@ body {
   background: linear-gradient(135deg, #e8f0fa 0%, #c5d8f0 100%);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* ✅ era center — em celular conteúdo longo ficava cortado */
   padding: 20px;
 }
 
@@ -92,6 +92,7 @@ input[type="password"] {
   max-width: 320px;
   display: block;
   margin: 0 auto 10px auto;
+  font-size: 16px; /* ✅ evita zoom automático no iOS ao focar */
 }
 
 /* RADIO E CHECKBOX */
@@ -110,7 +111,7 @@ textarea {
   border-radius: 10px;
   border: 1px solid #ccc;
   resize: vertical;
-  font-size: 14px;
+  font-size: 16px; /* ✅ evita zoom no iOS */
   margin-bottom: 10px;
 }
 
@@ -206,6 +207,7 @@ textarea {
   gap: 8px;
   margin-top: 8px;
   justify-content: flex-end;
+  flex-wrap: wrap; /* ✅ botões não saem da tela em celular estreito */
 }
 
 .btn-editar-item,
@@ -249,6 +251,7 @@ textarea {
 .acoes-grupo {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap; /* ✅ botões quebram para a linha seguinte se necessário */
 }
 
 .btn-editar-grupo,
@@ -274,7 +277,8 @@ textarea {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap; /* ✅ era nowrap — em celular os itens saíam da tela */
+  margin-bottom: 10px;
 }
 
 /* selects */
@@ -285,6 +289,10 @@ textarea {
   border: 1px solid #a0b8d0;
   background: white;
   color: #1a2e4a;
+  font-size: 14px;
+  flex: 1 1 140px; /* ✅ cresce e encolhe conforme o espaço disponível */
+  min-width: 120px;
+  max-width: 100%;
 }
 
 /* caixa de busca */
@@ -292,9 +300,12 @@ textarea {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex: 1 1 160px; /* ✅ também responsivo */
+  min-width: 120px;
+  max-width: 100%;
 }
 
-/* 🔥 CORREÇÃO FINAL DO INPUT */
+/* ✅ input de busca ocupa o espaço disponível em vez de ter largura fixa */
 .busca-box input {
   height: 36px;
   padding: 0 10px;
@@ -304,7 +315,9 @@ textarea {
   border: 1px solid #a0b8d0;
   background: white;
   color: #1a2e4a;
-  width: 180px;
+  flex: 1;
+  width: 100%; /* ✅ era 180px fixo */
+  font-size: 14px;
 }
 
 /* botão lupa */
@@ -317,6 +330,7 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .busca-box button span {
@@ -361,7 +375,7 @@ textarea {
   background: #cfd8e8;
   padding: 12px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* ✅ era 180px — cabe melhor em celular */
   gap: 10px;
 }
 
@@ -436,16 +450,18 @@ textarea {
   border-radius: 10px;
   text-align: center;
   max-width: 300px;
-  width: 80%;
+  width: 88%; /* ✅ era 80% — ocupa mais em celulares pequenos */
 }
+
 #popup-justificativa .conteudo {
   background: white;
   padding: 20px;
   border-radius: 12px;
-  width: 90%;
+  width: 93%; /* ✅ era 90% */
   max-width: 500px;
-  max-height: 80vh;
+  max-height: 85vh; /* ✅ era 80vh — mais espaço em celular */
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* ✅ scroll suave no iOS */
   text-align: left;
 }
 
@@ -481,6 +497,7 @@ textarea {
   gap: 10px;
   justify-content: center;
   margin-top: 15px;
+  flex-wrap: wrap; /* ✅ botões do popup não saem da tela */
 }
 
 .btn-primary {
@@ -552,7 +569,7 @@ textarea {
   padding: 12px 14px;
   border: 1.5px solid #e0e0e0;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 16px; /* ✅ evita zoom no iOS */
   transition: 0.2s;
   margin: 0;
   display: block;
@@ -672,6 +689,8 @@ textarea {
   font-size: 13px;
   margin-top: 0;
   border-radius: 8px;
+  flex: 1 1 auto; /* ✅ os botões crescem proporcionalmente em celular */
+  max-width: 220px;
 }
 
 .btn-excluir-selecionados-disp { background: #c0392b; }
@@ -710,6 +729,8 @@ textarea {
   text-align: center;
   font-weight: 700;
   letter-spacing: 0.3px;
+  min-width: 0; /* ✅ evita overflow do texto sobre os botões */
+  word-break: break-word;
 }
 
 .compromissos-page .lista-itens {
@@ -731,6 +752,7 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  flex-wrap: wrap; /* ✅ texto e botões quebram em telas estreitas */
 }
 
 .compromissos-page .item-compromisso:last-child {
@@ -742,18 +764,21 @@ textarea {
   align-items: center;
   gap: 10px;
   flex: 1;
+  min-width: 0; /* ✅ evita overflow de texto longo */
 }
 
 .compromissos-page .linha-compromisso span {
   font-size: 14px;
   font-weight: 500;
   color: #1a2e4a;
+  word-break: break-word; /* ✅ quebra palavras longas */
 }
 
 .compromissos-page .acoes-item {
   margin-top: 0;
   flex-shrink: 0;
 }
+
 /* ========================= */
 /* ===== LAYOUT ADMIN ====== */
 /* ========================= */
@@ -761,7 +786,7 @@ textarea {
 .admin-page {
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* ✅ era center — conteúdo longo ficava cortado em celular */
   justify-content: center;
   background: linear-gradient(135deg, #e8f0fa 0%, #c5d8f0 100%);
   padding: 20px;
@@ -772,7 +797,7 @@ textarea {
   border: 1px solid #c4d4e8;
   backdrop-filter: none;
   border-radius: 16px;
-  padding: 30px 25px;
+  padding: 24px 16px; /* ✅ era 30px 25px — padding lateral reduzido para celular */
   width: 100%;
   max-width: 900px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.18);
@@ -793,6 +818,7 @@ textarea {
 .admin-box .btn-voltar:hover {
   color: #1a2e4a;
 }
+
 /* Páginas com iframe (escala, repertórios) — restaura layout full-screen */
 body.iframe-page {
   background: #f0f2f5 !important;
@@ -804,4 +830,87 @@ body.iframe-page {
   height: 100vh !important;
   min-height: 100vh !important;
   overflow: hidden !important;
+}
+
+/* ========================= */
+/* ===== MEDIA QUERIES ====== */
+/* ========================= */
+
+@media (max-width: 480px) {
+  /* Body com menos padding em telas muito pequenas */
+  body {
+    padding: 12px;
+  }
+
+  /* Admin box sem bordas arredondadas ocupando mais espaço */
+  .admin-box {
+    padding: 18px 12px;
+    border-radius: 12px;
+  }
+
+  /* Container público também */
+  .container {
+    padding: 20px 14px;
+    border-radius: 12px;
+  }
+
+  /* Filtros em coluna única em telas muito pequenas */
+  #filtros {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #filtros select,
+  .busca-box {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .busca-box input {
+    width: 100%;
+  }
+
+  /* Barra de ações de disponibilidades em coluna */
+  .barra-acoes-disp {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .barra-acoes-disp button {
+    max-width: 100%;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Popups com mais margem lateral */
+  #popup-sucesso .conteudo,
+  #popup-justificativa .conteudo {
+    width: 95%;
+    padding: 16px;
+  }
+
+  /* Botões de ação dos grupos empilhados */
+  .compromissos-page .linha-grupo-titulo {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .acoes-grupo {
+    justify-content: center;
+  }
+
+  /* Pessoas em grid de 2 colunas mínimas */
+  .lista-pessoas {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    padding: 10px;
+    gap: 8px;
+  }
+
+  /* Selects e inputs de usuários */
+  .secao-body input,
+  .secao-body select {
+    font-size: 16px; /* evita zoom no iOS */
+  }
 }
