@@ -10,12 +10,19 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 </head>
 
-<body class="compromissos-page" onload="carregarCompromissos()">
+<body class="compromissos-page" onload="iniciarCompromissos()">
 
   <div class="container compromissos-page">
     <h2>Compromissos do Mês</h2>
 
     <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+
+    <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap; justify-content:center;">
+      <select id="filtro-mes" onchange="carregarCompromissos()" style="height:36px; padding:0 10px; border-radius:8px; border:1px solid #ccc; font-size:13px;">
+        <option value="todos">Todos os meses</option>
+      </select>
+      <button onclick="resetarMes()" style="width:auto; padding:0 14px; height:36px; margin-top:0; background:#c0392b; font-size:13px;">🗑️ Resetar mês</button>
+    </div>
 
     <textarea id="entrada" placeholder="Digite os compromissos...
 

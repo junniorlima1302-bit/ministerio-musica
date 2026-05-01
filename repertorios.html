@@ -3,31 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <title>Repertórios</title>
-
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#1b4580">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; display: flex; flex-direction: column; background: #f0f2f5; font-family: Arial, sans-serif; }
+    .topo {
+      display: flex;
+      align-items: center;
+      padding: 10px 16px;
+      background: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      gap: 12px;
+      flex-shrink: 0;
     }
-
-    html, body {
-      height: 100%;
-      overflow: hidden;
+    .topo h2 { color: #1b4580; font-size: 15px; flex: 1; text-align: center; margin: 0; }
+    .topo button {
+      width: auto; padding: 6px 14px; margin: 0;
+      font-size: 13px; border-radius: 8px;
+      background: none; color: #1b4580; border: none;
+      cursor: pointer; font-weight: 600;
     }
-
+    .topo button:hover { text-decoration: underline; background: none; }
+    .iframe-wrap {
+      flex: 1;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      background: white;
+    }
     iframe {
       width: 100%;
       height: 100%;
       border: none;
+      min-width: 600px;
     }
   </style>
 </head>
-
 <body>
-
-  <iframe 
-    src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml">
-  </iframe>
-
+  <div class="topo">
+    <button onclick="history.back()">← Voltar</button>
+    <h2>Repertórios</h2>
+    <div style="width:80px"></div>
+  </div>
+  <div class="iframe-wrap">
+    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml"></iframe>
+  </div>
 </body>
 </html>

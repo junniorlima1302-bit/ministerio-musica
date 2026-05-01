@@ -5,24 +5,47 @@
   <title>Login</title>
   <link rel="stylesheet" href="style.css">
   <meta name="theme-color" content="#1b4580">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
 </head>
-<body>
+<body class="login-page">
 
-  <div class="container">
-    <h2>Área da Coordenação</h2>
-<button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
-    <input type="email" id="email" placeholder="Email"><br><br>
-    <input type="password" id="senha" placeholder="Senha"><br><br>
-    
-    <button onclick="fazerLogin()">Entrar</button>
+  <div class="login-box">
+
+    <div class="logo">
+      <h1>Música Geral</h1>
+      <p>Área restrita da coordenação</p>
+    </div>
+
+    <div class="campo">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="seu@email.com" autocomplete="email">
+    </div>
+
+    <div class="campo">
+      <label>Senha</label>
+      <input type="password" id="senha" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <button class="btn-entrar" onclick="fazerLogin()">Entrar</button>
+
+    <button class="btn-voltar-login" onclick="history.back()">← Voltar para o início</button>
+
   </div>
 
-  <!-- ORDEM IMPORTA -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="supabase.js"></script>
   <script src="app.js"></script>
+
+  <script>
+    async function verificarSessao() {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        window.location.href = "dashboard.html";
+      }
+    }
+    verificarSessao();
+  </script>
 
 </body>
 </html>

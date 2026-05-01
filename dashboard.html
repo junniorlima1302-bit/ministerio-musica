@@ -7,25 +7,102 @@
   <meta name="theme-color" content="#1b4580">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    .dashboard-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1b4580 0%, #2d6bc4 100%);
+      padding: 20px;
+    }
+    .dashboard-box {
+      background: white;
+      border-radius: 16px;
+      padding: 36px 30px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .dashboard-box .logo {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .dashboard-box .logo h2 {
+      font-size: 20px;
+      color: #1b4580;
+      margin-bottom: 4px;
+    }
+    .dashboard-box .logo p {
+      font-size: 13px;
+      color: #888;
+    }
+    .dashboard-box .btn-menu {
+      width: 100%;
+      padding: 13px;
+      background: #1b4580;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.2s;
+      text-align: left;
+      padding-left: 18px;
+    }
+    .dashboard-box .btn-menu:hover {
+      background: #163b6d;
+      transform: translateX(3px);
+    }
+    .btn-sair {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #aaa;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 100%;
+      padding: 6px;
+    }
+    .btn-sair:hover {
+      color: #c0392b;
+      background: none;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid #f0f0f0;
+      margin: 18px 0 8px;
+    }
+  </style>
 </head>
-<body>
+<body class="dashboard-page">
 
-  <div class="container">
-    <h2>Painel da Coordenação</h2>
-    <p id="info-usuario" style="text-align:center; color:#1b4580; font-size:13px; margin-bottom:10px;"></p>
+  <div class="dashboard-box">
 
-    <!-- Disponível para todos -->
-    <button onclick="irPara('disponibilidades.html')">Ver Disponibilidades</button>
-
-    <!-- Apenas admin -->
-    <div id="area-admin" style="display:none;">
-      <button onclick="irPara('justificativas.html')">Ver Justificativas</button>
-      <button onclick="irPara('compromissos.html')">Compromissos do Mês</button>
-      <button onclick="irPara('usuarios.html')">Gerenciar Usuários</button>
+    <div class="logo">
+      <h2>MÚSICA GERAL</h2>
+      <p id="info-usuario">Carregando...</p>
     </div>
 
-    <button onclick="fazerLogout()" style="background:#c0392b; margin-top:20px;">Sair</button>
-    <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+    <div id="area-botoes" style="display:none;">
+
+      <button class="btn-menu" onclick="irPara('disponibilidades.html')">📋 Ver Disponibilidades</button>
+
+      <div id="area-admin" style="display:none;">
+        <button class="btn-menu" onclick="irPara('justificativas.html')">📝 Ver Justificativas</button>
+        <button class="btn-menu" onclick="irPara('compromissos.html')">📅 Compromissos do Mês</button>
+        <button class="btn-menu" onclick="irPara('usuarios.html')">👥 Gerenciar Usuários</button>
+      </div>
+
+      <hr class="divider">
+      <button class="btn-sair" onclick="fazerLogout()">Sair</button>
+
+    </div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -35,12 +112,16 @@
   <script>
     async function iniciarDashboard() {
       const { data: sessao } = await supabase.auth.getSession();
+
       if (!sessao.session) {
-        window.location.href = "login.html";
-        return;
+        const { data: refreshed } = await supabase.auth.refreshSession();
+        if (!refreshed.session) {
+          window.location.href = "login.html";
+          return;
+        }
       }
 
-      const userId = sessao.session.user.id;
+      const userId = sessao.session?.user?.id || (await supabase.auth.getSession()).data.session?.user?.id;
 
       const { data: usuario, error } = await supabase
         .from("usuarios")
@@ -55,12 +136,13 @@
         return;
       }
 
-      document.getElementById("info-usuario").innerText =
-        `Olá, ${usuario.nome} (${usuario.papel})`;
+      document.getElementById("info-usuario").innerText = `Olá, ${usuario.nome}`;
 
       if (usuario.papel === "admin") {
         document.getElementById("area-admin").style.display = "block";
       }
+
+      document.getElementById("area-botoes").style.display = "block";
     }
 
     iniciarDashboard();

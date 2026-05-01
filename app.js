@@ -240,15 +240,17 @@ if (ministerio === "Música Geral") {
 
 async function carregarCompromissos() {
 
-  const { data, error } = await supabase
-    .from("compromissos")
-    .select("*")
-    .order("nome");
+  const mesSelecionado = document.getElementById("filtro-mes")?.value || "todos";
 
-  if (error) {
-    console.error(error);
-    return;
+  let query = supabase.from("compromissos").select("*").order("nome");
+
+  if (mesSelecionado !== "todos") {
+    query = query.eq("mes_ref", mesSelecionado);
   }
+
+  const { data, error } = await query;
+
+  if (error) { console.error(error); return; }
 
   const lista = document.getElementById("lista-compromissos");
   if (!lista) return;
@@ -256,7 +258,6 @@ async function carregarCompromissos() {
   lista.innerHTML = "";
 
   let grupos = {};
-
   data.forEach(item => {
     if (!grupos[item.nome]) grupos[item.nome] = [];
     grupos[item.nome].push(item);
@@ -273,17 +274,23 @@ async function carregarCompromissos() {
     const titulo = document.createElement("h3");
     titulo.innerText = nome;
 
+    const acoesGrupo = document.createElement("div");
+    acoesGrupo.className = "acoes-grupo";
+    acoesGrupo.innerHTML = `
+      <button class="btn-editar-grupo" onclick="editarGrupo('${nome.replace(/'/g, "\\'")}')">✏️ Renomear</button>
+      <button class="btn-adicionar-item" onclick="adicionarItemGrupo('${nome.replace(/'/g, "\\'")}')">➕ Adicionar</button>
+    `;
+
     tituloLinha.appendChild(titulo);
+    tituloLinha.appendChild(acoesGrupo);
     divGrupo.appendChild(tituloLinha);
 
     const container = document.createElement("div");
     container.className = "lista-itens";
 
     grupos[nome].forEach(item => {
-
       const div = document.createElement("div");
       div.className = "item-compromisso";
-
       div.innerHTML = `
         <label class="linha-compromisso">
           <input type="checkbox" value="${item.id}">
@@ -294,13 +301,67 @@ async function carregarCompromissos() {
           <button class="btn-excluir-item" onclick="excluirCompromissoUnico('${item.id}')">🗑️ Excluir</button>
         </div>
       `;
-
       container.appendChild(div);
     });
 
     divGrupo.appendChild(container);
     lista.appendChild(divGrupo);
   });
+}
+
+async function editarGrupo(nomeAtual) {
+  const novoNome = prompt("Renomear grupo:", nomeAtual);
+  if (!novoNome || novoNome.trim() === nomeAtual) return;
+
+  const { error } = await supabase
+    .from("compromissos")
+    .update({ nome: novoNome.trim() })
+    .eq("nome", nomeAtual);
+
+  if (error) { alert("Erro ao renomear grupo."); return; }
+  carregarCompromissos();
+}
+
+async function adicionarItemGrupo(nomeGrupo) {
+  const novoTurno = prompt(`Adicionar item ao grupo "${nomeGrupo}":`);
+  if (!novoTurno || !novoTurno.trim()) return;
+
+  const mesRef = document.getElementById("filtro-mes")?.value || obterMesAtual();
+
+  const { error } = await supabase
+    .from("compromissos")
+    .insert({ nome: nomeGrupo, turno: novoTurno.trim(), mes_ref: mesRef });
+
+  if (error) { alert("Erro ao adicionar item."); return; }
+  carregarCompromissos();
+}
+
+function obterMesAtual() {
+  const agora = new Date();
+  return `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function popularFiltroMes(data) {
+  const select = document.getElementById("filtro-mes");
+  if (!select) return;
+  const meses = [...new Set(data.map(d => d.mes_ref).filter(Boolean))].sort().reverse();
+  const mesAtual = obterMesAtual();
+  select.innerHTML = `<option value="todos">Todos os meses</option>`;
+  meses.forEach(mes => {
+    const [ano, m] = mes.split("-");
+    const label = new Date(ano, m - 1).toLocaleString("pt-BR", { month: "long", year: "numeric" });
+    const opt = document.createElement("option");
+    opt.value = mes;
+    opt.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+    if (mes === mesAtual) opt.selected = true;
+    select.appendChild(opt);
+  });
+}
+
+async function iniciarCompromissos() {
+  const { data } = await supabase.from("compromissos").select("mes_ref");
+  if (data) popularFiltroMes(data);
+  carregarCompromissos();
 }
 
 //////////////////////////////////////////////////////
@@ -413,35 +474,66 @@ async function cadastrarTudo() {
     return;
   }
 
+  const mesRef = document.getElementById("filtro-mes")?.value !== "todos"
+    ? document.getElementById("filtro-mes")?.value
+    : obterMesAtual();
+
   const linhas = texto.split("\n").filter(l => l.trim() !== "");
 
   let grupoAtual = "OUTROS COMPROMISSOS";
   let dados = [];
 
   linhas.forEach(linha => {
-
     if (linha.startsWith("#")) {
       grupoAtual = linha.replace("#", "").trim().toUpperCase();
     } else {
-      dados.push({
-        nome: grupoAtual,
-        turno: linha
-      });
+      dados.push({ nome: grupoAtual, turno: linha, mes_ref: mesRef });
     }
-
   });
 
-  const { error } = await supabase
-    .from("compromissos")
-    .insert(dados);
+  const { error } = await supabase.from("compromissos").insert(dados);
 
-  if (error) {
-    console.error(error);
-    alert("Erro ao cadastrar.");
+  if (error) { console.error(error); alert("Erro ao cadastrar."); return; }
+
+  document.getElementById("entrada").value = "";
+  carregarCompromissos();
+}
+
+//////////////////////////////////////////////////////
+// RESET DO MÊS
+//////////////////////////////////////////////////////
+
+async function resetarMes() {
+  const mesSelecionado = document.getElementById("filtro-mes")?.value;
+
+  if (!mesSelecionado || mesSelecionado === "todos") {
+    alert("Selecione um mês específico para resetar.");
     return;
   }
 
-  document.getElementById("entrada").value = "";
+  const [ano, m] = mesSelecionado.split("-");
+  const label = new Date(ano, m - 1).toLocaleString("pt-BR", { month: "long", year: "numeric" });
+
+  const confirmar = confirm(
+    `Isso vai apagar TODOS os compromissos e disponibilidades de ${label}.\n\nTem certeza?`
+  );
+  if (!confirmar) return;
+
+  const { error: e1 } = await supabase
+    .from("compromissos")
+    .delete()
+    .eq("mes_ref", mesSelecionado);
+
+  if (e1) { alert("Erro ao apagar compromissos."); return; }
+
+  // Apaga disponibilidades também
+  const { error: e2 } = await supabase
+    .from("disponibilidades")
+    .delete()
+    .neq("id", "00000000-0000-0000-0000-000000000000");
+
+  if (e2) { alert("Compromissos apagados, mas erro ao apagar disponibilidades."); }
+  else { alert(`Mês de ${label} resetado com sucesso!`); }
 
   carregarCompromissos();
 }
@@ -495,11 +587,29 @@ async function fazerLogin() {
 
   window.location.href = "dashboard.html";
 }
+
+// Enter no login
+document.addEventListener("DOMContentLoaded", () => {
+  const senhaInput = document.getElementById("senha");
+  if (senhaInput) {
+    senhaInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") fazerLogin();
+    });
+  }
+  const emailInput = document.getElementById("email");
+  if (emailInput) {
+    emailInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") fazerLogin();
+    });
+  }
+});
 //////////////////////////////////////////////////////
 // RESPOSTAS (VISUALIZAÇÃO)
 //////////////////////////////////////////////////////
 
 let respostasGlobais = [];
+
+let compromissosGlobais = [];
 
 async function carregarRespostas() {
 
@@ -511,6 +621,9 @@ async function carregarRespostas() {
     console.error(error);
     return;
   }
+
+  const { data: comps } = await supabase.from("compromissos").select("*");
+  compromissosGlobais = comps || [];
 
   respostasGlobais = data;
 
@@ -576,10 +689,8 @@ async function renderizarRespostas(respostasFiltradas) {
 
   container.innerHTML = "";
 
-  // 🔥 pega compromissos sempre do banco
-  const { data: compromissos } = await supabase.from("compromissos").select("*");
+  const compromissos = compromissosGlobais;
 
-  // 🔥 usa os dados filtrados se foram passados, senão busca tudo
   let respostas;
   if (respostasFiltradas !== undefined) {
     respostas = respostasFiltradas;
@@ -661,15 +772,20 @@ async function renderizarRespostas(respostasFiltradas) {
     agrupado[chave].forEach(pessoa => {
 
       const item = document.createElement("div");
-item.className = "item-pessoa";
+      item.className = "item-pessoa";
+      item.dataset.nome = pessoa.nome;
+      item.dataset.ministerio = pessoa.ministerio;
 
-item.innerHTML = `
-  <strong>${pessoa.nome}</strong><br>
-  <small>${pessoa.ministerio}</small><br>
-  <small>${pessoa.tipo || ""} ${pessoa.instrumento ? "- " + pessoa.instrumento : ""}</small>
-`;
+      item.innerHTML = `
+        <span class="badge-excluir">✕</span>
+        <strong>${pessoa.nome}</strong><br>
+        <small>${pessoa.ministerio}</small><br>
+        <small>${pessoa.tipo || ""} ${pessoa.instrumento ? "- " + pessoa.instrumento : ""}</small>
+      `;
 
-lista.appendChild(item);
+      item.onclick = () => item.classList.toggle("selecionado");
+
+      lista.appendChild(item);
     });
 
     divGrupo.appendChild(titulo);
@@ -677,12 +793,50 @@ lista.appendChild(item);
     container.appendChild(divGrupo);
   });
 }
+//////////////////////////////////////////////////////
+// EXCLUIR DISPONIBILIDADES
+//////////////////////////////////////////////////////
+
+async function excluirSelecionadosDisp() {
+  const selecionados = document.querySelectorAll(".item-pessoa.selecionado");
+
+  if (selecionados.length === 0) {
+    alert("Clique em uma ou mais pessoas para selecioná-las antes de excluir.");
+    return;
+  }
+
+  const nomes = [...new Set(Array.from(selecionados).map(el => el.dataset.nome))];
+  const confirmar = confirm(`Excluir respostas de ${nomes.length} pessoa(s)?\n\n${nomes.join(", ")}`);
+  if (!confirmar) return;
+
+  for (const nome of nomes) {
+    await supabase.from("disponibilidades").delete().eq("nome_pessoa", nome);
+  }
+
+  carregarRespostas();
+}
+
+async function resetarTodasDisponibilidades() {
+  const confirmar = confirm("⚠️ Isso vai apagar TODAS as disponibilidades de todos os ministros.\n\nTem certeza?");
+  if (!confirmar) return;
+
+  const { error } = await supabase
+    .from("disponibilidades")
+    .delete()
+    .neq("id", "00000000-0000-0000-0000-000000000000");
+
+  if (error) { alert("Erro ao resetar."); return; }
+
+  alert("Todas as disponibilidades foram apagadas.");
+  carregarRespostas();
+}
+
 function mostrarPopup() {
   document.getElementById("popup-sucesso").style.display = "flex";
 }
 
 function fecharPopup() {
-  window.location.href = "index.html";
+  window.location.href = "identificacao.html";
 }
 //////////////////////////////////////////////////////
 // POPUP DE CONFIRMAÇÃO

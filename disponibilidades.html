@@ -14,7 +14,6 @@
     <button onclick="voltarPagina()" class="btn-voltar">← Voltar</button>
 
     <div id="filtros">
-
       <select id="filtroMinisterio" onchange="aplicarBusca()">
         <option value="todos">Todos Ministérios</option>
         <option value="Música Geral">Música Geral</option>
@@ -26,12 +25,13 @@
       </select>
 
       <div class="busca-box">
-       <input type="text" id="buscaNome" oninput="aplicarBusca()"
-          placeholder="Buscar por nome"
-        >
-        <button onclick="aplicarBusca()">🔍</button>
+        <input type="text" id="buscaNome" oninput="aplicarBusca()" placeholder="Buscar por nome">
       </div>
+    </div>
 
+    <div class="barra-acoes-disp">
+      <button class="btn-excluir-selecionados-disp" onclick="excluirSelecionadosDisp()">🗑️ Excluir selecionados</button>
+      <button class="btn-resetar-disp" onclick="resetarTodasDisponibilidades()">⚠️ Resetar tudo</button>
     </div>
 
     <div id="lista-respostas"></div>
