@@ -4,45 +4,190 @@
   <meta charset="UTF-8">
   <title>Música Geral Fortaleza</title>
   <link rel="stylesheet" href="style.css">
-
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1b4580">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="manifest" href="manifest.json">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(160deg, #0f2a5e 0%, #1b4580 50%, #2d6bc4 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .topo {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .topo h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: white;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    }
+
+    .topo p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 6px;
+      font-weight: 400;
+    }
+
+    .grade {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .bloco {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 22px 14px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(6px);
+      text-decoration: none;
+    }
+
+    .bloco:hover {
+      background: rgba(255,255,255,0.18);
+      border-color: rgba(255,255,255,0.35);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    .bloco:active {
+      transform: translateY(0px);
+    }
+
+    .bloco .icone {
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .bloco .label {
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+      text-align: center;
+      line-height: 1.3;
+      letter-spacing: 0.2px;
+    }
+
+    .bloco .desc {
+      font-size: 10px;
+      color: rgba(255,255,255,0.55);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .rodape {
+      margin-top: 28px;
+      text-align: center;
+    }
+
+    .btn-coordenacao {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 22px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 30px;
+      color: rgba(255,255,255,0.75);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-coordenacao:hover {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    @media (max-width: 420px) {
+      .grade {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .bloco {
+        padding: 16px 8px 14px;
+      }
+      .bloco .icone { font-size: 26px; }
+      .bloco .label { font-size: 11px; }
+      .bloco .desc { display: none; }
+      .topo h1 { font-size: 20px; }
+    }
+  </style>
 </head>
-
 <body>
 
-  <div class="container">
+  <div class="topo">
     <h1>MÚSICA GERAL FORTALEZA</h1>
-
-    <button onclick="irPara('identificacao.html')">
-      Enviar Disponibilidade
-    </button>
-
-    <button onclick="irPara('escala.html')">
-      Escala do Mês
-    </button>
-
-    <button onclick="irPara('repertorios.html')">
-      Repertórios
-    </button>
-      <!-- NOVOS BOTÕES -->
-  <button onclick="irPara('coral.html')">
-    Coral Shalom
-  </button>
-  
-  <button onclick="irPara('https://docs.google.com/document/d/1hX3ecyEERk10W3Hm9lKSZL8ZLs9yFMC1ryTtMGrXVI8/edit?tab=t.0')">
-    Link Importante
-  </button>
-
-   <button onclick="irPara('login.html')">
-    Login Coordenação
-  </button>
   </div>
 
-  <!-- 🔥 ORDEM CORRETA -->
+  <div class="grade">
+
+    <a class="bloco" onclick="irPara('identificacao.html')">
+      <div class="icone">📅</div>
+      <div class="label">Enviar Disponibilidade</div>
+      <div class="desc">Informe sua disponibilidade</div>
+    </a>
+
+    <a class="bloco" onclick="irPara('escala.html')">
+      <div class="icone">📋</div>
+      <div class="label">Escala do Mês</div>
+      <div class="desc">Acompanhe a escala do mês</div>
+    </a>
+
+    <a class="bloco" onclick="irPara('repertorios.html')">
+      <div class="icone">🎼</div>
+      <div class="label">Repertórios</div>
+      <div class="desc">Repertórios do mês</div>
+    </a>
+
+    <a class="bloco" onclick="irPara('coral.html')">
+      <div class="icone">🎙️</div>
+      <div class="label">Coral Shalom</div>
+      <div class="desc">Informações do coral</div>
+    </a>
+
+    <a class="bloco" onclick="irPara('https://docs.google.com/document/d/1hX3ecyEERk10W3Hm9lKSZL8ZLs9yFMC1ryTtMGrXVI8/edit?tab=t.0')">
+      <div class="icone">🔗</div>
+      <div class="label">Link Importante</div>
+      <div class="desc">Documento com os links</div>
+    </a>
+
+  </div>
+
+  <div class="rodape">
+    <a class="btn-coordenacao" onclick="irPara('login.html')">
+      🔐 Login Coordenação
+    </a>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="supabase.js"></script>
   <script src="app.js"></script>
