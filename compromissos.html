@@ -2,12 +2,110 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Compromissos</title>
   <link rel="stylesheet" href="style.css">
-
   <meta name="theme-color" content="#1b4580">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <style>
+    @media (max-width: 600px) {
+
+      .admin-box {
+        padding: 18px 12px;
+      }
+
+      h2 { font-size: 20px; }
+
+      /* Filtro de mês e botão resetar em coluna */
+      .filtro-topo {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filtro-topo select,
+      .filtro-topo button {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      /* Textarea maior para digitar */
+      textarea {
+        font-size: 15px;
+        min-height: 120px;
+      }
+
+      /* Botões principais (Cadastrar, Limpar, Excluir) */
+      button {
+        font-size: 15px;
+        padding: 14px;
+        min-height: 48px;
+      }
+
+      /* Cabeçalho do grupo — título e botões em coluna */
+      .compromissos-page .linha-grupo-titulo {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 12px;
+      }
+
+      .compromissos-page .linha-grupo-titulo h3 {
+        font-size: 14px;
+        text-align: center;
+      }
+
+      /* Botões Renomear e Adicionar maiores */
+      .acoes-grupo {
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-editar-grupo,
+      .btn-adicionar-item {
+        flex: 1;
+        text-align: center;
+        padding: 10px 8px;
+        font-size: 13px;
+        min-height: 42px;
+      }
+
+      /* Item de compromisso — texto e botões em coluna */
+      .compromissos-page .item-compromisso {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .compromissos-page .linha-compromisso {
+        width: 100%;
+      }
+
+      .compromissos-page .linha-compromisso span {
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      /* Botões Editar e Excluir maiores e lado a lado */
+      .compromissos-page .acoes-item {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .btn-editar-item,
+      .btn-excluir-item {
+        flex: 1;
+        text-align: center;
+        padding: 10px 8px;
+        font-size: 13px;
+        min-height: 42px;
+      }
+    }
+  </style>
 </head>
 
 <body class="admin-page compromissos-page" onload="iniciarCompromissos()">
@@ -17,7 +115,7 @@
 
     <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
 
-    <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap; justify-content:center;">
+    <div class="filtro-topo" style="display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap; justify-content:center;">
       <select id="filtro-mes" onchange="carregarCompromissos()" style="height:36px; padding:0 10px; border-radius:8px; border:1px solid #ccc; font-size:13px;">
         <option value="todos">Todos os meses</option>
       </select>
