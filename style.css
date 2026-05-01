@@ -737,3 +737,36 @@ textarea {
   margin-top: 0;
   flex-shrink: 0;
 }
+/* ========================= */
+/* ===== LAYOUT ADMIN ====== */
+/* ========================= */
+
+.admin-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1b4580 0%, #2d6bc4 100%);
+  padding: 20px;
+}
+
+.admin-box {
+  background: white;
+  border-radius: 16px;
+  padding: 30px 25px;
+  width: 100%;
+  max-width: 900px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+/* Título padrão */
+.admin-box h2 {
+  text-align: center;
+  color: #1b4580;
+  margin-bottom: 15px;
+}
+
+/* botão voltar alinhado */
+.admin-box .btn-voltar {
+  margin-bottom: 15px;
+}
