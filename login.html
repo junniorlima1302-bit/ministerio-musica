@@ -7,16 +7,165 @@
   <meta name="theme-color" content="#1b4580">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(160deg, #0f2a5e 0%, #1b4580 50%, #2d6bc4 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .topo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .topo h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: white;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    }
+
+    .topo p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 6px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 360px;
+      backdrop-filter: blur(6px);
+    }
+
+    .campo {
+      margin-bottom: 16px;
+    }
+
+    .campo label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 7px;
+    }
+
+    .campo input {
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: white;
+      font-size: 14px;
+      font-family: 'Nunito', sans-serif;
+      transition: 0.2s;
+      outline: none;
+      margin: 0;
+      max-width: 100%;
+      display: block;
+    }
+
+    .campo input::placeholder { color: rgba(255,255,255,0.35); }
+
+    .campo input:focus {
+      border-color: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.18);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.08);
+    }
+
+    .btn-entrar {
+      width: 100%;
+      padding: 14px;
+      background: white;
+      color: #1b4580;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-entrar:hover {
+      background: #eef3fb;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    .btn-esqueci {
+      display: block;
+      text-align: center;
+      margin-top: 14px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 100%;
+      font-family: 'Nunito', sans-serif;
+      transition: 0.2s;
+      padding: 4px;
+    }
+
+    .btn-esqueci:hover { color: rgba(255,255,255,0.85); }
+
+    .rodape {
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .btn-voltar {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 22px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 30px;
+      color: rgba(255,255,255,0.75);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-voltar:hover {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border-color: rgba(255,255,255,0.4);
+    }
+  </style>
 </head>
-<body class="login-page">
+<body>
 
-  <div class="login-box">
+  <div class="topo">
+    <h1>🎵 MÚSICA GERAL</h1>
+    <p>Área restrita da coordenação</p>
+  </div>
 
-    <div class="logo">
-      <h1>Música Geral</h1>
-      <p>Área restrita da coordenação</p>
-    </div>
-
+  <div class="card">
     <div class="campo">
       <label>Email</label>
       <input type="email" id="email" placeholder="seu@email.com" autocomplete="email">
@@ -28,9 +177,11 @@
     </div>
 
     <button class="btn-entrar" onclick="fazerLogin()">Entrar</button>
+    <button class="btn-esqueci" onclick="esqueceuSenha()">Esqueci minha senha</button>
+  </div>
 
-    <button class="btn-voltar-login" onclick="window.location.href='index.html'">← Voltar para o início</button>
-
+  <div class="rodape">
+    <a class="btn-voltar" onclick="window.location.href='index.html'">← Voltar ao Início</a>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -45,6 +196,22 @@
       }
     }
     verificarSessao();
+
+    async function esqueceuSenha() {
+      const email = document.getElementById("email").value.trim();
+      if (!email) {
+        alert("Digite seu email acima antes de clicar em esqueci minha senha.");
+        return;
+      }
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/login.html"
+      });
+      if (error) {
+        alert("Erro ao enviar email: " + error.message);
+        return;
+      }
+      alert("Email de redefinição enviado! Verifique sua caixa de entrada.");
+    }
   </script>
 
 </body>

@@ -7,118 +7,166 @@
   <meta name="theme-color" content="#1b4580">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    .dashboard-page {
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
       min-height: 100vh;
+      background: linear-gradient(160deg, #0f2a5e 0%, #1b4580 50%, #2d6bc4 100%);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #1b4580 0%, #2d6bc4 100%);
-      padding: 20px;
+      padding: 30px 20px;
+      font-family: 'Nunito', sans-serif;
     }
-    .dashboard-box {
-      background: white;
-      border-radius: 16px;
-      padding: 36px 30px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-    }
-    .dashboard-box .logo {
+
+    .topo {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 36px;
     }
-    .dashboard-box .logo h2 {
-      font-size: 20px;
-      color: #1b4580;
-      margin-bottom: 4px;
-    }
-    .dashboard-box .logo p {
-      font-size: 13px;
-      color: #888;
-    }
-    .dashboard-box .btn-menu {
-      width: 100%;
-      padding: 13px;
-      background: #1b4580;
+
+    .topo h1 {
+      font-size: 26px;
+      font-weight: 800;
       color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 500;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    }
+
+    .topo p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 6px;
+      font-weight: 400;
+    }
+
+    .grade {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .bloco {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 22px 14px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
       cursor: pointer;
-      margin-top: 10px;
-      transition: 0.2s;
-      text-align: left;
-      padding-left: 18px;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(6px);
+      text-decoration: none;
     }
-    .dashboard-box .btn-menu:hover {
-      background: #163b6d;
-      transform: translateX(3px);
+
+    .bloco:hover {
+      background: rgba(255,255,255,0.18);
+      border-color: rgba(255,255,255,0.35);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     }
+
+    .bloco:active { transform: translateY(0px); }
+
+    .bloco .icone { font-size: 30px; line-height: 1; }
+
+    .bloco .label {
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .bloco .desc {
+      font-size: 10px;
+      color: rgba(255,255,255,0.55);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .rodape {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-rodape {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 22px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 30px;
+      color: rgba(255,255,255,0.75);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-rodape:hover {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border-color: rgba(255,255,255,0.4);
+    }
+
     .btn-sair {
-      display: block;
-      text-align: center;
-      margin-top: 4px;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.4);
       font-size: 13px;
-      color: #aaa;
+      font-family: 'Nunito', sans-serif;
       cursor: pointer;
-      background: none;
-      border: none;
-      width: 100%;
-      padding: 6px;
+      padding: 4px 12px;
+      transition: 0.2s;
     }
-    .btn-sair:hover {
-      color: #c0392b;
-      background: none;
-    }
-    .btn-inicio {
-      display: block;
-      text-align: center;
-      margin-top: 8px;
-      font-size: 13px;
-      color: #1b4580;
-      cursor: pointer;
-      background: none;
-      border: none;
-      width: 100%;
-      padding: 6px;
-      font-weight: 500;
-    }
-    .btn-inicio:hover {
-      text-decoration: underline;
-      background: none;
-    }
-    .divider {
-      border: none;
-      border-top: 1px solid #f0f0f0;
-      margin: 18px 0 8px;
+
+    .btn-sair:hover { color: #ff6b6b; }
+
+    @media (max-width: 420px) {
+      .grade { gap: 10px; }
+      .bloco { padding: 16px 8px 14px; }
+      .bloco .icone { font-size: 26px; }
+      .bloco .label { font-size: 11px; }
+      .bloco .desc { display: none; }
+      .topo h1 { font-size: 20px; }
     }
   </style>
 </head>
-<body class="dashboard-page">
+<body>
 
-  <div class="dashboard-box">
+  <div class="topo">
+    <h1>🎵 MÚSICA GERAL</h1>
+    <p id="info-usuario">Carregando...</p>
+  </div>
 
-    <div class="logo">
-      <h2>MÚSICA GERAL</h2>
-      <p id="info-usuario">Carregando...</p>
+  <div id="area-botoes" style="display:none; width:100%; max-width:560px;">
+
+    <div class="grade" id="grade-botoes">
+      <a class="bloco" onclick="irPara('disponibilidades.html')">
+        <div class="icone">📋</div>
+        <div class="label">Ver Disponibilidades</div>
+        <div class="desc">Respostas dos ministros</div>
+      </a>
+      <div id="area-admin" style="display:contents;"></div>
     </div>
 
-    <div id="area-botoes" style="display:none;">
-
-      <button class="btn-menu" onclick="irPara('disponibilidades.html')">📋 Ver Disponibilidades</button>
-
-      <div id="area-admin" style="display:none;">
-        <button class="btn-menu" onclick="irPara('justificativas.html')">📝 Ver Justificativas</button>
-        <button class="btn-menu" onclick="irPara('compromissos.html')">📅 Compromissos do Mês</button>
-        <button class="btn-menu" onclick="irPara('usuarios.html')">👥 Gerenciar Usuários</button>
-      </div>
-
-      <hr class="divider">
-      <button class="btn-inicio" onclick="window.location.href='index.html'">🏠 Voltar ao Início</button>
+    <div class="rodape">
+      <a class="btn-rodape" onclick="window.location.href='index.html'">🏠 Voltar ao Início</a>
       <button class="btn-sair" onclick="fazerLogout()">Sair</button>
-
     </div>
 
   </div>
@@ -157,7 +205,23 @@
       document.getElementById("info-usuario").innerText = `Olá, ${usuario.nome}`;
 
       if (usuario.papel === "admin") {
-        document.getElementById("area-admin").style.display = "block";
+        document.getElementById("area-admin").innerHTML = `
+          <a class="bloco" onclick="irPara('justificativas.html')">
+            <div class="icone">📝</div>
+            <div class="label">Ver Justificativas</div>
+            <div class="desc">Motivos das ausências</div>
+          </a>
+          <a class="bloco" onclick="irPara('compromissos.html')">
+            <div class="icone">📅</div>
+            <div class="label">Compromissos do Mês</div>
+            <div class="desc">Gerencie os eventos</div>
+          </a>
+          <a class="bloco" onclick="irPara('usuarios.html')">
+            <div class="icone">👥</div>
+            <div class="label">Gerenciar Usuários</div>
+            <div class="desc">Acesso e cadastros</div>
+          </a>
+        `;
       }
 
       document.getElementById("area-botoes").style.display = "block";
