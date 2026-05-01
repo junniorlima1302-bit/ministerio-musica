@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Login</title>
+  <title>Redefinir Senha</title>
   <link rel="stylesheet" href="style.css">
   <meta name="theme-color" content="#1b4580">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -90,7 +90,7 @@
       box-shadow: 0 0 0 3px rgba(255,255,255,0.08);
     }
 
-    .btn-entrar {
+    .btn-salvar {
       width: 100%;
       padding: 14px;
       background: white;
@@ -103,31 +103,21 @@
       cursor: pointer;
       margin-top: 8px;
       transition: 0.2s;
-      letter-spacing: 0.3px;
     }
 
-    .btn-entrar:hover {
+    .btn-salvar:hover {
       background: #eef3fb;
       transform: translateY(-1px);
       box-shadow: 0 6px 20px rgba(0,0,0,0.15);
     }
 
-    .btn-esqueci {
-      display: block;
-      text-align: center;
-      margin-top: 14px;
+    .msg-erro {
+      color: #ff6b6b;
       font-size: 12px;
-      color: rgba(255,255,255,0.5);
-      cursor: pointer;
-      background: none;
-      border: none;
-      width: 100%;
-      font-family: 'Nunito', sans-serif;
-      transition: 0.2s;
-      padding: 4px;
+      margin-top: 10px;
+      text-align: center;
+      display: none;
     }
-
-    .btn-esqueci:hover { color: rgba(255,255,255,0.85); }
 
     .rodape {
       margin-top: 24px;
@@ -162,55 +152,67 @@
 
   <div class="topo">
     <h1>MÚSICA GERAL FORTALEZA</h1>
-    <p>Área restrita da coordenação</p>
+    <p>Redefinição de senha</p>
   </div>
 
   <div class="card">
     <div class="campo">
-      <label>Email</label>
-      <input type="email" id="email" placeholder="seu@email.com" autocomplete="email">
+      <label>Nova Senha</label>
+      <input type="password" id="nova-senha" placeholder="••••••••">
     </div>
 
     <div class="campo">
-      <label>Senha</label>
-      <input type="password" id="senha" placeholder="••••••••" autocomplete="current-password">
+      <label>Confirmar Nova Senha</label>
+      <input type="password" id="confirmar-senha" placeholder="••••••••">
     </div>
 
-    <button class="btn-entrar" onclick="fazerLogin()">Entrar</button>
-    <button class="btn-esqueci" onclick="esqueceuSenha()">Esqueci minha senha</button>
+    <button class="btn-salvar" onclick="redefinirSenha()">Salvar Nova Senha</button>
+    <p class="msg-erro" id="msg-erro"></p>
   </div>
 
   <div class="rodape">
-    <a class="btn-voltar" onclick="window.location.href='index.html'">← Voltar ao Início</a>
+    <a class="btn-voltar" onclick="window.location.href='login.html'">← Voltar ao Login</a>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="supabase.js"></script>
-  <script src="app.js"></script>
 
   <script>
-    async function verificarSessao() {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        window.location.href = "dashboard.html";
-      }
-    }
-    verificarSessao();
+    async function redefinirSenha() {
+      const nova = document.getElementById("nova-senha").value;
+      const confirmar = document.getElementById("confirmar-senha").value;
+      const msgErro = document.getElementById("msg-erro");
 
-    async function esqueceuSenha() {
-      const email = document.getElementById("email").value.trim();
-      if (!email) {
-        alert("Digite seu email acima antes de clicar em esqueci minha senha.");
+      msgErro.style.display = "none";
+
+      if (!nova || !confirmar) {
+        msgErro.innerText = "Preencha os dois campos.";
+        msgErro.style.display = "block";
         return;
       }
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + "/login.html"
-      });
+
+      if (nova !== confirmar) {
+        msgErro.innerText = "As senhas não coincidem.";
+        msgErro.style.display = "block";
+        return;
+      }
+
+      if (nova.length < 6) {
+        msgErro.innerText = "A senha deve ter pelo menos 6 caracteres.";
+        msgErro.style.display = "block";
+        return;
+      }
+
+      const { error } = await supabase.auth.updateUser({ password: nova });
+
       if (error) {
-        alert("Erro ao enviar email: " + error.message);
+        msgErro.innerText = "Erro: " + error.message;
+        msgErro.style.display = "block";
         return;
       }
-      alert("Email de redefinição enviado! Verifique sua caixa de entrada.");
+
+      alert("Senha redefinida com sucesso!");
+      window.location.href = "login.html";
     }
   </script>
 
