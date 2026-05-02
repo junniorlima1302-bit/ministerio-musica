@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuários</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#1b4580">
+  <style>
+    .lista-usuarios-wrap { border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.10); }
+    .lista-usuarios-header { background: #7a9ec4; padding: 12px 16px; }
+    .lista-usuarios-header h3 { color: #1a2e4a; font-size: 14px; margin: 0; font-weight: 700; }
+    .usuario-item {
+      background: #cfd8e8; padding: 14px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+    }
+    .usuario-item:last-child { border-bottom: none; }
+    .usuario-info strong { display: block; font-size: 15px; color: #1a2e4a; }
+    .usuario-info span { font-size: 12px; color: #3a5272; }
+    .badge-papel { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-top: 4px; background: rgba(27,69,128,0.15); color: #1a2e4a; }
+    .usuario-acoes { display: flex; gap: 8px; }
+    .usuario-acoes button { width: auto; padding: 6px 12px; font-size: 12px; margin-top: 0; border-radius: 6px; }
+    .btn-excluir-usuario { background: #c0392b; }
+    .btn-excluir-usuario:hover { background: #a93226; }
+    .btn-editar-usuario { background: #4a7fc1; }
+    .btn-editar-usuario:hover { background: #3a6aaa; }
+  </style>
+</head>
+<body class="admin-page">
+  <div class="admin-box">
+    <h2>Usuários Cadastrados</h2>
+    <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+
+    <div class="lista-usuarios-wrap">
+      <div class="lista-usuarios-header"><h3>👥 Usuários</h3></div>
+      <div id="lista-usuarios"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    let meuId = null;
+
+    async function iniciar() {
+      const { data: sessao } = await supabase.auth.getSession();
+      if (!sessao.session) { window.location.href = "login.html"; return; }
+
+      meuId = sessao.session.user.id;
+      const { data: eu } = await supabase.from("usuarios").select("*").eq("id", meuId).single();
+
+      if (!eu || eu.papel !== "admin") {
+        alert("Acesso restrito ao administrador.");
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      carregarUsuarios();
+    }
+
+    async function carregarUsuarios() {
+      const { data, error } = await supabase.from("usuarios").select("*").order("nome");
+      if (error) { console.error(error); return; }
+
+      const lista = document.getElementById("lista-usuarios");
+      lista.innerHTML = "";
+
+      data.forEach(u => {
+        const div = document.createElement("div");
+        div.className = "usuario-item";
+        div.innerHTML = `
+          <div class="usuario-info">
+            <strong>${u.nome}</strong>
+            <span>${u.email}</span>
+            <span class="badge-papel">${u.papel}</span>
+          </div>
+          <div class="usuario-acoes">
+            ${u.id !== meuId ? `
+              <button class="btn-editar-usuario" onclick="alterarPapel('${u.id}', '${u.papel}', '${u.nome}')">✏️ Papel</button>
+              <button class="btn-excluir-usuario" onclick="excluirUsuario('${u.id}', '${u.nome}')">🗑️ Excluir</button>
+            ` : `<span style="font-size:12px;color:#999;">Você</span>`}
+          </div>
+        `;
+        lista.appendChild(div);
+      });
+    }
+
+    async function alterarPapel(id, papelAtual, nome) {
+      const novoPapel = papelAtual === "admin" ? "agente" : "admin";
+      if (!confirm(`Alterar papel de "${nome}" para ${novoPapel}?`)) return;
+      const { error } = await supabase.from("usuarios").update({ papel: novoPapel }).eq("id", id);
+      if (error) { alert("Erro ao alterar papel."); return; }
+      carregarUsuarios();
+    }
+
+    async function excluirUsuario(id, nome) {
+      if (!confirm(`Excluir o usuário "${nome}"? Esta ação não pode ser desfeita.`)) return;
+      const { error } = await supabase.from("usuarios").delete().eq("id", id);
+      if (error) { alert("Erro ao excluir usuário."); return; }
+      carregarUsuarios();
+    }
+
+    iniciar();
+  </script>
+</body>
+</html>

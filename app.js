@@ -70,12 +70,29 @@ function continuar() {
 // CARREGAR DISPONIBILIDADES
 //////////////////////////////////////////////////////
 
+// 🔥 Descobre o mes_ref dos compromissos que estão ativos no momento
+async function obterMesRefAtivo() {
+  const { data } = await supabase
+    .from("compromissos")
+    .select("mes_ref")
+    .not("mes_ref", "is", null)
+    .order("mes_ref", { ascending: false })
+    .limit(1);
+
+  return data?.[0]?.mes_ref || null;
+}
+
 async function carregarDisponibilidades() {
 
-  const { data, error } = await supabase
-    .from("compromissos")
-    .select("*")
-    .order("nome");
+  // 🔥 busca apenas compromissos do mês ativo
+  const mesRef = await obterMesRefAtivo();
+
+  let query = supabase.from("compromissos").select("*").order("nome");
+  if (mesRef) {
+    query = query.eq("mes_ref", mesRef);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error(error);
@@ -145,12 +162,23 @@ async function enviarDisponibilidade(){
   botao.disabled = true;
   botao.innerText = "Enviando...";
 
-  // 🔥 verifica envio anterior
-  const { data: existente, error: erroBusca } = await supabase
+  // 🔥 descobre o mês de referência dos compromissos ativos (ex: "2025-05")
+  const mesRef = await obterMesRefAtivo();
+
+  // 🔥 verifica envio anterior SOMENTE do mês de referência correto
+  let buscaExistente = supabase
     .from("disponibilidades")
     .select("*")
     .eq("nome_pessoa", nome)
     .eq("ministerio", ministerio);
+
+  if (mesRef) {
+    buscaExistente = buscaExistente.eq("mes_ref", mesRef);
+  } else {
+    buscaExistente = buscaExistente.is("mes_ref", null);
+  }
+
+  const { data: existente, error: erroBusca } = await buscaExistente;
 
   if (erroBusca) {
     console.error(erroBusca);
@@ -199,16 +227,25 @@ if (ministerio === "Música Geral") {
       turno: partes[1].trim(),
       tipo: tipo,
       instrumento: instrumento,
-      justificativa: justificativas ? justificativas[index] : null
+      justificativa: justificativas ? justificativas[index] : null,
+      mes_ref: mesRef || null
     });
   });
 
-  // 🔥 remove antigo
-  const { error: deleteError } = await supabase
+  // 🔥 remove respostas anteriores somente do mês de referência correto
+  let deleteQuery = supabase
     .from("disponibilidades")
     .delete()
     .eq("nome_pessoa", nome)
     .eq("ministerio", ministerio);
+
+  if (mesRef) {
+    deleteQuery = deleteQuery.eq("mes_ref", mesRef);
+  } else {
+    deleteQuery = deleteQuery.is("mes_ref", null);
+  }
+
+  const { error: deleteError } = await deleteQuery;
 
   if (deleteError) {
     console.error(deleteError);
@@ -361,7 +398,100 @@ function popularFiltroMes(data) {
 async function iniciarCompromissos() {
   const { data } = await supabase.from("compromissos").select("mes_ref");
   if (data) popularFiltroMes(data);
+  construirGradeMeses();
   carregarCompromissos();
+}
+
+//////////////////////////////////////////////////////
+// POPUP DE SELEÇÃO DE MÊS DE REFERÊNCIA
+//////////////////////////////////////////////////////
+
+let mesSelecionadoPopup = null;
+
+const MESES_NOMES = [
+  "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+];
+
+function construirGradeMeses() {
+  const grade = document.getElementById("grade-meses-popup");
+  if (!grade) return;
+
+  grade.innerHTML = "";
+
+  const agora = new Date();
+  const anoAtual = agora.getFullYear();
+  const mesAtual = agora.getMonth(); // 0-based
+  const proximoMes = (mesAtual + 1) % 12;
+  const anoProximo = mesAtual === 11 ? anoAtual + 1 : anoAtual;
+
+  // Pré-seleciona o próximo mês
+  mesSelecionadoPopup = `${String(anoProximo).padStart(4,"0")}-${String(proximoMes + 1).padStart(2,"0")}`;
+
+  // Ano atual — sempre mostra os 12 meses
+  const labelAno = document.createElement("div");
+  labelAno.className = "ano-label";
+  labelAno.textContent = anoAtual;
+  grade.appendChild(labelAno);
+
+  for (let m = 0; m < 12; m++) {
+    const valor = `${anoAtual}-${String(m + 1).padStart(2, "0")}`;
+    const btn = document.createElement("button");
+    btn.className = "btn-mes" + (valor === mesSelecionadoPopup ? " selecionado" : "");
+    btn.textContent = MESES_NOMES[m].substring(0, 3);
+    btn.title = `${MESES_NOMES[m]} ${anoAtual}`;
+    btn.dataset.valor = valor;
+    btn.onclick = () => selecionarMesPopup(valor);
+    grade.appendChild(btn);
+  }
+
+  // Em dezembro, mostra também janeiro do ano seguinte
+  if (mesAtual === 11) {
+    const labelAnoSeg = document.createElement("div");
+    labelAnoSeg.className = "ano-label";
+    labelAnoSeg.textContent = anoAtual + 1;
+    grade.appendChild(labelAnoSeg);
+
+    const valor = `${anoAtual + 1}-01`;
+    const btn = document.createElement("button");
+    btn.className = "btn-mes" + (valor === mesSelecionadoPopup ? " selecionado" : "");
+    btn.textContent = "Jan";
+    btn.title = `Janeiro ${anoAtual + 1}`;
+    btn.dataset.valor = valor;
+    btn.onclick = () => selecionarMesPopup(valor);
+    grade.appendChild(btn);
+  }
+}
+
+function selecionarMesPopup(valor) {
+  mesSelecionadoPopup = valor;
+  document.querySelectorAll(".btn-mes").forEach(b => {
+    b.classList.toggle("selecionado", b.dataset.valor === valor);
+  });
+}
+
+function abrirPopupMes() {
+  const texto = document.getElementById("entrada")?.value?.trim();
+  if (!texto) {
+    alert("Digite os compromissos antes de cadastrar.");
+    return;
+  }
+  // Reconstrói a grade com mês atual sempre atualizado
+  construirGradeMeses();
+  document.getElementById("popup-mes-ref").classList.add("aberto");
+}
+
+function fecharPopupMes() {
+  document.getElementById("popup-mes-ref").classList.remove("aberto");
+}
+
+async function confirmarPopupMes() {
+  if (!mesSelecionadoPopup) {
+    alert("Selecione um mês.");
+    return;
+  }
+  fecharPopupMes();
+  await cadastrarTudo(mesSelecionadoPopup);
 }
 
 //////////////////////////////////////////////////////
@@ -465,7 +595,7 @@ async function limparTudo() {
 // CADASTRAR COMPROMISSOS
 //////////////////////////////////////////////////////
 
-async function cadastrarTudo() {
+async function cadastrarTudo(mesRef) {
 
   const texto = document.getElementById("entrada").value;
 
@@ -474,9 +604,10 @@ async function cadastrarTudo() {
     return;
   }
 
-  const mesRef = document.getElementById("filtro-mes")?.value !== "todos"
-    ? document.getElementById("filtro-mes")?.value
-    : obterMesAtual();
+  if (!mesRef) {
+    alert("Selecione o mês de referência.");
+    return;
+  }
 
   const linhas = texto.split("\n").filter(l => l.trim() !== "");
 
@@ -526,11 +657,11 @@ async function resetarMes() {
 
   if (e1) { alert("Erro ao apagar compromissos."); return; }
 
-  // Apaga disponibilidades também
+  // Apaga disponibilidades do mês de referência selecionado
   const { error: e2 } = await supabase
     .from("disponibilidades")
     .delete()
-    .neq("id", "00000000-0000-0000-0000-000000000000");
+    .eq("mes_ref", mesSelecionado);
 
   if (e2) { alert("Compromissos apagados, mas erro ao apagar disponibilidades."); }
   else { alert(`Mês de ${label} resetado com sucesso!`); }
@@ -613,17 +744,28 @@ let compromissosGlobais = [];
 
 async function carregarRespostas() {
 
-  const { data, error } = await supabase
-    .from("disponibilidades")
-    .select("*");
+  // 🔥 busca compromissos do mês ativo
+  const mesRef = await obterMesRefAtivo();
+
+  let compQuery = supabase.from("compromissos").select("*");
+  if (mesRef) compQuery = compQuery.eq("mes_ref", mesRef);
+  const { data: comps } = await compQuery;
+  compromissosGlobais = comps || [];
+
+  // 🔥 busca disponibilidades apenas do mês de referência correto
+  let dispQuery = supabase.from("disponibilidades").select("*");
+  if (mesRef) {
+    dispQuery = dispQuery.eq("mes_ref", mesRef);
+  } else {
+    dispQuery = dispQuery.is("mes_ref", null);
+  }
+
+  const { data, error } = await dispQuery;
 
   if (error) {
     console.error(error);
     return;
   }
-
-  const { data: comps } = await supabase.from("compromissos").select("*");
-  compromissosGlobais = comps || [];
 
   respostasGlobais = data;
 
@@ -817,7 +959,7 @@ async function excluirSelecionadosDisp() {
 }
 
 async function resetarTodasDisponibilidades() {
-  const confirmar = confirm("⚠️ Isso vai apagar TODAS as disponibilidades de todos os ministros.\n\nTem certeza?");
+  const confirmar = confirm("⚠️ Isso vai apagar TODAS as disponibilidades de todos os membros.\n\nTem certeza?");
   if (!confirmar) return;
 
   const { error } = await supabase

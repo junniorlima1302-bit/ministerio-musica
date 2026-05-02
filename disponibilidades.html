@@ -4,12 +4,164 @@
   <meta charset="UTF-8">
   <title>Disponibilidades</title>
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* ── BOTÃO RESPOSTAS ── */
+    .btn-respostas-status {
+      background: #2e7d52;
+      color: white;
+    }
+    .btn-respostas-status:hover { background: #256644; }
+
+    /* ── MODAL OVERLAY ── */
+    .modal-status-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: flex-start;
+      z-index: 9999;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal-status-overlay.aberto { display: flex; }
+
+    .modal-status-box {
+      background: #eaf0f8;
+      border: 1px solid #c4d4e8;
+      border-radius: 16px;
+      padding: 24px 20px;
+      width: 100%;
+      max-width: 460px;
+      margin: auto;
+      animation: aparecer 0.22s ease;
+    }
+
+    @keyframes aparecer {
+      from { transform: scale(0.92); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .modal-status-titulo {
+      font-size: 16px;
+      font-weight: 800;
+      color: #1a2e4a;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    /* ── BADGES CLICÁVEIS ── */
+    .resumo-status {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .resumo-badge-status {
+      flex: 1;
+      padding: 11px 10px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 3px solid transparent;
+    }
+
+    .badge-pendente-s  { background: #fce8d8; color: #8b3a00; }
+    .badge-pendente-s:hover  { border-color: #e8a87c; }
+    .badge-pendente-s.ativo  { border-color: #c0692b; box-shadow: 0 0 0 2px rgba(192,105,43,0.2); }
+
+    .badge-respondeu-s { background: #d8f0e0; color: #1a4a2a; }
+    .badge-respondeu-s:hover { border-color: #7bc49a; }
+    .badge-respondeu-s.ativo { border-color: #2e8b57; box-shadow: 0 0 0 2px rgba(46,139,87,0.2); }
+
+    /* ── CARDS DE RESULTADO ── */
+    .card-status {
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+    }
+
+    .card-status-header {
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .card-status-header.pendente { background: #e8a87c; color: #5a2d00; }
+    .card-status-header.ok       { background: #a8d5b5; color: #1a4a2a; }
+
+    .status-item {
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a2e4a;
+      border-bottom: 1px solid rgba(255,255,255,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .status-item:last-child { border-bottom: none; }
+    .status-item.pendente-item { background: #fce8d8; }
+    .status-item.ok-item       { background: #d8f0e0; }
+
+    .status-item small { font-size: 11px; color: #8b6040; font-weight: 600; }
+    .status-item.ok-item small { color: #2e7050; }
+
+    .sem-status {
+      text-align: center;
+      padding: 18px;
+      font-size: 14px;
+      color: #7a9ec4;
+    }
+
+    .status-loading {
+      text-align: center;
+      padding: 20px;
+      color: #7a9ec4;
+      font-size: 14px;
+    }
+
+    .btn-fechar-status {
+      width: 100%;
+      margin-top: 14px;
+      padding: 11px;
+      background: #a0b8d0;
+      color: #1a2e4a;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-fechar-status:hover { background: #8aaac2; }
+
+    .todos-responderam {
+      background: #d8f0e0;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      color: #1a4a2a;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+  </style>
 </head>
 
 <body class="admin-page" onload="carregarRespostas()">
 
   <div class="admin-box">
-    <h2>Disponibilidades dos Ministros</h2>
+    <h2>Disponibilidades dos Membros</h2>
 
     <button onclick="voltarPagina()" class="btn-voltar">← Voltar</button>
 
@@ -30,17 +182,154 @@
     </div>
 
     <div class="barra-acoes-disp">
+      <button class="btn-respostas-status" onclick="abrirModalStatus()">👥 Quem respondeu</button>
       <button class="btn-excluir-selecionados-disp" onclick="excluirSelecionadosDisp()">🗑️ Excluir selecionados</button>
       <button class="btn-resetar-disp" onclick="resetarTodasDisponibilidades()">⚠️ Resetar tudo</button>
     </div>
 
     <div id="lista-respostas"></div>
+  </div>
 
+  <!-- ── MODAL STATUS ── -->
+  <div class="modal-status-overlay" id="modal-status" onclick="fecharModalStatusFora(event)">
+    <div class="modal-status-box">
+      <div class="modal-status-titulo">👥 Status de Respostas</div>
+
+      <div class="resumo-status">
+        <div class="resumo-badge-status badge-pendente-s" id="badge-pendente" onclick="alternarFiltroStatus('pendentes')">
+          ⏳ Pendentes: <span id="count-pendentes">—</span>
+        </div>
+        <div class="resumo-badge-status badge-respondeu-s" id="badge-respondeu" onclick="alternarFiltroStatus('responderam')">
+          ✅ Responderam: <span id="count-responderam">—</span>
+        </div>
+      </div>
+
+      <div id="conteudo-status">
+        <div class="status-loading">Carregando...</div>
+      </div>
+
+      <button class="btn-fechar-status" onclick="fecharModalStatus()">Fechar</button>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="supabase.js"></script>
   <script src="app.js"></script>
+
+  <script>
+    let _statusPendentes = [];
+    let _statusOk = [];
+    let _statusFiltro = "todos"; // "todos" | "pendentes" | "responderam"
+    let _statusCarregado = false;
+
+    async function abrirModalStatus() {
+      document.getElementById("modal-status").classList.add("aberto");
+      if (!_statusCarregado) await carregarStatus();
+    }
+
+    function fecharModalStatus() {
+      document.getElementById("modal-status").classList.remove("aberto");
+    }
+
+    function fecharModalStatusFora(e) {
+      if (e.target === document.getElementById("modal-status")) fecharModalStatus();
+    }
+
+    async function carregarStatus() {
+      document.getElementById("conteudo-status").innerHTML = `<div class="status-loading">Carregando...</div>`;
+
+      const { data: membros } = await supabase
+        .from("membros")
+        .select("*")
+        .eq("ativo", true)
+        .order("nome");
+
+      const { data: respostas } = await supabase
+        .from("disponibilidades")
+        .select("nome_pessoa");
+
+      if (!membros) {
+        document.getElementById("conteudo-status").innerHTML = `<div class="sem-status">Erro ao carregar dados.</div>`;
+        return;
+      }
+
+      const responderam = new Set((respostas || []).map(r => r.nome_pessoa.trim().toLowerCase()));
+
+      _statusPendentes = membros.filter(m => !responderam.has(m.nome.trim().toLowerCase()));
+      _statusOk        = membros.filter(m =>  responderam.has(m.nome.trim().toLowerCase()));
+      _statusFiltro    = "todos";
+      _statusCarregado = true;
+
+      renderizarStatus();
+    }
+
+    function renderizarStatus() {
+      // Atualiza contadores e badges
+      document.getElementById("count-pendentes").textContent  = _statusPendentes.length;
+      document.getElementById("count-responderam").textContent = _statusOk.length;
+
+      document.getElementById("badge-pendente").classList.toggle("ativo", _statusFiltro === "pendentes");
+      document.getElementById("badge-respondeu").classList.toggle("ativo", _statusFiltro === "responderam");
+
+      const container = document.getElementById("conteudo-status");
+      let html = "";
+
+      const mostrarPendentes  = _statusFiltro === "todos" || _statusFiltro === "pendentes";
+      const mostrarResponderam = _statusFiltro === "todos" || _statusFiltro === "responderam";
+
+      // ── Pendentes ──
+      if (mostrarPendentes) {
+        if (_statusPendentes.length === 0) {
+          html += `<div class="todos-responderam">🎉 Todos os membros já responderam!</div>`;
+        } else {
+          const grupos = { "Música Geral": [], "Geral Eventos": [], "Outros": [] };
+          _statusPendentes.forEach(m => {
+            if (grupos[m.ministerio] !== undefined) grupos[m.ministerio].push(m);
+            else grupos["Outros"].push(m);
+          });
+
+          ["Música Geral", "Geral Eventos", "Outros"].forEach(min => {
+            if (grupos[min].length === 0) return;
+            html += `
+              <div class="card-status">
+                <div class="card-status-header pendente">⏳ Faltando — ${min} (${grupos[min].length})</div>
+                ${grupos[min].map(m => `
+                  <div class="status-item pendente-item">
+                    <span>${m.nome}</span>
+                    <small>${m.tipo === "toca" ? "🎸 " + (m.instrumento || "") : "🎤 Canta"}</small>
+                  </div>
+                `).join("")}
+              </div>
+            `;
+          });
+        }
+      }
+
+      // ── Responderam ──
+      if (mostrarResponderam && _statusOk.length > 0) {
+        html += `
+          <div class="card-status">
+            <div class="card-status-header ok">✅ Já responderam (${_statusOk.length})</div>
+            ${_statusOk.map(m => `
+              <div class="status-item ok-item">
+                <span>${m.nome}</span>
+                <small>${m.tipo === "toca" ? "🎸 " + (m.instrumento || "") : "🎤 Canta"}</small>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      if (!html) html = `<div class="sem-status">Nenhum membro encontrado.</div>`;
+
+      container.innerHTML = html;
+    }
+
+    function alternarFiltroStatus(filtro) {
+      _statusFiltro = _statusFiltro === filtro ? "todos" : filtro;
+      renderizarStatus();
+    }
+  </script>
 
 </body>
 </html>

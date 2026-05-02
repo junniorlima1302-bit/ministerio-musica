@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Membros</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#1b4580">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <style>
+    .abas {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .aba {
+      padding: 8px 18px;
+      border-radius: 20px;
+      border: 2px solid #7a9ec4;
+      background: transparent;
+      color: #1a2e4a;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+      width: auto;
+      margin-top: 0;
+    }
+
+    .aba.ativa { background: #7a9ec4; color: #1a2e4a; }
+    .aba:hover { background: rgba(122,158,196,0.25); }
+
+    .filtro-min {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-filtro-min {
+      width: auto;
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 2px solid #a0b8d0;
+      background: white;
+      color: #1a2e4a;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 0;
+      transition: 0.2s;
+    }
+
+    .btn-filtro-min.ativo { background: #1b4580; color: white; border-color: #1b4580; }
+    .btn-filtro-min:hover { border-color: #1b4580; }
+
+    .lista-membros-wrap {
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+      margin-bottom: 8px;
+    }
+
+    .membro-item {
+      background: #cfd8e8;
+      padding: 13px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .membro-item:last-child { border-bottom: none; }
+    .membro-item.inativo { opacity: 0.5; }
+
+    .membro-info strong { display: block; font-size: 14px; color: #1a2e4a; }
+    .membro-info small { font-size: 11px; color: #3a5272; }
+
+    .badge-min {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      background: #dde8f5;
+      color: #1b4580;
+      margin-top: 3px;
+    }
+
+    .membro-acoes { display: flex; gap: 7px; flex-shrink: 0; }
+
+    .membro-acoes button {
+      width: auto;
+      padding: 6px 12px;
+      font-size: 12px;
+      margin-top: 0;
+      border-radius: 6px;
+    }
+
+    .btn-editar-min { background: #4a7fc1; }
+    .btn-editar-min:hover { background: #3a6aaa; }
+    .btn-toggle-min { background: #7f8c8d; }
+    .btn-toggle-min:hover { background: #636e72; }
+    .btn-excluir-min { background: #c0392b; }
+    .btn-excluir-min:hover { background: #a93226; }
+
+    .secao-wrap {
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+      margin-top: 20px;
+    }
+
+    .secao-header { background: #7a9ec4; padding: 12px 16px; }
+    .secao-header h3 { color: #1a2e4a; font-size: 14px; margin: 0; font-weight: 700; }
+
+    .secao-body { background: #cfd8e8; padding: 16px; }
+
+    .secao-body input,
+    .secao-body select {
+      width: 100%;
+      max-width: 100%;
+      padding: 11px 14px;
+      border-radius: 8px;
+      border: 1px solid #a0b8d0;
+      background: rgba(255,255,255,0.85);
+      margin-bottom: 10px;
+      display: block;
+      color: #1a2e4a;
+      font-size: 15px;
+      font-family: Arial, sans-serif;
+    }
+
+    .secao-body label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #3a5272;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .campo-form { margin-bottom: 12px; }
+    #campo-instrumento-form { display: none; }
+
+    /* ── FALTANDO ── */
+    .resumo-faltando {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .resumo-badge {
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      flex: 1;
+      text-align: center;
+      min-width: 130px;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 3px solid transparent;
+    }
+
+    .badge-pendente { background: #fce8d8; color: #8b3a00; }
+    .badge-pendente:hover { border-color: #e8a87c; }
+    .badge-pendente.ativo-filtro { border-color: #c0692b; box-shadow: 0 0 0 2px rgba(192,105,43,0.2); }
+
+    .badge-respondeu { background: #d8f0e0; color: #1a4a2a; }
+    .badge-respondeu:hover { border-color: #7bc49a; }
+    .badge-respondeu.ativo-filtro { border-color: #2e8b57; box-shadow: 0 0 0 2px rgba(46,139,87,0.2); }
+
+    .card-faltando {
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+      margin-top: 12px;
+    }
+
+    .card-faltando-header { background: #e8a87c; padding: 12px 16px; }
+    .card-faltando-header h3 { color: #5a2d00; font-size: 13px; font-weight: 700; margin: 0; }
+
+    .card-faltando-ok .card-faltando-header { background: #a8d5b5; }
+    .card-faltando-ok .card-faltando-header h3 { color: #1a4a2a; }
+
+    .faltando-item {
+      background: #fce8d8;
+      padding: 11px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.6);
+      font-size: 13px;
+      color: #1a2e4a;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .faltando-item:last-child { border-bottom: none; }
+
+    .respondeu-item {
+      background: #d8f0e0;
+      padding: 11px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.6);
+      font-size: 13px;
+      color: #1a2e4a;
+      font-weight: 600;
+    }
+
+    .respondeu-item:last-child { border-bottom: none; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .modal-overlay.aberto { display: flex; }
+
+    .modal-box {
+      background: #eaf0f8;
+      border: 1px solid #c4d4e8;
+      border-radius: 16px;
+      padding: 24px;
+      width: 100%;
+      max-width: 420px;
+      animation: aparecer 0.25s ease;
+    }
+
+    @keyframes aparecer {
+      from { transform: scale(0.9); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .modal-box h3 { font-size: 16px; color: #1a2e4a; margin-bottom: 18px; text-align: center; }
+
+    .modal-box input,
+    .modal-box select {
+      width: 100%;
+      max-width: 100%;
+      padding: 11px 14px;
+      border-radius: 8px;
+      border: 1px solid #a0b8d0;
+      background: white;
+      margin-bottom: 10px;
+      display: block;
+      color: #1a2e4a;
+      font-size: 15px;
+    }
+
+    .modal-box label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #3a5272;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .modal-acoes { display: flex; gap: 10px; margin-top: 14px; }
+    .modal-acoes button { flex: 1; margin-top: 0; padding: 12px; }
+    .btn-cancelar-modal { background: #a0b8d0; color: #1a2e4a; }
+    .btn-cancelar-modal:hover { background: #8aaac2; }
+
+    .busca-lista { position: relative; margin-bottom: 12px; }
+
+    .busca-lista input {
+      width: 100%;
+      max-width: 100%;
+      padding: 10px 14px 10px 38px;
+      border: 1.5px solid #a0b8d0;
+      border-radius: 10px;
+      font-size: 14px;
+      color: #1a2e4a;
+      background: white;
+      outline: none;
+      display: block;
+      margin: 0;
+    }
+
+    .busca-lista input:focus { border-color: #1b4580; }
+    .busca-lista .ico { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+
+    .sem-registros {
+      padding: 20px;
+      text-align: center;
+      color: #7a9ec4;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .membro-acoes button { padding: 7px 9px; font-size: 11px; }
+      .resumo-badge { font-size: 13px; padding: 9px 12px; }
+    }
+  </style>
+</head>
+
+<body class="admin-page">
+<div class="admin-box">
+  <h2>Membros</h2>
+  <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+
+  <div class="abas">
+    <button class="aba ativa" id="aba-lista" onclick="mudarAba('lista')">👥 Lista</button>
+    <button class="aba" id="aba-cadastro" onclick="mudarAba('cadastro')">➕ Cadastrar</button>
+    <button class="aba" id="aba-faltando" onclick="mudarAba('faltando')">⚠️ Faltando Responder</button>
+  </div>
+
+  <!-- ABA LISTA -->
+  <div id="painel-lista">
+    <div class="filtro-min">
+      <button class="btn-filtro-min ativo" id="btn-todos" onclick="filtrarMin('todos')">Todos</button>
+      <button class="btn-filtro-min" id="btn-musica" onclick="filtrarMin('Música Geral')">🎵 Música Geral</button>
+      <button class="btn-filtro-min" id="btn-eventos" onclick="filtrarMin('Geral Eventos')">🎙️ Geral Eventos</button>
+    </div>
+
+    <div class="busca-lista">
+      <span class="ico">🔍</span>
+      <input type="text" id="busca-min" placeholder="Buscar membro..." oninput="renderizarLista()">
+    </div>
+
+    <div id="lista-membros-container"></div>
+  </div>
+
+  <!-- ABA CADASTRO -->
+  <div id="painel-cadastro" style="display:none;">
+    <div class="secao-wrap">
+      <div class="secao-header"><h3>➕ Novo Membro</h3></div>
+      <div class="secao-body">
+        <div class="campo-form">
+          <label>Nome completo</label>
+          <input type="text" id="novo-nome" placeholder="Nome do membro">
+        </div>
+        <div class="campo-form">
+          <label>Ministério</label>
+          <select id="novo-ministerio">
+            <option value="">Selecione...</option>
+            <option value="Música Geral">Música Geral</option>
+            <option value="Geral Eventos">Geral Eventos</option>
+          </select>
+        </div>
+        <div class="campo-form">
+          <label>Participa como</label>
+          <select id="novo-tipo" onchange="toggleInstrumentoForm('novo')">
+            <option value="">Selecione...</option>
+            <option value="canta">🎤 Canta</option>
+            <option value="toca">🎸 Toca</option>
+          </select>
+        </div>
+        <div class="campo-form" id="campo-instrumento-form">
+          <label>Instrumento</label>
+          <input type="text" id="novo-instrumento" placeholder="Ex: Violão, Bateria...">
+        </div>
+        <button onclick="cadastrarMembro()">Cadastrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA FALTANDO -->
+  <div id="painel-faltando" style="display:none;">
+    <div id="conteudo-faltando">
+      <div class="sem-registros">Carregando...</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL EDIÇÃO -->
+<div class="modal-overlay" id="modal-edicao">
+  <div class="modal-box">
+    <h3>✏️ Editar Membro</h3>
+    <input type="hidden" id="edit-id">
+    <div class="campo-form">
+      <label>Nome</label>
+      <input type="text" id="edit-nome">
+    </div>
+    <div class="campo-form">
+      <label>Ministério</label>
+      <select id="edit-ministerio">
+        <option value="Música Geral">Música Geral</option>
+        <option value="Geral Eventos">Geral Eventos</option>
+      </select>
+    </div>
+    <div class="campo-form">
+      <label>Participa como</label>
+      <select id="edit-tipo" onchange="toggleInstrumentoForm('edit')">
+        <option value="canta">🎤 Canta</option>
+        <option value="toca">🎸 Toca</option>
+      </select>
+    </div>
+    <div class="campo-form" id="campo-instrumento-edit" style="display:none;">
+      <label>Instrumento</label>
+      <input type="text" id="edit-instrumento">
+    </div>
+    <div class="modal-acoes">
+      <button class="btn-cancelar-modal" onclick="fecharModal()">Cancelar</button>
+      <button onclick="salvarEdicao()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="supabase.js"></script>
+<script src="app.js"></script>
+
+<script>
+  let todosMembros = [];
+  let filtroAtual = "todos";
+
+  // dados de faltando (para os filtros)
+  let dadosPendentes = [];
+  let dadosOk = [];
+  let filtroFaltando = "todos"; // "todos" | "pendentes" | "responderam"
+
+  async function iniciar() {
+    const { data: sessao } = await supabase.auth.getSession();
+    if (!sessao.session) { window.location.href = "login.html"; return; }
+
+    const { data: eu } = await supabase
+      .from("usuarios").select("papel").eq("id", sessao.session.user.id).single();
+
+    if (!eu || eu.papel !== "admin") {
+      alert("Acesso restrito ao administrador.");
+      window.location.href = "dashboard.html";
+      return;
+    }
+
+    await carregarMembros();
+  }
+
+  async function carregarMembros() {
+    const { data, error } = await supabase
+      .from("membros").select("*").order("nome");
+    if (error) { console.error(error); return; }
+    todosMembros = data || [];
+    renderizarLista();
+  }
+
+  // ── ABAS ──
+  function mudarAba(aba) {
+    ["lista", "cadastro", "faltando"].forEach(a => {
+      document.getElementById(`aba-${a}`).classList.toggle("ativa", a === aba);
+      document.getElementById(`painel-${a}`).style.display = a === aba ? "block" : "none";
+    });
+    if (aba === "faltando") carregarFaltando();
+  }
+
+  // ── FILTRO MINISTÉRIO ──
+  function filtrarMin(min) {
+    filtroAtual = min;
+    ["todos", "musica", "eventos"].forEach(id =>
+      document.getElementById(`btn-${id}`).classList.remove("ativo")
+    );
+    const mapa = { "todos": "btn-todos", "Música Geral": "btn-musica", "Geral Eventos": "btn-eventos" };
+    document.getElementById(mapa[min]).classList.add("ativo");
+    renderizarLista();
+  }
+
+  // ── RENDERIZAR LISTA ──
+  function renderizarLista() {
+    const container = document.getElementById("lista-membros-container");
+    const busca = (document.getElementById("busca-min")?.value || "")
+      .toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+    let dados = todosMembros;
+    if (filtroAtual !== "todos") dados = dados.filter(m => m.ministerio === filtroAtual);
+    if (busca) dados = dados.filter(m =>
+      m.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(busca)
+    );
+
+    if (dados.length === 0) {
+      container.innerHTML = `<div class="sem-registros">Nenhum membro encontrado.</div>`;
+      return;
+    }
+
+    const wrap = document.createElement("div");
+    wrap.className = "lista-membros-wrap";
+
+    dados.forEach(m => {
+      const badge = m.tipo === "toca" ? `🎸 ${m.instrumento || "Instrumento"}` : "🎤 Canta";
+      const div = document.createElement("div");
+      div.className = `membro-item${m.ativo ? "" : " inativo"}`;
+      div.innerHTML = `
+        <div class="membro-info">
+          <strong>${m.nome}</strong>
+          <small>${m.ministerio}</small><br>
+          <span class="badge-min">${badge}</span>
+          ${!m.ativo ? '<span class="badge-min" style="background:#fdecea;color:#c0392b;margin-left:4px;">Inativo</span>' : ""}
+        </div>
+        <div class="membro-acoes">
+          <button class="btn-editar-min" onclick="abrirEdicao('${m.id}')">✏️ Editar</button>
+          <button class="btn-toggle-min" onclick="toggleAtivo('${m.id}', ${m.ativo})">${m.ativo ? "⏸️ Desativar" : "▶️ Ativar"}</button>
+          <button class="btn-excluir-min" onclick="excluirMembro('${m.id}', '${m.nome.replace(/'/g, "\\'")}')">🗑️</button>
+        </div>
+      `;
+      wrap.appendChild(div);
+    });
+
+    container.innerHTML = "";
+    container.appendChild(wrap);
+  }
+
+  // ── CADASTRAR ──
+  async function cadastrarMembro() {
+    const nome = document.getElementById("novo-nome").value.trim();
+    const ministerio = document.getElementById("novo-ministerio").value;
+    const tipo = document.getElementById("novo-tipo").value;
+    const instrumento = document.getElementById("novo-instrumento")?.value.trim() || null;
+
+    if (!nome || !ministerio || !tipo) { alert("Preencha nome, ministério e como participa."); return; }
+    if (tipo === "toca" && !instrumento) { alert("Informe o instrumento."); return; }
+
+    const { error } = await supabase.from("membros").insert({
+      nome, ministerio, tipo,
+      instrumento: tipo === "toca" ? instrumento : null,
+      ativo: true
+    });
+
+    if (error) { alert("Erro ao cadastrar: " + error.message); return; }
+
+    document.getElementById("novo-nome").value = "";
+    document.getElementById("novo-ministerio").value = "";
+    document.getElementById("novo-tipo").value = "";
+    document.getElementById("novo-instrumento").value = "";
+    document.getElementById("campo-instrumento-form").style.display = "none";
+
+    alert("Membro cadastrado com sucesso!");
+    await carregarMembros();
+    mudarAba("lista");
+  }
+
+  function toggleInstrumentoForm(prefixo) {
+    const tipo = document.getElementById(`${prefixo}-tipo`)?.value;
+    const campo = document.getElementById(prefixo === "novo" ? "campo-instrumento-form" : "campo-instrumento-edit");
+    if (campo) campo.style.display = tipo === "toca" ? "block" : "none";
+  }
+
+  // ── EDIÇÃO ──
+  function abrirEdicao(id) {
+    const m = todosMembros.find(x => x.id === id);
+    if (!m) return;
+    document.getElementById("edit-id").value = m.id;
+    document.getElementById("edit-nome").value = m.nome;
+    document.getElementById("edit-ministerio").value = m.ministerio;
+    document.getElementById("edit-tipo").value = m.tipo;
+    document.getElementById("edit-instrumento").value = m.instrumento || "";
+    document.getElementById("campo-instrumento-edit").style.display = m.tipo === "toca" ? "block" : "none";
+    document.getElementById("modal-edicao").classList.add("aberto");
+  }
+
+  function fecharModal() {
+    document.getElementById("modal-edicao").classList.remove("aberto");
+  }
+
+  async function salvarEdicao() {
+    const id = document.getElementById("edit-id").value;
+    const nome = document.getElementById("edit-nome").value.trim();
+    const ministerio = document.getElementById("edit-ministerio").value;
+    const tipo = document.getElementById("edit-tipo").value;
+    const instrumento = document.getElementById("edit-instrumento").value.trim() || null;
+
+    if (!nome || !ministerio || !tipo) { alert("Preencha todos os campos."); return; }
+    if (tipo === "toca" && !instrumento) { alert("Informe o instrumento."); return; }
+
+    const { error } = await supabase.from("membros")
+      .update({ nome, ministerio, tipo, instrumento: tipo === "toca" ? instrumento : null })
+      .eq("id", id);
+
+    if (error) { alert("Erro ao salvar: " + error.message); return; }
+    fecharModal();
+    await carregarMembros();
+  }
+
+  async function toggleAtivo(id, ativoAtual) {
+    const { error } = await supabase.from("membros").update({ ativo: !ativoAtual }).eq("id", id);
+    if (error) { alert("Erro ao alterar status."); return; }
+    await carregarMembros();
+  }
+
+  async function excluirMembro(id, nome) {
+    if (!confirm(`Excluir "${nome}"? Esta ação não pode ser desfeita.`)) return;
+    const { error } = await supabase.from("membros").delete().eq("id", id);
+    if (error) { alert("Erro ao excluir."); return; }
+    await carregarMembros();
+  }
+
+  // ── FALTANDO RESPONDER ──
+  async function carregarFaltando() {
+    filtroFaltando = "todos";
+    const container = document.getElementById("conteudo-faltando");
+    container.innerHTML = `<div class="sem-registros">Carregando...</div>`;
+
+    const { data: membros } = await supabase
+      .from("membros").select("*").eq("ativo", true).order("nome");
+
+    const { data: respostas } = await supabase
+      .from("disponibilidades").select("nome_pessoa");
+
+    if (!membros) { container.innerHTML = `<div class="sem-registros">Erro ao carregar.</div>`; return; }
+
+    const responderam = new Set((respostas || []).map(r => r.nome_pessoa.trim().toLowerCase()));
+
+    dadosPendentes = membros.filter(m => !responderam.has(m.nome.trim().toLowerCase()));
+    dadosOk       = membros.filter(m =>  responderam.has(m.nome.trim().toLowerCase()));
+
+    renderizarFaltando();
+  }
+
+  function renderizarFaltando() {
+    const container = document.getElementById("conteudo-faltando");
+
+    // badges clicáveis
+    let html = `
+      <div class="resumo-faltando">
+        <div class="resumo-badge badge-pendente${filtroFaltando === 'pendentes' ? ' ativo-filtro' : ''}"
+             onclick="alternarFiltroFaltando('pendentes')">
+          ⏳ Pendentes: ${dadosPendentes.length}
+        </div>
+        <div class="resumo-badge badge-respondeu${filtroFaltando === 'responderam' ? ' ativo-filtro' : ''}"
+             onclick="alternarFiltroFaltando('responderam')">
+          ✅ Responderam: ${dadosOk.length}
+        </div>
+      </div>
+    `;
+
+    const mostrarPendentes = filtroFaltando === "todos" || filtroFaltando === "pendentes";
+    const mostrarOk        = filtroFaltando === "todos" || filtroFaltando === "responderam";
+
+    // ── Pendentes por ministério ──
+    if (mostrarPendentes) {
+      if (dadosPendentes.length === 0) {
+        html += `<div class="sem-registros" style="background:#d8f0e0;border-radius:12px;padding:16px;color:#1a4a2a;font-weight:700;">🎉 Todos responderam!</div>`;
+      } else {
+        const grupos = { "Música Geral": [], "Geral Eventos": [] };
+        dadosPendentes.forEach(m => { if (grupos[m.ministerio]) grupos[m.ministerio].push(m); });
+
+        ["Música Geral", "Geral Eventos"].forEach(min => {
+          if (grupos[min].length === 0) return;
+          html += `
+            <div class="card-faltando">
+              <div class="card-faltando-header">
+                <h3>⏳ Faltando — ${min} (${grupos[min].length})</h3>
+              </div>
+              ${grupos[min].map(m => `
+                <div class="faltando-item">
+                  <span>${m.nome}</span>
+                  <small style="color:#8b4a00;">${m.tipo === "toca" ? "🎸 " + (m.instrumento || "") : "🎤"}</small>
+                </div>
+              `).join("")}
+            </div>
+          `;
+        });
+      }
+    }
+
+    // ── Responderam ──
+    if (mostrarOk && dadosOk.length > 0) {
+      html += `
+        <div class="card-faltando card-faltando-ok" style="margin-top:16px;">
+          <div class="card-faltando-header">
+            <h3>✅ Já responderam (${dadosOk.length})</h3>
+          </div>
+          ${dadosOk.map(m => `<div class="respondeu-item">${m.nome}</div>`).join("")}
+        </div>
+      `;
+    }
+
+    container.innerHTML = html;
+  }
+
+  function alternarFiltroFaltando(filtro) {
+    // clicar no mesmo filtro ativo = volta para "todos"
+    filtroFaltando = filtroFaltando === filtro ? "todos" : filtro;
+    renderizarFaltando();
+  }
+
+  document.getElementById("modal-edicao").addEventListener("click", function(e) {
+    if (e.target === this) fecharModal();
+  });
+
+  iniciar();
+</script>
+
+</body>
+</html>

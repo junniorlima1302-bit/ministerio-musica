@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Conta</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#1b4580">
+  <style>
+    .secao-wrap { border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.10); margin-top: 10px; }
+    .secao-header { background: #7a9ec4; padding: 12px 16px; }
+    .secao-header h3 { color: #1a2e4a; font-size: 14px; margin: 0; font-weight: 700; }
+    .secao-body { background: #cfd8e8; padding: 16px; }
+    .secao-body input {
+      width: 100%; max-width: 100%; padding: 10px; border-radius: 8px;
+      border: 1px solid #a0b8d0; background: rgba(255,255,255,0.8);
+      margin-bottom: 10px; display: block; color: #1a2e4a; font-size: 14px;
+    }
+  </style>
+</head>
+<body class="admin-page">
+  <div class="admin-box">
+    <h2>Minha Conta</h2>
+    <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+
+    <div class="secao-wrap">
+      <div class="secao-header"><h3>🔑 Seus dados</h3></div>
+      <div class="secao-body">
+        <input type="text" id="meu-nome" placeholder="Seu nome">
+        <input type="password" id="minha-senha" placeholder="Nova senha (deixe em branco para não alterar)">
+        <button onclick="salvarMinhaConta()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    let meuId = null;
+
+    async function iniciar() {
+      const { data: sessao } = await supabase.auth.getSession();
+      if (!sessao.session) { window.location.href = "login.html"; return; }
+
+      meuId = sessao.session.user.id;
+      const { data: eu } = await supabase.from("usuarios").select("*").eq("id", meuId).single();
+
+      if (!eu) { alert("Usuário não encontrado."); return; }
+
+      document.getElementById("meu-nome").value = eu.nome;
+    }
+
+    async function salvarMinhaConta() {
+      const novoNome = document.getElementById("meu-nome").value.trim();
+      const novaSenha = document.getElementById("minha-senha").value;
+
+      if (!novoNome) { alert("Preencha seu nome."); return; }
+
+      const { error: erroNome } = await supabase
+        .from("usuarios").update({ nome: novoNome }).eq("id", meuId);
+
+      if (erroNome) { alert("Erro ao salvar nome."); return; }
+
+      if (novaSenha) {
+        const { error: erroSenha } = await supabase.auth.updateUser({ password: novaSenha });
+        if (erroSenha) { alert("Erro ao atualizar senha."); return; }
+      }
+
+      alert("Dados salvos com sucesso!");
+    }
+
+    iniciar();
+  </script>
+</body>
+</html>

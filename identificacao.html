@@ -8,77 +8,230 @@
   <meta name="theme-color" content="#1b4580">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    .radio-item { display: inline-block; margin: 5px; cursor: pointer; }
-    .radio-item input[type="radio"] { display: none; }
-    .radio-item span {
-      display: block; padding: 12px 20px; border-radius: 10px;
-      border: 2px solid #7a9ec4; background: #cfd8e8;
-      color: #1a2e4a; font-size: 15px; font-weight: 500; transition: 0.2s;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e8f0fa 0%, #c5d8f0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      font-family: 'Nunito', sans-serif;
     }
-    .radio-item input:checked + span { background: #1b4580; color: white; border-color: #1b4580; }
-    .radio-group { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-    input[type="text"] { border: 1px solid #a0b8d0; background: rgba(255,255,255,0.75); color: #1a2e4a; font-size: 16px; }
+
+    .topo {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .topo h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1a2e4a;
+      letter-spacing: 1px;
+    }
+
+    .topo p {
+      font-size: 13px;
+      color: #3a5272;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+
+    .card {
+      background: #eaf0f8;
+      border: 1px solid #c4d4e8;
+      border-radius: 20px;
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .campo-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #5a7a9a;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    select#select-nome {
+      width: 100%;
+      padding: 16px 40px 16px 14px;
+      border: 1.5px solid #a0b8d0;
+      border-radius: 12px;
+      font-size: 16px;
+      font-family: 'Nunito', sans-serif;
+      color: #1a2e4a;
+      background: white;
+      outline: none;
+      cursor: pointer;
+      transition: 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231b4580' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      max-width: 100%;
+      margin: 0;
+      display: block;
+    }
+
+    select#select-nome:focus {
+      border-color: #1b4580;
+      box-shadow: 0 0 0 3px rgba(27,69,128,0.1);
+    }
+
+    .btn-continuar {
+      width: 100%;
+      margin-top: 16px;
+      padding: 16px;
+      background: #1b4580;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-continuar:hover {
+      background: #163b6d;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    .btn-continuar:disabled {
+      background: #a0b8d0;
+      transform: none;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .loading-txt {
+      text-align: center;
+      color: #7a9ec4;
+      font-size: 14px;
+      padding: 10px 0;
+    }
+
+    .rodape {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .btn-inicio {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 28px;
+      background: rgba(27,69,128,0.08);
+      border: 1px solid #a0b8d0;
+      border-radius: 30px;
+      color: #1b4580;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: auto;
+      margin-top: 0;
+    }
+
+    .btn-inicio:hover { background: white; border-color: #1b4580; }
 
     @media (max-width: 600px) {
-      .admin-box {
-        padding: 24px 16px;
-      }
-      .radio-item span {
-        font-size: 15px;
-        padding: 12px 18px;
-      }
-      input[type="text"] {
-        max-width: 100%;
-        font-size: 16px;
-      }
-      button {
-        font-size: 16px;
-        padding: 14px;
-      }
+      body { padding: 24px 14px; }
+      .topo h1 { font-size: 20px; }
+      .card { padding: 24px 18px; }
     }
   </style>
 </head>
-<body class="admin-page">
-  <div class="admin-box">
-    <h2>Identificação</h2>
-    <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+<body>
 
-    <input type="text" id="nome" placeholder="Seu nome">
+  <div class="topo">
+    <h1>MÚSICA GERAL FORTALEZA</h1>
+    <p>Envio de disponibilidade</p>
+  </div>
 
-    <h3>Selecione seu ministério:</h3>
-    <div class="radio-group">
-      <label class="radio-item">
-        <input type="radio" name="ministerio" value="Música Geral">
-        <span>Música Geral</span>
-      </label>
-      <label class="radio-item">
-        <input type="radio" name="ministerio" value="Geral Eventos">
-        <span>Geral Eventos</span>
-      </label>
-    </div>
+  <div class="card">
+    <label class="campo-label" for="select-nome">Selecione seu nome</label>
+    <div id="loading-nomes" class="loading-txt">Carregando...</div>
+    <select id="select-nome" style="display:none;" onchange="document.getElementById('btn-continuar').disabled = this.value === ''">
+      <option value="">-- Selecione --</option>
+    </select>
+    <button class="btn-continuar" id="btn-continuar" onclick="continuar()" disabled>Continuar →</button>
+  </div>
 
-    <h3>Como você participa?</h3>
-    <div class="radio-group">
-      <label class="radio-item">
-        <input type="radio" name="tipo" value="canto" onchange="toggleInstrumento()">
-        <span>Canto</span>
-      </label>
-      <label class="radio-item">
-        <input type="radio" name="tipo" value="toco" onchange="toggleInstrumento()">
-        <span>Toco</span>
-      </label>
-    </div>
-
-    <div id="campo-instrumento" style="display:none; margin-top:10px;">
-      <input type="text" id="instrumento" placeholder="Qual instrumento você toca?">
-    </div>
-
-    <button onclick="continuar()">Continuar</button>
+  <div class="rodape">
+    <button class="btn-inicio" onclick="window.location.href='index.html'">🏠 Início</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="supabase.js"></script>
   <script src="app.js"></script>
+
+  <script>
+    let membrosCarregados = [];
+
+    async function carregarNomes() {
+      const { data, error } = await supabase
+        .from("membros")
+        .select("*")
+        .eq("ativo", true)
+        .order("nome");
+
+      document.getElementById("loading-nomes").style.display = "none";
+      const sel = document.getElementById("select-nome");
+      sel.style.display = "block";
+
+      if (error || !data || data.length === 0) {
+        sel.innerHTML = `<option value="">Nenhum membro cadastrado</option>`;
+        return;
+      }
+
+      membrosCarregados = data;
+
+      data.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = m.nome;
+        sel.appendChild(opt);
+      });
+    }
+
+    function continuar() {
+      const sel = document.getElementById("select-nome");
+      const id = sel.value;
+      if (!id) return;
+
+      const membro = membrosCarregados.find(m => m.id === id);
+      if (!membro) return;
+
+      localStorage.setItem("nome", membro.nome);
+      localStorage.setItem("ministerio", membro.ministerio);
+      localStorage.setItem("tipo", membro.tipo);
+      localStorage.setItem("instrumento", membro.instrumento || "");
+      localStorage.setItem("ministro_id", membro.id);
+
+      let historico = JSON.parse(localStorage.getItem("historico")) || [];
+      historico.push(window.location.pathname);
+      localStorage.setItem("historico", JSON.stringify(historico));
+
+      window.location.href = "disponibilidade.html";
+    }
+
+    carregarNomes();
+  </script>
+
 </body>
 </html>

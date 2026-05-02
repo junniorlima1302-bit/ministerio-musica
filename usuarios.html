@@ -2,115 +2,157 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Usuários</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciar</title>
   <link rel="stylesheet" href="style.css">
   <meta name="theme-color" content="#1b4580">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    .lista-usuarios-wrap {
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.10);
-      margin-bottom: 25px;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e8f0fa 0%, #c5d8f0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      font-family: 'Nunito', sans-serif;
     }
-    .lista-usuarios-header {
-      background: #7a9ec4;
-      padding: 12px 16px;
+
+    .topo {
+      text-align: center;
+      margin-bottom: 32px;
     }
-    .lista-usuarios-header h3 {
+
+    .topo h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #1a2e4a;
+      letter-spacing: 1px;
+    }
+
+    .grade {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .bloco {
+      background: white;
+      border: 1.5px solid #a0b8d0;
+      border-radius: 16px;
+      padding: 26px 14px 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      box-shadow: 0 2px 8px rgba(27,69,128,0.08);
+    }
+
+    .bloco:hover {
+      background: #eaf0f8;
+      border-color: #1b4580;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 18px rgba(27,69,128,0.15);
+    }
+
+    .bloco:active { transform: translateY(0px); }
+    .bloco .icone { font-size: 38px; line-height: 1; }
+
+    .bloco .label {
+      font-size: 14px;
+      font-weight: 800;
+      color: #1a2e4a;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .bloco .desc {
+      font-size: 11px;
+      color: #3a5272;
+      text-align: center;
+      line-height: 1.4;
+      font-weight: 600;
+    }
+
+    .rodape {
+      margin-top: 28px;
+      text-align: center;
+    }
+
+    .btn-voltar-hub {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 28px;
+      background: white;
+      border: 1.5px solid #a0b8d0;
+      border-radius: 30px;
       color: #1a2e4a;
       font-size: 14px;
-      margin: 0;
       font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(27,69,128,0.08);
     }
-    .usuario-item {
-      background: #cfd8e8;
-      padding: 14px 18px;
-      border-bottom: 1px solid rgba(255,255,255,0.5);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .usuario-item:last-child { border-bottom: none; }
-    .usuario-info strong { display: block; font-size: 15px; color: #1a2e4a; }
-    .usuario-info span { font-size: 12px; color: #3a5272; }
-    .badge-papel {
-      display: inline-block; padding: 3px 10px; border-radius: 20px;
-      font-size: 11px; font-weight: bold; margin-top: 4px;
-    }
-    .badge-admin { background: rgba(27,69,128,0.15); color: #1a2e4a; }
-    .badge-agente { background: rgba(27,69,128,0.15); color: #1a2e4a; }
-    .usuario-acoes { display: flex; gap: 8px; }
-    .usuario-acoes button { width: auto; padding: 6px 12px; font-size: 12px; margin-top: 0; border-radius: 6px; }
-    .btn-excluir-usuario { background: #c0392b; }
-    .btn-excluir-usuario:hover { background: #a93226; }
-    .btn-editar-usuario { background: #4a7fc1; }
-    .btn-editar-usuario:hover { background: #3a6aaa; }
 
-    .secao-wrap {
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.10);
-      margin-top: 25px;
-    }
-    .secao-header {
-      background: #7a9ec4;
-      padding: 12px 16px;
-    }
-    .secao-header h3 {
-      color: #1a2e4a; font-size: 14px; margin: 0; font-weight: 700;
-    }
-    .secao-body {
-      background: #cfd8e8;
-      padding: 16px;
-    }
-    .secao-body input, .secao-body select {
-      width: 100%; max-width: 100%; padding: 10px;
-      border-radius: 8px; border: 1px solid #a0b8d0;
-      background: rgba(255,255,255,0.8); margin-bottom: 10px;
-      display: block; color: #1a2e4a; font-size: 14px;
+    .btn-voltar-hub:hover { background: #eaf0f8; border-color: #1b4580; color: #1b4580; }
+
+    @media (max-width: 600px) {
+      body { padding: 32px 16px; }
+      .topo h1 { font-size: 19px; }
+      .topo { margin-bottom: 24px; }
+      .grade { gap: 12px; max-width: 100%; }
+      .bloco { padding: 22px 10px 18px; border-radius: 14px; }
+      .bloco .icone { font-size: 34px; }
     }
   </style>
 </head>
 <body>
 
-  <body class="admin-page">
+  <div class="topo">
+    <h1>⚙️ Gerenciar</h1>
+  </div>
 
-  <div class="admin-box">
-    <h2>Gerenciar Usuários</h2>
-    <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+  <div class="grade">
+    <a class="bloco" onclick="irPara('usuarios-lista.html')">
+      <div class="icone">👥</div>
+      <div class="label">Usuários</div>
+      <div class="desc">Cadastrados no sistema</div>
+    </a>
 
-    <div class="lista-usuarios-wrap">
-      <div class="lista-usuarios-header"><h3>👥 Usuários cadastrados</h3></div>
-      <div id="lista-usuarios"></div>
-    </div>
+    <a class="bloco" onclick="irPara('membros.html')">
+      <div class="icone">🎵</div>
+      <div class="label">Membros</div>
+      <div class="desc">Cadastros e pendências</div>
+    </a>
 
-    <div class="secao-wrap">
-      <div class="secao-header"><h3>➕ Cadastrar novo usuário</h3></div>
-      <div class="secao-body">
-        <input type="text" id="novo-nome" placeholder="Nome completo">
-        <input type="email" id="novo-email" placeholder="Email">
-        <input type="password" id="novo-senha" placeholder="Senha">
-        <select id="novo-papel">
-          <option value="agente">Agente</option>
-          <option value="admin">Admin</option>
-        </select>
-        <button onclick="cadastrarUsuario()">Cadastrar</button>
-      </div>
-    </div>
+    <a class="bloco" onclick="irPara('usuarios-cadastro.html')">
+      <div class="icone">➕</div>
+      <div class="label">Cadastrar Usuário</div>
+      <div class="desc">Novo acesso ao sistema</div>
+    </a>
 
-    <div class="secao-wrap">
-      <div class="secao-header"><h3>🔑 Minha conta</h3></div>
-      <div class="secao-body">
-        <input type="text" id="meu-nome" placeholder="Seu nome">
-        <input type="password" id="minha-senha" placeholder="Nova senha (deixe em branco para não alterar)">
-        <button onclick="salvarMinhaConta()">Salvar</button>
-      </div>
-    </div>
+    <a class="bloco" onclick="irPara('minha-conta.html')">
+      <div class="icone">🔑</div>
+      <div class="label">Minha Conta</div>
+      <div class="desc">Nome e senha</div>
+    </a>
+  </div>
 
+  <div class="rodape">
+    <button class="btn-voltar-hub" onclick="voltarPagina()">← Voltar</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -118,154 +160,18 @@
   <script src="app.js"></script>
 
   <script>
-    let meuId = null;
-
     async function iniciar() {
       const { data: sessao } = await supabase.auth.getSession();
       if (!sessao.session) { window.location.href = "login.html"; return; }
 
-      meuId = sessao.session.user.id;
-
       const { data: eu } = await supabase
-        .from("usuarios").select("*").eq("id", meuId).single();
+        .from("usuarios").select("papel").eq("id", sessao.session.user.id).single();
 
       if (!eu || eu.papel !== "admin") {
         alert("Acesso restrito ao administrador.");
         window.location.href = "dashboard.html";
         return;
       }
-
-      document.getElementById("meu-nome").value = eu.nome;
-
-      carregarUsuarios();
-    }
-
-    async function carregarUsuarios() {
-      const { data, error } = await supabase
-        .from("usuarios").select("*").order("nome");
-
-      if (error) { console.error(error); return; }
-
-      const lista = document.getElementById("lista-usuarios");
-      lista.innerHTML = "";
-
-      data.forEach(u => {
-        const div = document.createElement("div");
-        div.className = "usuario-item";
-
-        div.innerHTML = `
-          <div class="usuario-info">
-            <strong>${u.nome}</strong>
-            <span>${u.email}</span>
-            <span class="badge-papel badge-${u.papel}">${u.papel}</span>
-          </div>
-          <div class="usuario-acoes">
-            ${u.id !== meuId ? `
-              <button class="btn-editar-usuario" onclick="alterarPapel('${u.id}', '${u.papel}', '${u.nome}')">
-                ✏️ Papel
-              </button>
-              <button class="btn-excluir-usuario" onclick="excluirUsuario('${u.id}', '${u.nome}')">
-                🗑️ Excluir
-              </button>
-            ` : `<span style="font-size:12px;color:#999;">Você</span>`}
-          </div>
-        `;
-
-        lista.appendChild(div);
-      });
-    }
-
-    async function cadastrarUsuario() {
-      const nome = document.getElementById("novo-nome").value.trim();
-      const email = document.getElementById("novo-email").value.trim();
-      const senha = document.getElementById("novo-senha").value;
-      const papel = document.getElementById("novo-papel").value;
-
-      if (!nome || !email || !senha) {
-        alert("Preencha todos os campos.");
-        return;
-      }
-
-      const { data: sessao } = await supabase.auth.getSession();
-      const token = sessao.session.access_token;
-
-      const response = await fetch(
-        "https://yasvanzqhvvpighfzttv.supabase.co/functions/v1/smooth-api",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-          body: JSON.stringify({ nome, email, senha, papel }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        alert("Erro: " + result.error);
-        return;
-      }
-
-      document.getElementById("novo-nome").value = "";
-      document.getElementById("novo-email").value = "";
-      document.getElementById("novo-senha").value = "";
-
-      alert("Usuário cadastrado com sucesso!");
-      carregarUsuarios();
-    }
-
-    async function alterarPapel(id, papelAtual, nome) {
-      const novoPapel = papelAtual === "admin" ? "agente" : "admin";
-      const confirmar = confirm(`Alterar papel de "${nome}" para ${novoPapel}?`);
-      if (!confirmar) return;
-
-      const { error } = await supabase
-        .from("usuarios")
-        .update({ papel: novoPapel })
-        .eq("id", id);
-
-      if (error) { alert("Erro ao alterar papel."); return; }
-
-      carregarUsuarios();
-    }
-
-    async function excluirUsuario(id, nome) {
-      const confirmar = confirm(`Excluir o usuário "${nome}"? Esta ação não pode ser desfeita.`);
-      if (!confirmar) return;
-
-      const { error } = await supabase
-        .from("usuarios")
-        .delete()
-        .eq("id", id);
-
-      if (error) { alert("Erro ao excluir usuário."); return; }
-
-      carregarUsuarios();
-    }
-
-    async function salvarMinhaConta() {
-      const novoNome = document.getElementById("meu-nome").value.trim();
-      const novaSenha = document.getElementById("minha-senha").value;
-
-      if (!novoNome) { alert("Preencha seu nome."); return; }
-
-      const { error: erroNome } = await supabase
-        .from("usuarios")
-        .update({ nome: novoNome })
-        .eq("id", meuId);
-
-      if (erroNome) { alert("Erro ao salvar nome."); return; }
-
-      if (novaSenha) {
-        const { error: erroSenha } = await supabase.auth.updateUser({
-          password: novaSenha
-        });
-        if (erroSenha) { alert("Erro ao atualizar senha."); return; }
-      }
-
-      alert("Dados salvos com sucesso!");
     }
 
     iniciar();
