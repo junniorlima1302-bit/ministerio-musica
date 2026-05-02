@@ -13,6 +13,11 @@
 
   <style>
     /* ===== SPLASH SCREEN ===== */
+    /* Splash nunca aparece no desktop via CSS */
+    @media (min-width: 768px) {
+      #splash { display: none !important; }
+    }
+
     #splash {
       position: fixed;
       inset: 0;
@@ -251,14 +256,14 @@
     navigator.serviceWorker.register('/sw.js');
   }
 
-  // Splash só na primeira abertura do celular (por sessão)
+  // Splash só na primeira abertura do celular (por sessão de navegação)
   window.addEventListener('load', () => {
     const splash = document.getElementById('splash');
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
     const jaViu = sessionStorage.getItem('splash_visto');
 
     if (!isMobile || jaViu) {
-      splash.classList.add('oculto');
+      if (splash) splash.style.display = 'none';
       return;
     }
 
