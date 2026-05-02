@@ -307,11 +307,26 @@
     }
 
     @media (max-width: 600px) {
+      .membro-item { padding: 10px 12px; gap: 8px; }
+      .membro-info strong { font-size: 13px; }
+      .membro-info small { font-size: 10px; }
+      .badge-min { font-size: 10px; padding: 2px 6px; }
+      .resumo-badge { font-size: 12px; padding: 8px 10px; }
+      .membro-acoes { gap: 5px; }
       .membro-acoes button {
-        padding: 5px 7px;
-        font-size: 11px;
-        border-radius: 5px;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        font-size: 17px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0;
+        min-width: 0;
       }
+      .btn-txt { display: none; }
+    }
       .resumo-badge { font-size: 12px; padding: 8px 10px; }
       .membro-item { padding: 10px 12px; gap: 8px; }
       .membro-info strong { font-size: 13px; }
@@ -518,8 +533,8 @@
           ${!m.ativo ? '<span class="badge-min" style="background:#fdecea;color:#c0392b;margin-left:4px;">Inativo</span>' : ""}
         </div>
         <div class="membro-acoes">
-          <button class="btn-editar-min" onclick="abrirEdicao('${m.id}')">✏️ Editar</button>
-          <button class="btn-toggle-min" onclick="toggleAtivo('${m.id}', ${m.ativo})">${m.ativo ? "⏸️ Desativar" : "▶️ Ativar"}</button>
+          <button class="btn-editar-min" onclick="abrirEdicao('${m.id}')">✏️ <span class="btn-txt">Editar</span></button>
+          <button class="btn-toggle-min" onclick="toggleAtivo('${m.id}', ${m.ativo})">${m.ativo ? "⏸️ <span class=\"btn-txt\">Desativar</span>" : "▶️ <span class=\"btn-txt\">Ativar</span>"}</button>
           <button class="btn-excluir-min" onclick="excluirMembro('${m.id}', '${m.nome.replace(/'/g, "\\'")}')">🗑️</button>
         </div>
       `;
