@@ -958,7 +958,7 @@ async function renderizarRespostas(respostasFiltradas) {
         <span class="badge-excluir">✕</span>
         <strong>${pessoa.nome}</strong><br>
         <small>${pessoa.ministerio}</small><br>
-        <small>${pessoa.tipo || ""} ${pessoa.instrumento ? "- " + pessoa.instrumento : ""}</small>
+        <small>${pessoa.tipo === "toca" ? "Toca" : pessoa.tipo === "toca_canta" ? "Toca e Canta" : pessoa.tipo === "canta" ? "Canta" : ""} ${pessoa.instrumento ? "- " + pessoa.instrumento : ""}</small>
       `;
 
       item.onclick = () => item.classList.toggle("selecionado");

@@ -251,10 +251,18 @@
     navigator.serviceWorker.register('/sw.js');
   }
 
-  // Remove a splash assim que a página estiver pronta
-  // Mínimo de 1.2s para a logo aparecer mesmo em conexões rápidas
+  // Splash só na primeira abertura do celular (por sessão)
   window.addEventListener('load', () => {
     const splash = document.getElementById('splash');
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    const jaViu = sessionStorage.getItem('splash_visto');
+
+    if (!isMobile || jaViu) {
+      splash.classList.add('oculto');
+      return;
+    }
+
+    sessionStorage.setItem('splash_visto', '1');
     const tempo = Math.max(0, 1200 - performance.now());
     setTimeout(() => splash.classList.add('oculto'), tempo);
   });

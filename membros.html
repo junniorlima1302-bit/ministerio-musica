@@ -307,8 +307,16 @@
     }
 
     @media (max-width: 600px) {
-      .membro-acoes button { padding: 7px 9px; font-size: 11px; }
-      .resumo-badge { font-size: 13px; padding: 9px 12px; }
+      .membro-acoes button {
+        padding: 5px 7px;
+        font-size: 11px;
+        border-radius: 5px;
+      }
+      .resumo-badge { font-size: 12px; padding: 8px 10px; }
+      .membro-item { padding: 10px 12px; gap: 8px; }
+      .membro-info strong { font-size: 13px; }
+      .membro-info small { font-size: 10px; }
+      .badge-min { font-size: 10px; padding: 2px 6px; }
     }
   </style>
 </head>
@@ -363,6 +371,7 @@
             <option value="">Selecione...</option>
             <option value="canta">🎤 Canta</option>
             <option value="toca">🎸 Toca</option>
+            <option value="toca_canta">🎸🎤 Toca e Canta</option>
           </select>
         </div>
         <div class="campo-form" id="campo-instrumento-form">
@@ -404,6 +413,7 @@
       <select id="edit-tipo" onchange="toggleInstrumentoForm('edit')">
         <option value="canta">🎤 Canta</option>
         <option value="toca">🎸 Toca</option>
+        <option value="toca_canta">🎸🎤 Toca e Canta</option>
       </select>
     </div>
     <div class="campo-form" id="campo-instrumento-edit" style="display:none;">
@@ -495,7 +505,9 @@
     wrap.className = "lista-membros-wrap";
 
     dados.forEach(m => {
-      const badge = m.tipo === "toca" ? `🎸 ${m.instrumento || "Instrumento"}` : "🎤 Canta";
+      const badge = m.tipo === "toca" ? `🎸 Toca — ${m.instrumento || "Instrumento"}`
+                  : m.tipo === "toca_canta" ? `🎸🎤 Toca e Canta — ${m.instrumento || "Instrumento"}`
+                  : "🎤 Canta";
       const div = document.createElement("div");
       div.className = `membro-item${m.ativo ? "" : " inativo"}`;
       div.innerHTML = `
@@ -526,11 +538,11 @@
     const instrumento = document.getElementById("novo-instrumento")?.value.trim() || null;
 
     if (!nome || !ministerio || !tipo) { alert("Preencha nome, ministério e como participa."); return; }
-    if (tipo === "toca" && !instrumento) { alert("Informe o instrumento."); return; }
+    if ((tipo === "toca" || tipo === "toca_canta") && !instrumento) { alert("Informe o instrumento."); return; }
 
     const { error } = await supabase.from("membros").insert({
       nome, ministerio, tipo,
-      instrumento: tipo === "toca" ? instrumento : null,
+      instrumento: (tipo === "toca" || tipo === "toca_canta") ? instrumento : null,
       ativo: true
     });
 
@@ -550,7 +562,7 @@
   function toggleInstrumentoForm(prefixo) {
     const tipo = document.getElementById(`${prefixo}-tipo`)?.value;
     const campo = document.getElementById(prefixo === "novo" ? "campo-instrumento-form" : "campo-instrumento-edit");
-    if (campo) campo.style.display = tipo === "toca" ? "block" : "none";
+    if (campo) campo.style.display = (tipo === "toca" || tipo === "toca_canta") ? "block" : "none";
   }
 
   // ── EDIÇÃO ──
@@ -578,10 +590,10 @@
     const instrumento = document.getElementById("edit-instrumento").value.trim() || null;
 
     if (!nome || !ministerio || !tipo) { alert("Preencha todos os campos."); return; }
-    if (tipo === "toca" && !instrumento) { alert("Informe o instrumento."); return; }
+    if ((tipo === "toca" || tipo === "toca_canta") && !instrumento) { alert("Informe o instrumento."); return; }
 
     const { error } = await supabase.from("membros")
-      .update({ nome, ministerio, tipo, instrumento: tipo === "toca" ? instrumento : null })
+      .update({ nome, ministerio, tipo, instrumento: (tipo === "toca" || tipo === "toca_canta") ? instrumento : null })
       .eq("id", id);
 
     if (error) { alert("Erro ao salvar: " + error.message); return; }
@@ -662,7 +674,7 @@
               ${grupos[min].map(m => `
                 <div class="faltando-item">
                   <span>${m.nome}</span>
-                  <small style="color:#8b4a00;">${m.tipo === "toca" ? "🎸 " + (m.instrumento || "") : "🎤"}</small>
+                  <small style="color:#8b4a00;">${m.tipo === "toca" ? "🎸 Toca — " + (m.instrumento || "") : m.tipo === "toca_canta" ? "🎸🎤 Toca e Canta — " + (m.instrumento || "") : "🎤 Canta"}</small>
                 </div>
               `).join("")}
             </div>
