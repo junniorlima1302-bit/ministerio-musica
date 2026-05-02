@@ -1,5 +1,7 @@
 //////////////////////////////////////////////////////
 // NORMALIZAR TEXTO
+// NOTA: carregar supabase com versão fixa no HTML:
+// <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 //////////////////////////////////////////////////////
 
 function normalizar(texto) {
@@ -8,6 +10,43 @@ function normalizar(texto) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
+}
+
+//////////////////////////////////////////////////////
+// CACHE DO MÊS DE REFERÊNCIA ATIVO
+//////////////////////////////////////////////////////
+
+let _mesRefCache = undefined; // undefined = não carregado ainda; null = sem dados
+
+async function obterMesRefAtivo() {
+  if (_mesRefCache !== undefined) return _mesRefCache;
+  const { data } = await supabase
+    .from("compromissos")
+    .select("mes_ref")
+    .not("mes_ref", "is", null)
+    .order("mes_ref", { ascending: false })
+    .limit(1);
+  _mesRefCache = data?.[0]?.mes_ref || null;
+  return _mesRefCache;
+}
+
+function invalidarCacheMesRef() {
+  _mesRefCache = undefined;
+}
+
+//////////////////////////////////////////////////////
+// LOADING GLOBAL
+//////////////////////////////////////////////////////
+
+function mostrarLoading(containerId, mensagem) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = `
+    <div class="loading-skeleton">
+      <div class="loading-spinner"></div>
+      <p class="loading-txt">${mensagem || "Carregando..."}</p>
+    </div>
+  `;
 }
 
 //////////////////////////////////////////////////////
@@ -70,21 +109,16 @@ function continuar() {
 // CARREGAR DISPONIBILIDADES
 //////////////////////////////////////////////////////
 
-// 🔥 Descobre o mes_ref dos compromissos que estão ativos no momento
-async function obterMesRefAtivo() {
-  const { data } = await supabase
-    .from("compromissos")
-    .select("mes_ref")
-    .not("mes_ref", "is", null)
-    .order("mes_ref", { ascending: false })
-    .limit(1);
-
-  return data?.[0]?.mes_ref || null;
-}
+// obterMesRefAtivo() agora está no topo do arquivo com cache
 
 async function carregarDisponibilidades() {
 
-  // 🔥 busca apenas compromissos do mês ativo
+  const lista = document.getElementById("lista-disponibilidade");
+  if (!lista) return;
+
+  mostrarLoading("lista-disponibilidade", "Buscando compromissos...");
+
+  // 🔥 busca apenas compromissos do mês ativo (usa cache)
   const mesRef = await obterMesRefAtivo();
 
   let query = supabase.from("compromissos").select("*").order("nome");
@@ -96,11 +130,9 @@ async function carregarDisponibilidades() {
 
   if (error) {
     console.error(error);
+    lista.innerHTML = `<p style="color:#c0392b;text-align:center;padding:20px;">Erro ao carregar. Tente novamente.</p>`;
     return;
   }
-
-  const lista = document.getElementById("lista-disponibilidade");
-  if (!lista) return;
 
   lista.innerHTML = "";
 
@@ -162,7 +194,7 @@ async function enviarDisponibilidade(){
   botao.disabled = true;
   botao.innerText = "Enviando...";
 
-  // 🔥 descobre o mês de referência dos compromissos ativos (ex: "2025-05")
+  // 🔥 descobre o mês de referência (usa cache — já foi buscado em carregarDisponibilidades)
   const mesRef = await obterMesRefAtivo();
 
   // 🔥 verifica envio anterior SOMENTE do mês de referência correto
@@ -279,6 +311,11 @@ async function carregarCompromissos() {
 
   const mesSelecionado = document.getElementById("filtro-mes")?.value || "todos";
 
+  const lista = document.getElementById("lista-compromissos");
+  if (!lista) return;
+
+  mostrarLoading("lista-compromissos", "Carregando compromissos...");
+
   let query = supabase.from("compromissos").select("*").order("nome");
 
   if (mesSelecionado !== "todos") {
@@ -288,9 +325,6 @@ async function carregarCompromissos() {
   const { data, error } = await query;
 
   if (error) { console.error(error); return; }
-
-  const lista = document.getElementById("lista-compromissos");
-  if (!lista) return;
 
   lista.innerHTML = "";
 
@@ -370,6 +404,7 @@ async function adicionarItemGrupo(nomeGrupo) {
     .insert({ nome: nomeGrupo, turno: novoTurno.trim(), mes_ref: mesRef });
 
   if (error) { alert("Erro ao adicionar item."); return; }
+  invalidarCacheMesRef();
   carregarCompromissos();
 }
 
@@ -588,6 +623,7 @@ async function limparTudo() {
     return;
   }
 
+  invalidarCacheMesRef();
   carregarCompromissos();
 }
 
@@ -626,6 +662,7 @@ async function cadastrarTudo(mesRef) {
 
   if (error) { console.error(error); alert("Erro ao cadastrar."); return; }
 
+  invalidarCacheMesRef();
   document.getElementById("entrada").value = "";
   carregarCompromissos();
 }
@@ -666,6 +703,7 @@ async function resetarMes() {
   if (e2) { alert("Compromissos apagados, mas erro ao apagar disponibilidades."); }
   else { alert(`Mês de ${label} resetado com sucesso!`); }
 
+  invalidarCacheMesRef();
   carregarCompromissos();
 }
 
@@ -744,15 +782,15 @@ let compromissosGlobais = [];
 
 async function carregarRespostas() {
 
-  // 🔥 busca compromissos do mês ativo
+  const container = document.getElementById("lista-respostas");
+  if (container) mostrarLoading("lista-respostas", "Carregando disponibilidades...");
+
+  // 🔥 busca compromissos e mês ativo em paralelo
   const mesRef = await obterMesRefAtivo();
 
   let compQuery = supabase.from("compromissos").select("*");
   if (mesRef) compQuery = compQuery.eq("mes_ref", mesRef);
-  const { data: comps } = await compQuery;
-  compromissosGlobais = comps || [];
 
-  // 🔥 busca disponibilidades apenas do mês de referência correto
   let dispQuery = supabase.from("disponibilidades").select("*");
   if (mesRef) {
     dispQuery = dispQuery.eq("mes_ref", mesRef);
@@ -760,35 +798,33 @@ async function carregarRespostas() {
     dispQuery = dispQuery.is("mes_ref", null);
   }
 
-  const { data, error } = await dispQuery;
-
-  if (error) {
-    console.error(error);
+  // 🔥 busca simultânea — economiza 1 round-trip completo
+  let comps, data;
+  try {
+    const [resComps, resDisp] = await Promise.all([compQuery, dispQuery]);
+    comps = resComps.data;
+    data  = resDisp.data;
+    if (resDisp.error) throw resDisp.error;
+  } catch (err) {
+    console.error(err);
+    if (container) container.innerHTML = `<p style="color:#c0392b;text-align:center;padding:20px;">Erro ao carregar. Tente novamente.</p>`;
     return;
   }
 
-  respostasGlobais = data;
+  compromissosGlobais = comps || [];
+  respostasGlobais = data || [];
 
-  await popularFiltroEventos();
+  popularFiltroEventos(compromissosGlobais);
   renderizarRespostas(data);
 }
 
-async function popularFiltroEventos() {
+// 🔥 usa os dados já buscados em carregarRespostas — sem nova query ao banco
+function popularFiltroEventos(compromissos) {
 
   const select = document.getElementById("filtroEvento");
   if (!select) return;
 
-  const { data, error } = await supabase
-    .from("compromissos")
-    .select("nome")
-    .order("nome");
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  const eventosUnicos = [...new Set(data.map(item => item.nome))];
+  const eventosUnicos = [...new Set((compromissos || []).map(item => item.nome))].sort();
 
   select.innerHTML = `<option value="todos">Todos</option>`;
 
