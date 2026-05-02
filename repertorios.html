@@ -30,6 +30,7 @@
       overflow: hidden;
       -webkit-overflow-scrolling: touch;
       background: white;
+      position: relative;
     }
     iframe {
       width: 100%;
@@ -37,6 +38,41 @@
       border: none;
       min-width: 600px;
       margin-top: -30px;
+    }
+    .iframe-loading {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #e8f0fa 0%, #c5d8f0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      z-index: 10;
+      transition: opacity 0.4s ease;
+    }
+    .iframe-loading.oculto {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .iframe-spinner {
+      width: 38px;
+      height: 38px;
+      border: 3px solid #c4d4e8;
+      border-top-color: #1b4580;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    .iframe-loading p {
+      font-size: 14px;
+      font-weight: 600;
+      color: #3a5272;
+      animation: pulse-txt 1.4s ease-in-out infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse-txt {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
     }
   </style>
 </head>
@@ -47,7 +83,14 @@
     <div style="width:80px"></div>
   </div>
   <div class="iframe-wrap">
-    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml"></iframe>
+    <div class="iframe-loading" id="loading">
+      <div class="iframe-spinner"></div>
+      <p>Carregando repertórios...</p>
+    </div>
+    <iframe
+      src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml"
+      onload="document.getElementById('loading').classList.add('oculto')">
+    </iframe>
   </div>
 </body>
 </html>
