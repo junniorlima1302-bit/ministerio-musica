@@ -6,10 +6,52 @@
   <title>Música Geral Fortaleza</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1b4580">
+  <meta name="theme-color" content="#0a0a0a">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== SPLASH SCREEN ===== */
+    #splash {
+      position: fixed;
+      inset: 0;
+      background: #0d0d0d;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #splash.oculto {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    #splash img {
+      width: 120px;
+      height: 120px;
+      animation: splash-pulso 1.8s ease-in-out infinite;
+    }
+
+    #splash p {
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #e8d9b8;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      animation: splash-pulso 1.8s ease-in-out infinite;
+    }
+
+    @keyframes splash-pulso {
+      0%, 100% { opacity: 1;    transform: scale(1);    }
+      50%       { opacity: 0.6; transform: scale(0.97); }
+    }
+  </style>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -153,6 +195,12 @@
 </head>
 <body>
 
+  <!-- SPLASH SCREEN -->
+  <div id="splash">
+    <img src="icon-384.png" alt="Música Geral">
+    <p>Música Geral Fortaleza</p>
+  </div>
+
   <div class="topo">
     <h1>MÚSICA GERAL FORTALEZA</h1>
   </div>
@@ -202,6 +250,14 @@
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js');
   }
+
+  // Remove a splash assim que a página estiver pronta
+  // Mínimo de 1.2s para a logo aparecer mesmo em conexões rápidas
+  window.addEventListener('load', () => {
+    const splash = document.getElementById('splash');
+    const tempo = Math.max(0, 1200 - performance.now());
+    setTimeout(() => splash.classList.add('oculto'), tempo);
+  });
 </script>
 </body>
 </html>
