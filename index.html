@@ -366,13 +366,9 @@
 <script>
   function fecharPopupInstalar() {
     document.getElementById('popup-instalar').style.display = 'none';
-    localStorage.setItem('app_instalado_visto', '1');
   }
 
   function verificarPopupInstalar() {
-    // Não mostra se já viu antes
-    if (localStorage.getItem('app_instalado_visto')) return;
-
     // Não mostra se já está rodando como PWA instalado
     if (window.navigator.standalone === true) return;
     if (window.matchMedia('(display-mode: standalone)').matches) return;
@@ -394,7 +390,26 @@
     setTimeout(() => {
       document.getElementById('popup-instalar').style.display = 'flex';
     }, 1500);
+
+    // Reaparecer a cada 40 segundos enquanto na página
+    setInterval(() => {
+      if (window.navigator.standalone === true) return;
+      if (window.matchMedia('(display-mode: standalone)').matches) return;
+      document.getElementById('popup-instalar').style.display = 'flex';
+    }, 30000);
   }
+
+  // Reaparecer ao voltar para a aba
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    if (window.navigator.standalone === true) return;
+    if (window.matchMedia('(display-mode: standalone)').matches) return;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile) return;
+    setTimeout(() => {
+      document.getElementById('popup-instalar').style.display = 'flex';
+    }, 800);
+  });
 
   verificarPopupInstalar();
 </script>
