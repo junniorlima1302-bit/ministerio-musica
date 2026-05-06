@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-  <style>
+ <style>
     @media (max-width: 600px) {
 
       .admin-box {
@@ -104,6 +104,14 @@
         width: auto;
       }
     }
+    .btn-toggle{
+  width:auto;
+  display:inline-block;
+  background:#8e44ad;
+  padding:10px 14px;
+  margin-top:0;
+  margin-bottom:12px;
+}
   </style>
 </head>
 
@@ -218,13 +226,31 @@
   </div>
 </div>
 
-<body class="admin-page compromissos-page" onload="iniciarCompromissos()">
+<body class="admin-page compromissos-page" onload="iniciarCompromissos(); atualizarBotaoRespostas()">
 
   <div class="admin-box">
     <h2>Compromissos do Mês</h2>
 
     <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
-
+    <button 
+  id="btn-respostas"
+  onclick="toggleRespostas()" 
+  style="
+    width:auto;
+    display:inline-block;
+    padding:6px 10px;
+    margin-top:0;
+    margin-bottom:12px;
+    font-size:12px;
+    border-radius:8px;
+    border:none;
+    color:white;
+    cursor:pointer;
+  "
+>
+  Carregando...
+</button>
+</button>
     <div class="filtro-topo" style="display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap; justify-content:center;">
       <select id="filtro-mes" onchange="carregarCompromissos()" style="height:36px; padding:0 10px; border-radius:8px; border:1px solid #ccc; font-size:13px;">
         <option value="todos">Todos os meses</option>

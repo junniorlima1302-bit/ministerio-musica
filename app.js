@@ -1095,3 +1095,110 @@ function cancelarJustificativa() {
   document.getElementById("popup-justificativa").style.display = "none";
   resolverJustificativa(null);
 }
+async function atualizarBotaoRespostas() {
+
+  const botao = document.getElementById("btn-respostas");
+
+  const { data, error } = await supabase
+    .from('configuracoes')
+    .select('respostas_ativas')
+    .eq('id', 1)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  if (data.respostas_ativas) {
+
+    botao.innerHTML = "🟢 Respostas ATIVADAS";
+    botao.style.background = "#27ae60";
+
+  } else {
+
+    botao.innerHTML = "🔴 Respostas DESATIVADAS";
+    botao.style.background = "#c0392b";
+
+  }
+
+}
+
+async function toggleRespostas() {
+
+  const { data, error } = await supabase
+    .from('configuracoes')
+    .select('respostas_ativas')
+    .eq('id', 1)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const novoValor = !data.respostas_ativas;
+
+  const { error: updateError } = await supabase
+    .from('configuracoes')
+    .update({
+      respostas_ativas: novoValor
+    })
+    .eq('id', 1);
+
+  if (updateError) {
+    console.error(updateError);
+    return;
+  }
+
+  atualizarBotaoRespostas();
+
+}
+async function verificarStatusRespostas() {
+
+  const { data, error } = await supabase
+    .from('configuracoes')
+    .select('respostas_ativas')
+    .eq('id', 1)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  if (!data.respostas_ativas) {
+
+    document.body.innerHTML = `
+      <div style="
+        height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        flex-direction:column;
+        font-family:Arial,sans-serif;
+        text-align:center;
+        padding:20px;
+        background:#f4f6f9;
+      ">
+        <h1 style="
+          color:#c0392b;
+          margin-bottom:12px;
+        ">
+          ⛔ Respostas Encerradas
+        </h1>
+
+        <p style="
+          color:#555;
+          font-size:16px;
+          max-width:400px;
+          line-height:1.5;
+        ">
+          O período para envio de disponibilidades foi encerrado.
+        </p>
+      </div>
+    `;
+
+  }
+
+}
