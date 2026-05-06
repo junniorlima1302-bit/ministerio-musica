@@ -428,6 +428,70 @@
 
   verificarPopupInstalar();
 </script>
+<div id="popup-notificacao" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  z-index:9999;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+">
 
+  <div style="
+    background:white;
+    border-radius:18px;
+    padding:24px;
+    max-width:340px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+  ">
+
+    <h2 style="
+      font-size:20px;
+      color:#1b4580;
+      margin-bottom:10px;
+    ">
+      🔔 Ativar notificações
+    </h2>
+
+    <p style="
+      color:#555;
+      font-size:14px;
+      line-height:1.5;
+      margin-bottom:20px;
+    ">
+      Receba avisos sobre escalas, disponibilidades e alterações importantes.
+    </p>
+
+    <button onclick="ativarPush()" style="
+      background:#1b4580;
+      color:white;
+      border:none;
+      border-radius:10px;
+      padding:12px;
+      width:100%;
+      font-weight:bold;
+      margin-bottom:10px;
+    ">
+      Ativar notificações
+    </button>
+
+    <button onclick="fecharPopupPush()" style="
+      background:#e0e0e0;
+      color:#333;
+      border:none;
+      border-radius:10px;
+      padding:10px;
+      width:100%;
+    ">
+      Agora não
+    </button>
+
+  </div>
+
+</div>
 </body>
 </html>

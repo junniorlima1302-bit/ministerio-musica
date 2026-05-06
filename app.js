@@ -1202,3 +1202,56 @@ async function verificarStatusRespostas() {
   }
 
 }
+function abrirPopupPush() {
+
+  const jaFechou = localStorage.getItem("popupPushFechado");
+
+  if (jaFechou) return;
+
+  const popup = document.getElementById("popup-notificacao");
+
+  if (popup) {
+    popup.style.display = "flex";
+  }
+
+}
+
+function fecharPopupPush() {
+
+  localStorage.setItem("popupPushFechado", "true");
+
+  const popup = document.getElementById("popup-notificacao");
+
+  if (popup) {
+    popup.style.display = "none";
+  }
+
+}
+
+async function ativarPush() {
+
+  try {
+
+    await OneSignal.showSlidedownPrompt();
+
+    localStorage.setItem("popupPushFechado", "true");
+
+    fecharPopupPush();
+
+  } catch (e) {
+
+    console.error(e);
+
+  }
+
+}
+
+window.addEventListener("load", () => {
+
+  setTimeout(() => {
+
+    abrirPopupPush();
+
+  }, 2500);
+
+});
