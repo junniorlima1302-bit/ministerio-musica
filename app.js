@@ -1232,38 +1232,22 @@ async function ativarPush() {
 
   try {
 
-    OneSignalDeferred.push(async function(OneSignal) {
-
-      const permission = await OneSignal.Notifications.requestPermission();
-
-      console.log(permission);
-
-    });
-
     fecharPopupPush();
+
+    setTimeout(() => {
+
+      OneSignalDeferred.push(async function(OneSignal) {
+
+        await OneSignal.Notifications.requestPermission();
+
+      });
+
+    }, 300);
 
   } catch (e) {
 
     console.error(e);
     alert("Erro ao ativar notificações");
-
-  }
-
-}
-async function testePush() {
-
-  try {
-
-    const permission = await Notification.requestPermission();
-
-    alert("Permissão: " + permission);
-
-    console.log(permission);
-
-  } catch (e) {
-
-    console.error(e);
-    alert("Erro: " + e);
 
   }
 
