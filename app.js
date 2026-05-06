@@ -1232,15 +1232,13 @@ async function ativarPush() {
 
   try {
 
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-
     OneSignalDeferred.push(async function(OneSignal) {
 
-      await OneSignal.showSlidedownPrompt();
+      const permission = await OneSignal.Notifications.requestPermission();
+
+      console.log(permission);
 
     });
-
-    localStorage.setItem("popupPushFechado", "true");
 
     fecharPopupPush();
 
