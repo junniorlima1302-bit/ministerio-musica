@@ -204,11 +204,27 @@
     };
 
     function mostrarPopup() {
+      // Limpa identificação ao concluir envio
+      localStorage.removeItem("nome");
+      localStorage.removeItem("ministerio");
+      localStorage.removeItem("tipo");
+      localStorage.removeItem("instrumento");
+      localStorage.removeItem("membro_id");
       document.getElementById("popup-sucesso").style.display = "flex";
     }
 
     function fecharPopup() {
       window.location.href = "index.html";
+    }
+
+    function voltarPagina() {
+      // Limpa identificação ao voltar também
+      localStorage.removeItem("nome");
+      localStorage.removeItem("ministerio");
+      localStorage.removeItem("tipo");
+      localStorage.removeItem("instrumento");
+      localStorage.removeItem("membro_id");
+      voltarSistema();
     }
   </script>
 

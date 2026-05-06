@@ -3,160 +3,254 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Disponibilidade</title>
+  <title>Identificação</title>
   <link rel="stylesheet" href="style.css">
-
   <meta name="theme-color" content="#1b4580">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    .popup {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    .popup .conteudo {
-      background: white;
-      padding: 25px;
-      border-radius: 10px;
-      text-align: center;
-      max-width: 320px;
-      width: 90%;
-      animation: aparecer 0.3s ease;
-    }
-
-    @keyframes aparecer {
-      from { transform: scale(0.8); opacity: 0; }
-      to   { transform: scale(1);   opacity: 1; }
-    }
-
-    .popup button {
-      margin-top: 15px;
-      padding: 12px 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 15px;
-    }
-
-    .btn-primary  { background: #1b4580; color: white; }
-    .btn-secondary { background: #ccc; }
-
-    .acoes {
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e8f0fa 0%, #c5d8f0 100%);
       display: flex;
-      gap: 10px;
+      flex-direction: column;
+      align-items: center;
       justify-content: center;
-      margin-top: 15px;
-      flex-wrap: wrap;
-    }
-
-    .aviso-topo {
-      text-align: center;
-      font-weight: bold;
-      color: #1b4580;
-      margin-bottom: 15px;
-      font-size: 15px;
-      background: #eef3fb;
-      padding: 12px;
-      border-radius: 8px;
-    }
-
-    .btn-disponibilidade {
-      font-size: 14px;
-      padding: 14px 10px;
-      min-height: 48px;
-    }
-
-    h3 { font-size: 16px; }
-
-    button[onclick="enviarDisponibilidade()"] {
-      padding: 16px;
-      font-size: 16px;
-      min-height: 52px;
-    }
-
-    .aviso-bloqueio {
-      text-align: center;
       padding: 30px 20px;
-      background: #fce8d8;
-      border-radius: 14px;
-      margin-top: 20px;
+      font-family: 'Nunito', sans-serif;
     }
 
-    .aviso-bloqueio .icone { font-size: 40px; margin-bottom: 12px; }
-    .aviso-bloqueio p { font-size: 15px; font-weight: 700; color: #8b3a00; }
-    .aviso-bloqueio small { font-size: 13px; color: #a05000; margin-top: 6px; display: block; }
+    .topo {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .topo h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1a2e4a;
+      letter-spacing: 1px;
+    }
+
+    .topo p {
+      font-size: 13px;
+      color: #3a5272;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+
+    .card {
+      background: #eaf0f8;
+      border: 1px solid #c4d4e8;
+      border-radius: 20px;
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .campo-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #5a7a9a;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    /* ── SEARCHABLE SELECT ── */
+    .select-busca-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    #input-select {
+      width: 100%;
+      padding: 16px 44px 16px 14px;
+      border: 1.5px solid #a0b8d0;
+      border-radius: 12px;
+      font-size: 16px;
+      font-family: 'Nunito', sans-serif;
+      color: #1a2e4a;
+      background: white;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      display: block;
+      max-width: 100%;
+      margin: 0;
+    }
+
+    #input-select::placeholder { color: #a0b8d0; }
+
+    #input-select:focus {
+      border-color: #1b4580;
+      box-shadow: 0 0 0 3px rgba(27,69,128,0.1);
+    }
+
+    .seta-select {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      transition: transform 0.2s;
+    }
+
+    .select-busca-wrap.aberto .seta-select {
+      transform: translateY(-50%) rotate(180deg);
+    }
+
+    .dropdown-lista {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1.5px solid #a0b8d0;
+      border-radius: 12px;
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 999;
+      box-shadow: 0 8px 24px rgba(27,69,128,0.15);
+    }
+
+    .select-busca-wrap.aberto .dropdown-lista {
+      display: block;
+    }
+
+    .dropdown-item {
+      padding: 13px 16px;
+      font-size: 15px;
+      font-family: 'Nunito', sans-serif;
+      color: #1a2e4a;
+      cursor: pointer;
+      border-bottom: 1px solid #eaf0f8;
+      transition: background 0.15s;
+    }
+
+    .dropdown-item:last-child { border-bottom: none; }
+    .dropdown-item:hover { background: #eaf0f8; }
+    .dropdown-item.selecionado { background: #ddeaf8; font-weight: 700; }
+
+    .dropdown-vazio {
+      padding: 14px 16px;
+      font-size: 14px;
+      color: #a0b8d0;
+      text-align: center;
+    }
+
+    .dropdown-lista::-webkit-scrollbar { width: 6px; }
+    .dropdown-lista::-webkit-scrollbar-track { background: transparent; }
+    .dropdown-lista::-webkit-scrollbar-thumb { background: #c4d4e8; border-radius: 4px; }
+
+    /* ── BOTÃO ── */
+    .btn-continuar {
+      width: 100%;
+      margin-top: 16px;
+      padding: 16px;
+      background: #1b4580;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-continuar:hover {
+      background: #163b6d;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    .btn-continuar:disabled {
+      background: #a0b8d0;
+      transform: none;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .loading-txt {
+      text-align: center;
+      color: #7a9ec4;
+      font-size: 14px;
+      padding: 10px 0;
+    }
+
+    .rodape {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .btn-inicio {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 28px;
+      background: rgba(27,69,128,0.08);
+      border: 1px solid #a0b8d0;
+      border-radius: 30px;
+      color: #1b4580;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: auto;
+      margin-top: 0;
+    }
+
+    .btn-inicio:hover { background: white; border-color: #1b4580; }
 
     @media (max-width: 600px) {
-      .container { padding: 20px 14px; border-radius: 12px; }
-      h2 { font-size: 20px; }
-      .aviso-topo { font-size: 14px; }
-      .btn-disponibilidade { font-size: 13px; padding: 14px 8px; }
-      h3 { font-size: 15px; }
+      body { padding: 24px 14px; }
+      .topo h1 { font-size: 20px; }
+      .card { padding: 24px 18px; }
     }
   </style>
 </head>
+<body onload="verificarStatusRespostas()">
 
-<body>
-
-  <div class="container">
-    <h2>Enviar Disponibilidade</h2>
-
-    <p id="mensagem-musica-geral" class="aviso-topo" style="display:none;">
-      ⚠️ MARQUE AS DATAS QUE VOCÊ NÃO PODE SERVIR.
-    </p>
-
-    <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
-
-    <div id="lista-disponibilidade"></div>
-
-    <br>
-
-    <button id="btn-enviar" onclick="enviarDisponibilidade()">Enviar</button>
+  <div class="topo">
+    <h1>MÚSICA GERAL FORTALEZA</h1>
+    <p>Envio de disponibilidade</p>
   </div>
 
-  <!-- POPUP SUCESSO -->
-  <div id="popup-sucesso" class="popup">
-    <div class="conteudo">
-      <h3>✅ Enviado!</h3>
-      <p>Sua disponibilidade foi enviada com sucesso.</p>
-      <button class="btn-primary" onclick="fecharPopup()">OK</button>
+  <div class="card">
+    <label class="campo-label" for="input-select">Selecione seu nome</label>
+    <div id="loading-nomes" class="loading-txt">Carregando...</div>
+
+    <div class="select-busca-wrap" id="select-wrap" style="display:none;">
+      <input
+        type="text"
+        id="input-select"
+        placeholder="-- Selecione --"
+        autocomplete="off"
+        onclick="abrirDropdown()"
+        onfocus="abrirDropdown()"
+        oninput="filtrar()"
+      >
+      <span class="seta-select">
+        <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 1l5 5 5-5" stroke="#1b4580" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <div class="dropdown-lista" id="dropdown-lista"></div>
     </div>
+
+    <button class="btn-continuar" id="btn-continuar" onclick="continuar()" disabled>Continuar →</button>
   </div>
 
-  <!-- POPUP JUSTIFICATIVA -->
-  <div id="popup-justificativa" class="popup">
-    <div class="conteudo">
-      <h3>📝 Justificativas</h3>
-      <p class="titulo-justificativa">
-        Tendo em vista que os serviços são prioridade no nosso ministério, 
-        explique por que você não pode servir em cada data:
-      </p>
-      <div id="lista-justificativas"></div>
-      <div class="acoes">
-        <button class="btn-primary" onclick="confirmarJustificativa()">Enviar</button>
-        <button class="btn-secondary" onclick="cancelarJustificativa()">Cancelar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- POPUP CONFIRMAÇÃO -->
-  <div id="popup-confirmacao" class="popup">
-    <div class="conteudo">
-      <h3>⚠️ Atenção</h3>
-      <p>Você já enviou sua disponibilidade. Deseja atualizar?</p>
-      <div class="acoes">
-        <button class="btn-primary" onclick="confirmarAtualizacao()">Sim</button>
-        <button class="btn-secondary" onclick="cancelarAtualizacao()">Cancelar</button>
-      </div>
-    </div>
+  <div class="rodape">
+    <button class="btn-inicio" onclick="window.location.href='index.html'">🏠 Início</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -164,52 +258,120 @@
   <script src="app.js"></script>
 
   <script>
-    const nome = localStorage.getItem("nome");
-    const ministerio = localStorage.getItem("ministerio");
+    let membrosCarregados = [];
+    let membroSelecionado = null;
+    let dropdownAberto = false;
 
-    if (!nome || !ministerio) {
-      window.location.href = "identificacao.html";
-    }
+    async function carregarNomes() {
+      const { data, error } = await supabase
+        .from("membros")
+        .select("*")
+        .eq("ativo", true)
+        .order("nome");
 
-    window.onload = async function () {
+      document.getElementById("loading-nomes").style.display = "none";
+      document.getElementById("select-wrap").style.display = "block";
 
-      // 1. Verifica bloqueio
-      const bloqueado = await verificarBloqueio();
-      if (bloqueado) {
-        document.getElementById("lista-disponibilidade").innerHTML = `
-          <div class="aviso-bloqueio">
-            <div class="icone">🔒</div>
-            <p>Respostas encerradas</p>
-            <small>O período de envio foi encerrado.<br>Entre em contato com a coordenação.</small>
-          </div>
-        `;
-        document.getElementById("btn-enviar").style.display = "none";
+      if (error || !data || data.length === 0) {
+        document.getElementById("input-select").placeholder = "Nenhum membro cadastrado";
         return;
       }
 
-      // 2. Carrega as datas
-      carregarDisponibilidades();
+      membrosCarregados = data;
+      renderizarDropdown(data);
+    }
 
-      // 3. Aviso Música Geral
-      if (ministerio && ministerio.includes("Música")) {
-        const aviso = document.getElementById("mensagem-musica-geral");
-        if (aviso) aviso.style.display = "block";
+    function renderizarDropdown(lista) {
+      const dl = document.getElementById("dropdown-lista");
+      if (lista.length === 0) {
+        dl.innerHTML = `<div class="dropdown-vazio">Nenhum nome encontrado</div>`;
+        return;
       }
+      dl.innerHTML = lista.map(m => `
+        <div
+          class="dropdown-item${membroSelecionado && membroSelecionado.id === m.id ? ' selecionado' : ''}"
+          onmousedown="selecionarMembro('${m.id}')"
+        >${m.nome}</div>
+      `).join("");
+    }
 
-      // 4. Vincula token push ao membro (silencioso)
-      const membroId = localStorage.getItem("membro_id");
+    function abrirDropdown() {
+      const wrap = document.getElementById("select-wrap");
+      const input = document.getElementById("input-select");
+
+      wrap.classList.add("aberto");
+      dropdownAberto = true;
+      input.removeAttribute("readonly");
+
+      // Seleciona o texto para facilitar a digitação
+      setTimeout(() => input.select(), 10);
+      renderizarDropdown(membrosCarregados);
+    }
+
+    function fecharDropdown() {
+      const wrap = document.getElementById("select-wrap");
+      const input = document.getElementById("input-select");
+
+      wrap.classList.remove("aberto");
+      dropdownAberto = false;
+      input.setAttribute("readonly", true);
+
+      // Restaura nome selecionado (ou limpa)
+      input.value = membroSelecionado ? membroSelecionado.nome : "";
+    }
+
+    function filtrar() {
+      const termo = document.getElementById("input-select").value.trim().toLowerCase();
+      const filtrados = termo
+        ? membrosCarregados.filter(m => m.nome.toLowerCase().includes(termo))
+        : membrosCarregados;
+      renderizarDropdown(filtrados);
+    }
+
+    function selecionarMembro(id) {
+      membroSelecionado = membrosCarregados.find(m => m.id === id);
+      document.getElementById("input-select").value = membroSelecionado.nome;
+      document.getElementById("btn-continuar").disabled = false;
+      fecharDropdown();
+    }
+
+    async function continuar() {
+      if (!membroSelecionado) return;
+
+      // Limpa dados de sessão anterior antes de salvar os novos
+      localStorage.removeItem("nome");
+      localStorage.removeItem("ministerio");
+      localStorage.removeItem("tipo");
+      localStorage.removeItem("instrumento");
+      localStorage.removeItem("membro_id");
+
+      localStorage.setItem("nome", membroSelecionado.nome);
+      localStorage.setItem("ministerio", membroSelecionado.ministerio);
+      localStorage.setItem("tipo", membroSelecionado.tipo);
+      localStorage.setItem("instrumento", membroSelecionado.instrumento || "");
+      localStorage.setItem("membro_id", membroSelecionado.id);
+
+      // Vincula o token push ao membro (aguarda antes de navegar)
       if (Notification.permission === 'granted') {
-        registrarPush(membroId).catch(() => {});
+        await registrarPush(membroSelecionado.id).catch(() => {});
       }
-    };
 
-    function mostrarPopup() {
-      document.getElementById("popup-sucesso").style.display = "flex";
+      let historico = JSON.parse(localStorage.getItem("historico")) || [];
+      historico.push(window.location.pathname);
+      localStorage.setItem("historico", JSON.stringify(historico));
+
+      window.location.href = "disponibilidade.html";
     }
 
-    function fecharPopup() {
-      window.location.href = "index.html";
-    }
+    // Fecha ao clicar fora
+    document.addEventListener("click", function(e) {
+      const wrap = document.getElementById("select-wrap");
+      if (wrap && !wrap.contains(e.target) && dropdownAberto) {
+        fecharDropdown();
+      }
+    });
+
+    carregarNomes();
   </script>
 
 </body>
