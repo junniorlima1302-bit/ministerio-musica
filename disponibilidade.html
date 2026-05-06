@@ -197,7 +197,7 @@
       }
 
       // 4. Vincula token push ao membro (silencioso)
-      const membroId = localStorage.getItem("ministro_id");
+      const membroId = localStorage.getItem("membro_id");
       if (Notification.permission === 'granted') {
         registrarPush(membroId).catch(() => {});
       }
