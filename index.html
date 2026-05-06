@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
 
@@ -10,6 +8,10 @@
     await OneSignal.init({
       appId: "d53920a1-67a4-4de3-8de3-3d2a99c9df4a",
     });
+
+    setTimeout(() => {
+      OneSignal.showSlidedownPrompt();
+    }, 4000);
 
   });
 </script>
