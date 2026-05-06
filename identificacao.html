@@ -335,7 +335,7 @@
       fecharDropdown();
     }
 
-    function continuar() {
+    async function continuar() {
       if (!membroSelecionado) return;
 
       localStorage.setItem("nome", membroSelecionado.nome);
@@ -343,6 +343,11 @@
       localStorage.setItem("tipo", membroSelecionado.tipo);
       localStorage.setItem("instrumento", membroSelecionado.instrumento || "");
       localStorage.setItem("ministro_id", membroSelecionado.id);
+
+      // Vincula o token push ao membro (silencioso, só se já tem permissão)
+      if (Notification.permission === 'granted') {
+        registrarPush(membroSelecionado.id).catch(() => {});
+      }
 
       let historico = JSON.parse(localStorage.getItem("historico")) || [];
       historico.push(window.location.pathname);

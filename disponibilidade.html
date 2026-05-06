@@ -68,40 +68,37 @@
       border-radius: 8px;
     }
 
-    /* Botões de disponibilidade maiores no celular */
     .btn-disponibilidade {
       font-size: 14px;
       padding: 14px 10px;
       min-height: 48px;
     }
 
-    h3 {
-      font-size: 16px;
-    }
+    h3 { font-size: 16px; }
 
-    /* Botão enviar maior para toque fácil */
-    .container > button:last-of-type,
     button[onclick="enviarDisponibilidade()"] {
       padding: 16px;
       font-size: 16px;
       min-height: 52px;
     }
 
+    .aviso-bloqueio {
+      text-align: center;
+      padding: 30px 20px;
+      background: #fce8d8;
+      border-radius: 14px;
+      margin-top: 20px;
+    }
+
+    .aviso-bloqueio .icone { font-size: 40px; margin-bottom: 12px; }
+    .aviso-bloqueio p { font-size: 15px; font-weight: 700; color: #8b3a00; }
+    .aviso-bloqueio small { font-size: 13px; color: #a05000; margin-top: 6px; display: block; }
+
     @media (max-width: 600px) {
-      .container {
-        padding: 20px 14px;
-        border-radius: 12px;
-      }
-
+      .container { padding: 20px 14px; border-radius: 12px; }
       h2 { font-size: 20px; }
-
       .aviso-topo { font-size: 14px; }
-
-      .btn-disponibilidade {
-        font-size: 13px;
-        padding: 14px 8px;
-      }
-
+      .btn-disponibilidade { font-size: 13px; padding: 14px 8px; }
       h3 { font-size: 15px; }
     }
   </style>
@@ -122,7 +119,7 @@
 
     <br>
 
-    <button onclick="enviarDisponibilidade()">Enviar</button>
+    <button id="btn-enviar" onclick="enviarDisponibilidade()">Enviar</button>
   </div>
 
   <!-- POPUP SUCESSO -->
@@ -138,14 +135,11 @@
   <div id="popup-justificativa" class="popup">
     <div class="conteudo">
       <h3>📝 Justificativas</h3>
-
       <p class="titulo-justificativa">
         Tendo em vista que os serviços são prioridade no nosso ministério, 
         explique por que você não pode servir em cada data:
       </p>
-
       <div id="lista-justificativas"></div>
-
       <div class="acoes">
         <button class="btn-primary" onclick="confirmarJustificativa()">Enviar</button>
         <button class="btn-secondary" onclick="cancelarJustificativa()">Cancelar</button>
@@ -158,7 +152,6 @@
     <div class="conteudo">
       <h3>⚠️ Atenção</h3>
       <p>Você já enviou sua disponibilidade. Deseja atualizar?</p>
-
       <div class="acoes">
         <button class="btn-primary" onclick="confirmarAtualizacao()">Sim</button>
         <button class="btn-secondary" onclick="cancelarAtualizacao()">Cancelar</button>
@@ -171,14 +164,42 @@
   <script src="app.js"></script>
 
   <script>
-    window.onload = function () {
+    const nome = localStorage.getItem("nome");
+    const ministerio = localStorage.getItem("ministerio");
+
+    if (!nome || !ministerio) {
+      window.location.href = "identificacao.html";
+    }
+
+    window.onload = async function () {
+
+      // 1. Verifica bloqueio
+      const bloqueado = await verificarBloqueio();
+      if (bloqueado) {
+        document.getElementById("lista-disponibilidade").innerHTML = `
+          <div class="aviso-bloqueio">
+            <div class="icone">🔒</div>
+            <p>Respostas encerradas</p>
+            <small>O período de envio foi encerrado.<br>Entre em contato com a coordenação.</small>
+          </div>
+        `;
+        document.getElementById("btn-enviar").style.display = "none";
+        return;
+      }
+
+      // 2. Carrega as datas
       carregarDisponibilidades();
 
-      const ministerio = localStorage.getItem("ministerio");
-
+      // 3. Aviso Música Geral
       if (ministerio && ministerio.includes("Música")) {
         const aviso = document.getElementById("mensagem-musica-geral");
         if (aviso) aviso.style.display = "block";
+      }
+
+      // 4. Vincula token push ao membro (silencioso)
+      const membroId = localStorage.getItem("ministro_id");
+      if (Notification.permission === 'granted') {
+        registrarPush(membroId).catch(() => {});
       }
     };
 
@@ -188,13 +209,6 @@
 
     function fecharPopup() {
       window.location.href = "index.html";
-    }
-
-    const nome = localStorage.getItem("nome");
-    const ministerio = localStorage.getItem("ministerio");
-
-    if (!nome || !ministerio) {
-      window.location.href = "identificacao.html";
     }
   </script>
 

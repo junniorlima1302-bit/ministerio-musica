@@ -1,4 +1,4 @@
-const CACHE_NAME = 'musica-geral-v1';
+const CACHE_NAME = 'musica-geral-v2';
 
 const ARQUIVOS = [
   '/',
@@ -11,7 +11,6 @@ const ARQUIVOS = [
   '/icon-512.png'
 ];
 
-// Instala e faz cache dos arquivos principais
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(ARQUIVOS))
@@ -19,7 +18,6 @@ self.addEventListener('install', event => {
   self.skipWaiting();
 });
 
-// Limpa caches antigos
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -29,9 +27,50 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Tenta rede primeiro, cai no cache se offline
 self.addEventListener('fetch', event => {
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
+  );
+});
+
+// ── Exibe a notificação push ──
+self.addEventListener('push', event => {
+  let dados = {
+    title: 'Música Geral Fortaleza',
+    body: 'Você tem uma nova notificação.',
+    icon: '/icon-192.png',
+    badge: '/icon-96.png',
+    data: { url: '/' }
+  };
+
+  if (event.data) {
+    try { dados = { ...dados, ...JSON.parse(event.data.text()) }; } catch {}
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(dados.title, {
+      body: dados.body,
+      icon: dados.icon,
+      badge: dados.badge,
+      data: dados.data,
+      vibrate: [200, 100, 200]
+    })
+  );
+});
+
+// ── Clique na notificação abre o app ──
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const url = event.notification.data?.url || '/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(lista => {
+      for (const client of lista) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          client.navigate(url);
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) return clients.openWindow(url);
+    })
   );
 });

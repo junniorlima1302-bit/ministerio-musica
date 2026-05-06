@@ -279,5 +279,19 @@ DIA 10 - MISSA"></textarea>
   <script src="supabase.js"></script>
   <script src="app.js?v=2"></script>
 
+  <script>
+    const _confirmarPopupMesOriginal = confirmarPopupMes;
+    async function confirmarPopupMes() {
+      await _confirmarPopupMesOriginal();
+      try {
+        const result = await enviarPushTodos(
+          "📅 Novas datas disponíveis!",
+          "Acesse o app e envie sua disponibilidade para o próximo mês."
+        );
+        if (result?.enviados > 0) console.log("Push enviado para " + result.enviados + " dispositivo(s).");
+      } catch (e) { console.error("Erro ao enviar push:", e); }
+    }
+  </script>
+
 </body>
 </html>

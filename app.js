@@ -1202,3 +1202,85 @@ async function verificarStatusRespostas() {
   }
 
 }
+//////////////////////////////////////////////////////
+// PUSH NOTIFICATIONS — REGISTRO
+//////////////////////////////////////////////////////
+
+const VAPID_PUBLIC_KEY = "BKnGI5N-ffsOf4AGZR8Z-8cXwdIFdcdW-b93YG9K87XZe9sfbk3x5e3F13-JXRCsx7uvkXMv4CduUkChN5U-Lrw";
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = atob(base64);
+  return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+}
+
+async function registrarPush(membroId) {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return false;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const permissao = await Notification.requestPermission();
+    if (permissao !== 'granted') return false;
+
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+    }
+
+    const tokenStr = JSON.stringify(sub);
+
+    // Upsert vinculando ao membro
+    const payload = { token: tokenStr };
+    if (membroId) payload.membro_id = membroId;
+
+    const { error } = await supabase
+      .from('push_tokens')
+      .upsert(payload, { onConflict: 'token' });
+
+    if (error) console.error('Erro ao salvar token push:', error);
+    return true;
+  } catch (e) {
+    console.error('Erro ao registrar push:', e);
+    return false;
+  }
+}
+
+//////////////////////////////////////////////////////
+// PUSH NOTIFICATIONS — ENVIO (admin)
+//////////////////////////////////////////////////////
+
+// membroIds: array de UUIDs para filtrar — se vazio, envia para todos
+async function enviarPushTodos(titulo, corpo, membroIds) {
+  const { data: sessao } = await supabase.auth.getSession();
+  if (!sessao?.session) return;
+
+  const body = { titulo, corpo };
+
+  // Se passou lista de membros, busca apenas os tokens deles
+  if (membroIds && membroIds.length > 0) {
+    const { data: tokens } = await supabase
+      .from('push_tokens')
+      .select('id')
+      .in('membro_id', membroIds);
+    body.apenas_tokens = (tokens || []).map(t => t.id);
+    if (body.apenas_tokens.length === 0) return { enviados: 0, falhas: 0 };
+  }
+
+  const res = await fetch(
+    'https://yasvanzqhvvpighfzttv.supabase.co/functions/v1/send-push',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessao.session.access_token}`
+      },
+      body: JSON.stringify(body)
+    }
+  );
+  const result = await res.json();
+  console.log('Push enviado:', result);
+  return result;
+}

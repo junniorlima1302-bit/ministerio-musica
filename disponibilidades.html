@@ -183,6 +183,7 @@
 
     <div class="barra-acoes-disp">
       <button class="btn-respostas-status" onclick="abrirModalStatus()">👥 Quem respondeu</button>
+      <button class="btn-lembrar-push" onclick="lembrarPendentes()" style="background:#e67e22;color:white;">🔔 Lembrar pendentes</button>
       <button class="btn-excluir-selecionados-disp" onclick="excluirSelecionadosDisp()">🗑️ Excluir selecionados</button>
       <button class="btn-resetar-disp" onclick="resetarTodasDisponibilidades()">⚠️ Resetar tudo</button>
     </div>
@@ -323,6 +324,37 @@
       if (!html) html = `<div class="sem-status">Nenhum membro encontrado.</div>`;
 
       container.innerHTML = html;
+    }
+
+    async function lembrarPendentes() {
+      if (!_statusCarregado) await carregarStatus();
+
+      if (_statusPendentes.length === 0) {
+        alert("🎉 Todos já responderam! Nenhum lembrete necessário.");
+        return;
+      }
+
+      const confirmar = confirm(`Enviar notificação para ${_statusPendentes.length} membro(s) que ainda não responderam?`);
+      if (!confirmar) return;
+
+      // Passa apenas os IDs dos membros pendentes
+      const idsPendentes = _statusPendentes.map(m => m.id);
+
+      const result = await enviarPushTodos(
+        "⏰ Lembrete de disponibilidade!",
+        "Você ainda não enviou sua disponibilidade. Acesse o app e responda!",
+        idsPendentes
+      );
+
+      if (result) {
+        if (result.enviados === 0) {
+          alert("⚠️ Nenhum dispositivo encontrado para os membros pendentes.\nEles precisam abrir o app e aceitar as notificações primeiro.");
+        } else {
+          alert(`✅ Lembrete enviado para ${result.enviados} dispositivo(s)!`);
+        }
+      } else {
+        alert("Erro ao enviar notificação. Tente novamente.");
+      }
     }
 
     function alternarFiltroStatus(filtro) {

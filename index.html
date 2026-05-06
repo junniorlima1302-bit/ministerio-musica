@@ -414,5 +414,75 @@
   verificarPopupInstalar();
 </script>
 
+<!-- POPUP NOTIFICAÇÕES -->
+<div id="popup-notificacao" style="
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.55);
+  z-index:99998;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+">
+  <div style="
+    background:#eaf0f8;
+    border:1px solid #c4d4e8;
+    border-radius:20px;
+    padding:28px 24px;
+    max-width:340px;
+    width:100%;
+    text-align:center;
+    font-family:'Nunito',sans-serif;
+  ">
+    <div style="font-size:44px;margin-bottom:12px;">🔔</div>
+    <p style="font-size:17px;font-weight:800;color:#1a2e4a;margin:0 0 8px;">Ativar notificações?</p>
+    <p style="font-size:13px;color:#3a5272;margin:0 0 22px;line-height:1.5;">Receba lembretes quando houver novas datas para responder.</p>
+    <div style="display:flex;gap:10px;">
+      <button onclick="recusarNotificacao()" style="
+        flex:1;padding:13px;background:#e0e8f4;color:#3a5272;
+        border:none;border-radius:12px;font-size:14px;font-weight:700;
+        font-family:'Nunito',sans-serif;cursor:pointer;margin:0;
+      ">Agora não</button>
+      <button onclick="aceitarNotificacao()" style="
+        flex:1;padding:13px;background:#1b4580;color:white;
+        border:none;border-radius:12px;font-size:14px;font-weight:700;
+        font-family:'Nunito',sans-serif;cursor:pointer;margin:0;
+      ">Ativar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function fecharPopupNotificacao() {
+    document.getElementById('popup-notificacao').style.display = 'none';
+  }
+
+  function recusarNotificacao() {
+    localStorage.setItem('push_recusado', '1');
+    fecharPopupNotificacao();
+  }
+
+  async function aceitarNotificacao() {
+    fecharPopupNotificacao();
+    // Registra sem vincular membro (vínculo ocorre na identificação)
+    await registrarPush(null);
+  }
+
+  function verificarPopupNotificacao() {
+    // Não mostra se já tem permissão ou recusou
+    if (Notification.permission === 'granted') return;
+    if (Notification.permission === 'denied') return;
+    if (localStorage.getItem('push_recusado')) return;
+    // Só mostra em dispositivos com suporte
+    if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+
+    setTimeout(() => {
+      document.getElementById('popup-notificacao').style.display = 'flex';
+    }, 2500);
+  }
+
+  navigator.serviceWorker.ready.then(() => verificarPopupNotificacao());
+</script>
+
 </body>
 </html>
