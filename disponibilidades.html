@@ -155,7 +155,51 @@
       font-size: 14px;
       margin-bottom: 12px;
     }
-  </style>
+  
+  /* ── POPUP NOTIFICAÇÃO EDITÁVEL ── */
+  .popup-notif {
+    display: none; position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+    justify-content: center; align-items: center; z-index: 99999; padding: 20px;
+  }
+  .popup-notif.aberto { display: flex; }
+  .popup-notif .caixa {
+    background: white; border-radius: 16px; padding: 28px 24px;
+    width: 100%; max-width: 400px; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    animation: aparecer 0.25s ease;
+  }
+  .popup-notif h3 { font-size: 16px; color: #1a2e4a; margin-bottom: 18px; text-align: center; }
+  .popup-notif .campo-label {
+    font-size: 11px; font-weight: 700; color: #5a7a9a;
+    text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 6px;
+  }
+  .popup-notif input, .popup-notif .notif-textarea {
+    width: 100%; border: 1.5px solid #a0b8d0; border-radius: 10px;
+    padding: 12px 14px; font-size: 14px; font-family: inherit;
+    color: #1a2e4a; margin-bottom: 14px; outline: none; resize: vertical; box-sizing: border-box;
+  }
+  .popup-notif input:focus, .popup-notif .notif-textarea:focus { border-color: #1b4580; }
+  .popup-notif .notif-textarea { min-height: 80px; }
+  .popup-notif .acoes { display: flex; gap: 10px; margin-top: 4px; }
+  .popup-notif .acoes button { flex: 1; margin-top: 0; padding: 12px; font-size: 14px; border-radius: 10px; }
+  .btn-enviar-notif { background: #e67e22 !important; color: white !important; }
+  .btn-cancelar-notif { background: #e0e0e0 !important; color: #333 !important; }
+</style>
+
+<!-- POPUP NOTIFICAÇÃO EDITÁVEL -->
+<div id="popup-notif" class="popup-notif">
+  <div class="caixa">
+    <h3>🔔 Enviar lembrete</h3>
+    <label class="campo-label">Título</label>
+    <input type="text" id="notif-titulo" maxlength="80">
+    <label class="campo-label">Mensagem</label>
+    <textarea class="notif-textarea" id="notif-corpo" maxlength="200"></textarea>
+    <div class="acoes">
+      <button class="btn-cancelar-notif" onclick="fecharPopupNotif()">Cancelar</button>
+      <button class="btn-enviar-notif" onclick="confirmarNotif()">Enviar 🔔</button>
+    </div>
+  </div>
+</div>
 </head>
 
 <body class="admin-page" onload="carregarRespostas()">
@@ -326,6 +370,28 @@
       container.innerHTML = html;
     }
 
+    let _resolverNotif = null;
+
+    function abrirPopupNotif(tituloDefault, corpoDefault) {
+      document.getElementById("notif-titulo").value = tituloDefault || "";
+      document.getElementById("notif-corpo").value = corpoDefault || "";
+      document.getElementById("popup-notif").classList.add("aberto");
+      return new Promise(resolve => { _resolverNotif = resolve; });
+    }
+
+    function fecharPopupNotif() {
+      document.getElementById("popup-notif").classList.remove("aberto");
+      if (_resolverNotif) { _resolverNotif(null); _resolverNotif = null; }
+    }
+
+    async function confirmarNotif() {
+      const titulo = document.getElementById("notif-titulo").value.trim();
+      const corpo  = document.getElementById("notif-corpo").value.trim();
+      if (!titulo || !corpo) { alert("Preencha o título e a mensagem."); return; }
+      document.getElementById("popup-notif").classList.remove("aberto");
+      if (_resolverNotif) { _resolverNotif({ titulo, corpo }); _resolverNotif = null; }
+    }
+
     async function lembrarPendentes() {
       if (!_statusCarregado) await carregarStatus();
 
@@ -334,17 +400,14 @@
         return;
       }
 
-      const confirmar = confirm(`Enviar notificação para ${_statusPendentes.length} membro(s) que ainda não responderam?`);
-      if (!confirmar) return;
-
-      // Passa apenas os IDs dos membros pendentes
-      const idsPendentes = _statusPendentes.map(m => m.id);
-
-      const result = await enviarPushTodos(
+      const dados = await abrirPopupNotif(
         "⏰ Lembrete de disponibilidade!",
-        "Você ainda não enviou sua disponibilidade. Acesse o app e responda!",
-        idsPendentes
+        "Você ainda não enviou sua disponibilidade. Acesse o app e responda!"
       );
+      if (!dados) return;
+
+      const idsPendentes = _statusPendentes.map(m => m.id);
+      const result = await enviarPushTodos(dados.titulo, dados.corpo, idsPendentes);
 
       if (result) {
         if (result.enviados === 0) {
