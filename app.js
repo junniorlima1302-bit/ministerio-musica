@@ -1232,7 +1232,13 @@ async function ativarPush() {
 
   try {
 
-    await OneSignal.showSlidedownPrompt();
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+
+    OneSignalDeferred.push(async function(OneSignal) {
+
+      await OneSignal.showSlidedownPrompt();
+
+    });
 
     localStorage.setItem("popupPushFechado", "true");
 
@@ -1241,17 +1247,8 @@ async function ativarPush() {
   } catch (e) {
 
     console.error(e);
+    alert("Erro ao ativar notificações");
 
   }
 
 }
-
-window.addEventListener("load", () => {
-
-  setTimeout(() => {
-
-    abrirPopupPush();
-
-  }, 2500);
-
-});
