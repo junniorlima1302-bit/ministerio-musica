@@ -1250,3 +1250,21 @@ async function ativarPush() {
   }
 
 }
+async function testePush() {
+
+  try {
+
+    const permission = await Notification.requestPermission();
+
+    alert("Permissão: " + permission);
+
+    console.log(permission);
+
+  } catch (e) {
+
+    console.error(e);
+    alert("Erro: " + e);
+
+  }
+
+}
