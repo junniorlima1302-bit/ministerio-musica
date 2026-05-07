@@ -431,28 +431,141 @@
     padding:28px 24px;
     max-width:340px;
     width:100%;
-    text-align:center;
     font-family:'Nunito',sans-serif;
   ">
-    <div style="font-size:44px;margin-bottom:12px;">🔔</div>
-    <p style="font-size:17px;font-weight:800;color:#1a2e4a;margin:0 0 8px;">Ativar notificações?</p>
-    <p style="font-size:13px;color:#3a5272;margin:0 0 22px;line-height:1.5;">Receba lembretes quando houver novas datas para responder.</p>
+    <div style="text-align:center;">
+      <div style="font-size:44px;margin-bottom:12px;">🔔</div>
+      <p style="font-size:17px;font-weight:800;color:#1a2e4a;margin:0 0 8px;">Ativar notificações?</p>
+      <p style="font-size:13px;color:#3a5272;margin:0 0 20px;line-height:1.5;">Receba lembretes quando houver novas datas para responder.</p>
+    </div>
+
+    <!-- Seleção de nome -->
+    <div style="margin-bottom:18px;">
+      <label style="
+        font-size:11px;font-weight:700;color:#5a7a9a;
+        text-transform:uppercase;letter-spacing:0.8px;
+        display:block;margin-bottom:8px;
+      ">Selecione seu nome</label>
+
+      <!-- Campo de busca com dropdown -->
+      <div id="notif-select-wrap" style="position:relative;">
+        <input
+          type="text"
+          id="notif-input"
+          placeholder="-- Selecione --"
+          autocomplete="off"
+          onclick="abrirDropdownNotif()"
+          onfocus="abrirDropdownNotif()"
+          oninput="filtrarNotif()"
+          style="
+            width:100%;padding:13px 40px 13px 14px;
+            border:1.5px solid #a0b8d0;border-radius:12px;
+            font-size:15px;font-family:'Nunito',sans-serif;
+            color:#1a2e4a;background:white;outline:none;
+            box-sizing:border-box;cursor:pointer;
+          "
+        >
+        <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;">
+          <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+            <path d="M1 1l5 5 5-5" stroke="#1b4580" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <div id="notif-dropdown" style="
+          display:none;position:absolute;top:calc(100% + 6px);
+          left:0;right:0;background:white;
+          border:1.5px solid #a0b8d0;border-radius:12px;
+          max-height:200px;overflow-y:auto;z-index:9999;
+          box-shadow:0 8px 24px rgba(27,69,128,0.15);
+        "></div>
+      </div>
+    </div>
+
     <div style="display:flex;gap:10px;">
       <button onclick="recusarNotificacao()" style="
         flex:1;padding:13px;background:#e0e8f4;color:#3a5272;
         border:none;border-radius:12px;font-size:14px;font-weight:700;
         font-family:'Nunito',sans-serif;cursor:pointer;margin:0;
       ">Agora não</button>
-      <button onclick="aceitarNotificacao()" style="
-        flex:1;padding:13px;background:#1b4580;color:white;
+      <button id="btn-ativar-notif" onclick="aceitarNotificacao()" style="
+        flex:1;padding:13px;background:#a0b8d0;color:white;
         border:none;border-radius:12px;font-size:14px;font-weight:700;
-        font-family:'Nunito',sans-serif;cursor:pointer;margin:0;
-      ">Ativar</button>
+        font-family:'Nunito',sans-serif;cursor:default;margin:0;
+        opacity:0.7;
+      " disabled>Ativar</button>
     </div>
   </div>
 </div>
 
 <script>
+  let _membrosNotif = [];
+  let _membroNotifSelecionado = null;
+  let _dropdownNotifAberto = false;
+
+  async function carregarMembrosNotif() {
+    const { data } = await supabase
+      .from('membros')
+      .select('id, nome')
+      .eq('ativo', true)
+      .order('nome');
+    _membrosNotif = data || [];
+  }
+
+  function renderizarDropdownNotif(lista) {
+    const dd = document.getElementById('notif-dropdown');
+    if (lista.length === 0) {
+      dd.innerHTML = '<div style="padding:14px;text-align:center;color:#a0b8d0;font-size:14px;">Nenhum nome encontrado</div>';
+      return;
+    }
+    dd.innerHTML = lista.map(m => `
+      <div
+        onmousedown="selecionarMembroNotif('${m.id}','${m.nome.replace(/'/g,"\'")}')"
+        style="padding:12px 16px;font-size:15px;font-family:'Nunito',sans-serif;
+        color:#1a2e4a;cursor:pointer;border-bottom:1px solid #eaf0f8;"
+        onmouseover="this.style.background='#eaf0f8'"
+        onmouseout="this.style.background='white'"
+      >${m.nome}</div>
+    `).join('');
+  }
+
+  function abrirDropdownNotif() {
+    document.getElementById('notif-dropdown').style.display = 'block';
+    _dropdownNotifAberto = true;
+    renderizarDropdownNotif(_membrosNotif);
+  }
+
+  function fecharDropdownNotif() {
+    document.getElementById('notif-dropdown').style.display = 'none';
+    _dropdownNotifAberto = false;
+    document.getElementById('notif-input').value = _membroNotifSelecionado?.nome || '';
+  }
+
+  function filtrarNotif() {
+    const termo = document.getElementById('notif-input').value.toLowerCase();
+    const filtrados = termo
+      ? _membrosNotif.filter(m => m.nome.toLowerCase().includes(termo))
+      : _membrosNotif;
+    renderizarDropdownNotif(filtrados);
+  }
+
+  function selecionarMembroNotif(id, nome) {
+    _membroNotifSelecionado = { id, nome };
+    document.getElementById('notif-input').value = nome;
+    fecharDropdownNotif();
+    // Habilita botão Ativar
+    const btn = document.getElementById('btn-ativar-notif');
+    btn.disabled = false;
+    btn.style.background = '#1b4580';
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+  }
+
+  document.addEventListener('click', function(e) {
+    const wrap = document.getElementById('notif-select-wrap');
+    if (wrap && !wrap.contains(e.target) && _dropdownNotifAberto) {
+      fecharDropdownNotif();
+    }
+  });
+
   function fecharPopupNotificacao() {
     document.getElementById('popup-notificacao').style.display = 'none';
   }
@@ -463,18 +576,19 @@
   }
 
   async function aceitarNotificacao() {
+    if (!_membroNotifSelecionado) return;
     fecharPopupNotificacao();
-    // Registra sem vincular membro (vínculo ocorre na identificação)
-    await registrarPush(null);
+    // Registra vinculando ao membro selecionado
+    await registrarPush(_membroNotifSelecionado.id);
   }
 
-  function verificarPopupNotificacao() {
-    // Não mostra se já tem permissão ou recusou
+  async function verificarPopupNotificacao() {
     if (Notification.permission === 'granted') return;
     if (Notification.permission === 'denied') return;
     if (localStorage.getItem('push_recusado')) return;
-    // Só mostra em dispositivos com suporte
     if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+
+    await carregarMembrosNotif();
 
     setTimeout(() => {
       document.getElementById('popup-notificacao').style.display = 'flex';
