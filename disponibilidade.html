@@ -173,8 +173,15 @@
 
     window.onload = async function () {
 
-      // 1. Verifica bloqueio
-      const bloqueado = await verificarBloqueio();
+      // 1. Verifica bloqueio consultando configuracoes
+      const { data: cfg } = await supabase
+        .from('configuracoes')
+        .select('respostas_ativas')
+        .eq('id', 1)
+        .single();
+
+      const bloqueado = cfg && cfg.respostas_ativas === false;
+
       if (bloqueado) {
         document.getElementById("lista-disponibilidade").innerHTML = `
           <div class="aviso-bloqueio">
