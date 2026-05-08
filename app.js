@@ -991,7 +991,9 @@ async function excluirSelecionadosDisp() {
     await supabase.from("disponibilidades").delete().eq("nome_pessoa", nome);
   }
 
-  carregarRespostas();
+  // Recarrega os dados e reseta o modal de status
+  await carregarRespostas();
+  if (typeof _statusCarregado !== 'undefined') _statusCarregado = false;
 }
 
 async function resetarTodasDisponibilidades() {
@@ -1005,8 +1007,9 @@ async function resetarTodasDisponibilidades() {
 
   if (error) { alert("Erro ao resetar."); return; }
 
-  alert("Todas as disponibilidades foram apagadas.");
-  carregarRespostas();
+  // Recarrega os dados e reseta o modal de status
+  await carregarRespostas();
+  if (typeof _statusCarregado !== 'undefined') _statusCarregado = false;
 }
 
 function mostrarPopup() {
@@ -1171,53 +1174,31 @@ async function verificarStatusRespostas() {
 
     document.body.innerHTML = `
       <div style="
-        min-height:100vh;
+        height:100vh;
         display:flex;
         justify-content:center;
         align-items:center;
         flex-direction:column;
-        font-family:'Nunito',Arial,sans-serif;
+        font-family:Arial,sans-serif;
         text-align:center;
-        padding:40px 24px;
-        background:linear-gradient(135deg,#e8f0fa 0%,#c5d8f0 100%);
+        padding:20px;
+        background:#f4f6f9;
       ">
-        <div style="
-          background:white;
-          border-radius:24px;
-          padding:48px 36px;
-          max-width:380px;
-          width:100%;
-          box-shadow:0 8px 32px rgba(27,69,128,0.12);
+        <h1 style="
+          color:#c0392b;
+          margin-bottom:12px;
         ">
-          <div style="font-size:56px;margin-bottom:20px;line-height:1;">🔒</div>
-          <h2 style="
-            color:#1a2e4a;
-            font-size:22px;
-            font-weight:800;
-            margin:0 0 12px;
-            letter-spacing:0.5px;
-          ">Período Encerrado</h2>
-          <p style="
-            color:#5a7a9a;
-            font-size:14px;
-            line-height:1.7;
-            margin:0 0 28px;
-          ">
-            O prazo para envio de disponibilidades<br>foi encerrado pela coordenação.<br><br>
-            Aguarde a abertura do próximo período.
-          </p>
-          <a href="index.html" style="
-            display:inline-block;
-            padding:14px 32px;
-            background:#1b4580;
-            color:white;
-            border-radius:12px;
-            font-size:14px;
-            font-weight:700;
-            text-decoration:none;
-            transition:0.2s;
-          ">🏠 Voltar ao Início</a>
-        </div>
+          ⛔ Respostas Encerradas
+        </h1>
+
+        <p style="
+          color:#555;
+          font-size:16px;
+          max-width:400px;
+          line-height:1.5;
+        ">
+          O período para envio de disponibilidades foi encerrado.
+        </p>
       </div>
     `;
 
