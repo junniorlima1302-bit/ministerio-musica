@@ -184,6 +184,23 @@
       .btn-mes { padding: 16px 8px; border-radius: 12px; }
       .btn-mes .nome { font-size: 12px; }
     }
+    
+    @media (max-width: 768px) {
+
+  .iframe-wrap {
+    overflow: auto;
+  }
+
+  iframe {
+    min-width: unset;
+
+    width: 160%;
+    height: 160%;
+
+    transform: scale(0.62);
+    transform-origin: top left;
+  }
+}
   </style>
 </head>
 <body>
