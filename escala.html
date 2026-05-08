@@ -205,11 +205,7 @@
       -webkit-overflow-scrolling: touch;
       background: white;
       position: relative;
-      /* Esconde a barra de abas do Google Sheets no rodapé */
-      padding-bottom: 0;
     }
-
-
 
     iframe {
       width: 100%;
@@ -305,21 +301,23 @@
   </div>
 
   <script>
-    // URLs publicadas de cada mês
+    const SPREADSHEET_ID = '1BNGtM5dl_MbcpnNNdo_y8zd1moxZc5GYdex8yUKtN68';
+
+    // gid de cada mês — adicione mais anos conforme necessário
     const ESCALAS = {
       2026: {
-        1:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=730728701&single=true&chrome=false',
-        2:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=988997767&single=true&chrome=false',
-        3:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=648709550&single=true&chrome=false',
-        4:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=2143851099&single=true&chrome=false',
-        5:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=0&single=true&chrome=false',
-        6:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=490700562&single=true&chrome=false',
-        7:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1572787071&single=true&chrome=false',
-        8:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1581535435&single=true&chrome=false',
-        9:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=421089766&single=true&chrome=false',
-        10: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1851774441&single=true&chrome=false',
-        11: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1895725809&single=true&chrome=false',
-        12: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=12955142&single=true&chrome=false',
+        1:  '730728701',    // Janeiro
+        2:  '988997767',    // Fevereiro
+        3:  '648709550',    // Março
+        4:  '2143851099',   // Abril
+        5:  '0',            // Maio
+        6:  '490700562',    // Junho
+        7:  '1572787071',   // Julho
+        8:  '1581535435',   // Agosto
+        9:  '421089766',    // Setembro
+        10: null,           // Outubro — confirmar gid
+        11: '1895725809',   // Novembro
+        12: '12955142',     // Dezembro
       }
     };
 
@@ -359,7 +357,7 @@
         return `
           <button
             class="btn-mes ${!temEscala ? 'sem-escala' : ''} ${ehMesAtual ? 'mes-atual' : ''}"
-            onclick="${temEscala ? `abrirEscala('${escalasDoAno[m.num]}', '${m.nome} ${anoAtual}')` : ''}"
+            onclick="${temEscala ? `abrirEscala('${gid}', '${m.nome} ${anoAtual}')` : ''}"
           >
             <span class="nome">${m.nome}</span>
             ${!temEscala ? '<span style="font-size:10px;color:#a0b8d0;">Sem escala</span>' : ''}
@@ -368,7 +366,8 @@
       }).join('');
     }
 
-    function abrirEscala(url, titulo) {
+    function abrirEscala(gid, titulo) {
+      const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/pubhtml?gid=${gid}&single=true&widget=false&headers=false`;
       document.getElementById('iframe-escala').src = '';
       document.getElementById('iframe-loading').classList.remove('oculto');
       document.getElementById('iframe-titulo').textContent = `Escala — ${titulo}`;
