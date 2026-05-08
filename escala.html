@@ -2,13 +2,168 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Escala</title>
   <link rel="stylesheet" href="style.css">
   <meta name="theme-color" content="#1b4580">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; display: flex; flex-direction: column; background: #f0f2f5; font-family: Arial, sans-serif; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e8f0fa 0%, #c5d8f0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 30px 20px;
+      font-family: 'Nunito', sans-serif;
+    }
+
     .topo {
+      text-align: center;
+      margin-bottom: 24px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .topo h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #1a2e4a;
+      letter-spacing: 1px;
+    }
+
+    /* ── FILTRO ANO ── */
+    .filtro-ano {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .btn-ano {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid #a0b8d0;
+      background: white;
+      color: #1a2e4a;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+      font-family: 'Nunito', sans-serif;
+      padding: 0;
+      margin: 0;
+    }
+
+    .btn-ano:hover { background: #eaf0f8; border-color: #1b4580; }
+
+    .ano-atual {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1a2e4a;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    /* ── GRADE DE MESES ── */
+    .grade-meses {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .btn-mes {
+      background: white;
+      border: 1.5px solid #a0b8d0;
+      border-radius: 14px;
+      padding: 22px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(27,69,128,0.08);
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .btn-mes:hover {
+      background: #eaf0f8;
+      border-color: #1b4580;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(27,69,128,0.15);
+    }
+
+    .btn-mes:active { transform: translateY(0); }
+
+    .btn-mes .nome {
+      font-size: 13px;
+      font-weight: 800;
+      color: #1a2e4a;
+    }
+
+    .btn-mes.sem-escala {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .btn-mes.mes-atual {
+      border-color: #1b4580;
+      background: #eaf0f8;
+    }
+
+    .btn-mes.mes-atual .nome {
+      color: #1b4580;
+    }
+
+    /* ── RODAPÉ ── */
+    .rodape {
+      margin-top: 28px;
+    }
+
+    .btn-voltar-inicio {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 28px;
+      background: white;
+      border: 1.5px solid #a0b8d0;
+      border-radius: 30px;
+      color: #1a2e4a;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(27,69,128,0.08);
+    }
+
+    .btn-voltar-inicio:hover { background: #eaf0f8; border-color: #1b4580; }
+
+    /* ── IFRAME ── */
+    .iframe-container {
+      display: none;
+      position: fixed;
+      inset: 0;
+      flex-direction: column;
+      background: white;
+      z-index: 999;
+    }
+
+    .iframe-container.aberto { display: flex; }
+
+    .iframe-topo {
       display: flex;
       align-items: center;
       padding: 10px 16px;
@@ -17,14 +172,33 @@
       gap: 12px;
       flex-shrink: 0;
     }
-    .topo h2 { color: #1b4580; font-size: 15px; flex: 1; text-align: center; margin: 0; }
-    .topo button {
-      width: auto; padding: 6px 14px; margin: 0;
-      font-size: 13px; border-radius: 8px;
-      background: none; color: #1b4580; border: none;
-      cursor: pointer; font-weight: 600;
+
+    .iframe-topo h2 {
+      color: #1b4580;
+      font-size: 15px;
+      flex: 1;
+      text-align: center;
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
     }
-    .topo button:hover { text-decoration: underline; background: none; }
+
+    .btn-fechar-iframe {
+      width: auto;
+      padding: 6px 14px;
+      margin: 0;
+      font-size: 13px;
+      border-radius: 8px;
+      background: none;
+      color: #1b4580;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .btn-fechar-iframe:hover { text-decoration: underline; background: none; }
+
     .iframe-wrap {
       flex: 1;
       overflow: hidden;
@@ -32,6 +206,7 @@
       background: white;
       position: relative;
     }
+
     iframe {
       width: 100%;
       height: calc(100% + 30px);
@@ -39,6 +214,7 @@
       min-width: 600px;
       margin-top: -30px;
     }
+
     .iframe-loading {
       position: absolute;
       inset: 0;
@@ -51,10 +227,9 @@
       z-index: 10;
       transition: opacity 0.4s ease;
     }
-    .iframe-loading.oculto {
-      opacity: 0;
-      pointer-events: none;
-    }
+
+    .iframe-loading.oculto { opacity: 0; pointer-events: none; }
+
     .iframe-spinner {
       width: 38px;
       height: 38px;
@@ -63,34 +238,151 @@
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
     }
+
     .iframe-loading p {
       font-size: 14px;
       font-weight: 600;
       color: #3a5272;
+      font-family: 'Nunito', sans-serif;
       animation: pulse-txt 1.4s ease-in-out infinite;
     }
+
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes pulse-txt {
       0%, 100% { opacity: 1; }
       50%       { opacity: 0.4; }
     }
+
+    @media (max-width: 600px) {
+      body { padding: 24px 14px; }
+      .topo h1 { font-size: 19px; }
+      .grade-meses { gap: 10px; }
+      .btn-mes { padding: 16px 8px; border-radius: 12px; }
+      .btn-mes .icone { font-size: 24px; }
+      .btn-mes .nome { font-size: 12px; }
+    }
   </style>
 </head>
-<body class="iframe-page">
+<body>
+
   <div class="topo">
-    <button onclick="history.back()">← Voltar</button>
-    <h2>Escala do Mês</h2>
-    <div style="width:80px"></div>
+    <h1>📋 Escala do Mês</h1>
   </div>
-  <div class="iframe-wrap">
-    <div class="iframe-loading" id="loading">
-      <div class="iframe-spinner"></div>
-      <p>Carregando escala...</p>
+
+  <!-- FILTRO DE ANO -->
+  <div class="filtro-ano">
+    <button class="btn-ano" onclick="mudarAno(-1)">‹</button>
+    <span class="ano-atual" id="ano-label">2026</span>
+    <button class="btn-ano" onclick="mudarAno(1)">›</button>
+  </div>
+
+  <!-- GRADE DE MESES -->
+  <div class="grade-meses" id="grade-meses"></div>
+
+  <!-- RODAPÉ -->
+  <div class="rodape">
+    <button class="btn-voltar-inicio" onclick="history.back()">← Voltar</button>
+  </div>
+
+  <!-- IFRAME FULLSCREEN -->
+  <div class="iframe-container" id="iframe-container">
+    <div class="iframe-topo">
+      <button class="btn-fechar-iframe" onclick="fecharIframe()">← Voltar</button>
+      <h2 id="iframe-titulo">Escala</h2>
+      <div style="width:80px"></div>
     </div>
-    <iframe
-      src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?widget=true&headers=false"
-      onload="document.getElementById('loading').classList.add('oculto')">
-    </iframe>
+    <div class="iframe-wrap">
+      <div class="iframe-loading" id="iframe-loading">
+        <div class="iframe-spinner"></div>
+        <p>Carregando escala...</p>
+      </div>
+      <iframe id="iframe-escala" src="" onload="document.getElementById('iframe-loading').classList.add('oculto')"></iframe>
+    </div>
   </div>
+
+  <script>
+    const SPREADSHEET_ID = '1BNGtM5dl_MbcpnNNdo_y8zd1moxZc5GYdex8yUKtN68';
+
+    // gid de cada mês — adicione mais anos conforme necessário
+    const ESCALAS = {
+      2026: {
+        1:  '730728701',    // Janeiro
+        2:  '988997767',    // Fevereiro
+        3:  '648709550',    // Março
+        4:  '2143851099',   // Abril
+        5:  '0',            // Maio
+        6:  '490700562',    // Junho
+        7:  '1572787071',   // Julho
+        8:  '1581535435',   // Agosto
+        9:  '421089766',    // Setembro
+        10: null,           // Outubro — confirmar gid
+        11: '1895725809',   // Novembro
+        12: '12955142',     // Dezembro
+      }
+    };
+
+    const MESES = [
+      { num: 1,  nome: 'Janeiro'   },
+      { num: 2,  nome: 'Fevereiro' },
+      { num: 3,  nome: 'Março'     },
+      { num: 4,  nome: 'Abril'     },
+      { num: 5,  nome: 'Maio'      },
+      { num: 6,  nome: 'Junho'     },
+      { num: 7,  nome: 'Julho'     },
+      { num: 8,  nome: 'Agosto'    },
+      { num: 9,  nome: 'Setembro'  },
+      { num: 10, nome: 'Outubro'   },
+      { num: 11, nome: 'Novembro'  },
+      { num: 12, nome: 'Dezembro'  },
+    ];
+
+    let anoAtual = new Date().getFullYear();
+    const mesAtual = new Date().getMonth() + 1;
+
+    function mudarAno(delta) {
+      anoAtual += delta;
+      renderizarGrade();
+    }
+
+    function renderizarGrade() {
+      document.getElementById('ano-label').textContent = anoAtual;
+      const escalasDoAno = ESCALAS[anoAtual] || {};
+      const grade = document.getElementById('grade-meses');
+
+      grade.innerHTML = MESES.map(m => {
+        const gid = escalasDoAno[m.num];
+        const temEscala = gid !== null && gid !== undefined;
+        const ehMesAtual = m.num === mesAtual && anoAtual === new Date().getFullYear();
+
+        return `
+          <button
+            class="btn-mes ${!temEscala ? 'sem-escala' : ''} ${ehMesAtual ? 'mes-atual' : ''}"
+            onclick="${temEscala ? `abrirEscala('${gid}', '${m.nome} ${anoAtual}')` : ''}"
+          >
+            <span class="nome">${m.nome}</span>
+            ${!temEscala ? '<span style="font-size:10px;color:#a0b8d0;">Sem escala</span>' : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function abrirEscala(gid, titulo) {
+      const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/pubhtml?gid=${gid}&single=true&widget=false&headers=false`;
+      document.getElementById('iframe-escala').src = '';
+      document.getElementById('iframe-loading').classList.remove('oculto');
+      document.getElementById('iframe-titulo').textContent = `Escala — ${titulo}`;
+      document.getElementById('iframe-escala').src = url;
+      document.getElementById('iframe-container').classList.add('aberto');
+    }
+
+    function fecharIframe() {
+      document.getElementById('iframe-container').classList.remove('aberto');
+      document.getElementById('iframe-escala').src = '';
+    }
+
+    // Inicia
+    renderizarGrade();
+  </script>
+
 </body>
 </html>
