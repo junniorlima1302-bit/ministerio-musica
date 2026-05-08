@@ -205,7 +205,11 @@
       -webkit-overflow-scrolling: touch;
       background: white;
       position: relative;
+      /* Esconde a barra de abas do Google Sheets no rodapé */
+      padding-bottom: 0;
     }
+
+
 
     iframe {
       width: 100%;
@@ -304,18 +308,18 @@
     // URLs publicadas de cada mês
     const ESCALAS = {
       2026: {
-        1:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=730728701&single=true',
-        2:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=988997767&single=true',
-        3:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=648709550&single=true',
-        4:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=2143851099&single=true',
-        5:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=0&single=true',
-        6:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=490700562&single=true',
-        7:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1572787071&single=true',
-        8:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1581535435&single=true',
-        9:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=421089766&single=true',
-        10: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1851774441&single=true',
-        11: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1895725809&single=true',
-        12: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=12955142&single=true',
+        1:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=730728701&single=true&chrome=false',
+        2:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=988997767&single=true&chrome=false',
+        3:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=648709550&single=true&chrome=false',
+        4:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=2143851099&single=true&chrome=false',
+        5:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=0&single=true&chrome=false',
+        6:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=490700562&single=true&chrome=false',
+        7:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1572787071&single=true&chrome=false',
+        8:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1581535435&single=true&chrome=false',
+        9:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=421089766&single=true&chrome=false',
+        10: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1851774441&single=true&chrome=false',
+        11: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1895725809&single=true&chrome=false',
+        12: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=12955142&single=true&chrome=false',
       }
     };
 
@@ -327,6 +331,7 @@
       { num: 5,  nome: 'Maio'      },
       { num: 6,  nome: 'Junho'     },
       { num: 7,  nome: 'Julho'     },
+      { num: 0,  nome: 'Halleluya', url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1457402506&single=true' },
       { num: 8,  nome: 'Agosto'    },
       { num: 9,  nome: 'Setembro'  },
       { num: 10, nome: 'Outubro'   },
@@ -348,14 +353,27 @@
       const grade = document.getElementById('grade-meses');
 
       grade.innerHTML = MESES.map(m => {
-        const gid = escalasDoAno[m.num];
-        const temEscala = gid !== null && gid !== undefined;
+        // Halleluya é fixo — sempre disponível
+        if (m.url) {
+          return `
+            <button
+              class="btn-mes"
+              onclick="abrirEscala('${m.url}', '${m.nome}')"
+              style="border-color:#1b4580;background:#eaf0f8;"
+            >
+              <span class="nome" style="color:#1b4580;">🎵 ${m.nome}</span>
+            </button>
+          `;
+        }
+
+        const url = escalasDoAno[m.num];
+        const temEscala = url !== null && url !== undefined;
         const ehMesAtual = m.num === mesAtual && anoAtual === new Date().getFullYear();
 
         return `
           <button
             class="btn-mes ${!temEscala ? 'sem-escala' : ''} ${ehMesAtual ? 'mes-atual' : ''}"
-            onclick="${temEscala ? `abrirEscala('${escalasDoAno[m.num]}', '${m.nome} ${anoAtual}')` : ''}"
+            onclick="${temEscala ? `abrirEscala('${url}', '${m.nome} ${anoAtual}')` : ''}"
           >
             <span class="nome">${m.nome}</span>
             ${!temEscala ? '<span style="font-size:10px;color:#a0b8d0;">Sem escala</span>' : ''}
