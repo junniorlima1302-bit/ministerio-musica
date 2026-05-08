@@ -205,14 +205,30 @@
       -webkit-overflow-scrolling: touch;
       background: white;
       position: relative;
+      /* Esconde a barra de abas do Google Sheets no rodapé */
+      padding-bottom: 0;
+    }
+
+    /* Cobre a barra de abas do Google Sheets */
+    .iframe-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 42px;
+      background: white;
+      z-index: 5;
+      pointer-events: none;
     }
 
     iframe {
-      width: 142%;
-      height: calc(142% + 30px);
+      width: 122%;
+      height: calc(122% + 60px);
       border: none;
       margin-top: -30px;
-      transform: scale(0.7);
+      margin-bottom: -60px;
+      transform: scale(0.82);
       transform-origin: top left;
     }
 
