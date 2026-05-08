@@ -10,6 +10,7 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* ── TELA DE SELEÇÃO ── */
     body {
       min-height: 100vh;
       background: linear-gradient(135deg, #e8f0fa 0%, #c5d8f0 100%);
@@ -21,21 +22,20 @@
       font-family: 'Nunito', sans-serif;
     }
 
-    .topo {
+    .topo-selecao {
       text-align: center;
       margin-bottom: 24px;
       width: 100%;
       max-width: 480px;
     }
 
-    .topo h1 {
+    .topo-selecao h1 {
       font-size: 22px;
       font-weight: 800;
       color: #1a2e4a;
       letter-spacing: 1px;
     }
 
-    /* ── FILTRO ANO ── */
     .filtro-ano {
       display: flex;
       align-items: center;
@@ -45,41 +45,27 @@
     }
 
     .btn-ano {
-      width: 36px;
-      height: 36px;
+      width: 36px; height: 36px;
       border-radius: 50%;
       border: 1.5px solid #a0b8d0;
-      background: white;
-      color: #1a2e4a;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: 0.2s;
-      font-family: 'Nunito', sans-serif;
-      padding: 0;
-      margin: 0;
+      background: white; color: #1a2e4a;
+      font-size: 16px; font-weight: 700;
+      cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+      transition: 0.2s; font-family: 'Nunito', sans-serif;
+      padding: 0; margin: 0;
     }
-
     .btn-ano:hover { background: #eaf0f8; border-color: #1b4580; }
 
     .ano-atual {
-      font-size: 20px;
-      font-weight: 800;
-      color: #1a2e4a;
-      min-width: 60px;
-      text-align: center;
+      font-size: 20px; font-weight: 800;
+      color: #1a2e4a; min-width: 60px; text-align: center;
     }
 
-    /* ── GRADE DE MESES ── */
     .grade-meses {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      width: 100%;
-      max-width: 480px;
+      gap: 12px; width: 100%; max-width: 480px;
     }
 
     .btn-mes {
@@ -87,83 +73,49 @@
       border: 1.5px solid #a0b8d0;
       border-radius: 14px;
       padding: 22px 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 6px;
       cursor: pointer;
       transition: all 0.2s ease;
       box-shadow: 0 2px 8px rgba(27,69,128,0.08);
       font-family: 'Nunito', sans-serif;
     }
-
     .btn-mes:hover {
-      background: #eaf0f8;
-      border-color: #1b4580;
+      background: #eaf0f8; border-color: #1b4580;
       transform: translateY(-2px);
       box-shadow: 0 6px 18px rgba(27,69,128,0.15);
     }
-
     .btn-mes:active { transform: translateY(0); }
+    .btn-mes .nome { font-size: 13px; font-weight: 800; color: #1a2e4a; }
+    .btn-mes.sem-escala { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+    .btn-mes.mes-atual { border-color: #1b4580; background: #eaf0f8; }
+    .btn-mes.mes-atual .nome { color: #1b4580; }
 
-    .btn-mes .nome {
-      font-size: 13px;
-      font-weight: 800;
-      color: #1a2e4a;
-    }
-
-    .btn-mes.sem-escala {
-      opacity: 0.4;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
-    .btn-mes.mes-atual {
-      border-color: #1b4580;
-      background: #eaf0f8;
-    }
-
-    .btn-mes.mes-atual .nome {
-      color: #1b4580;
-    }
-
-    /* ── RODAPÉ ── */
-    .rodape {
-      margin-top: 28px;
-    }
-
+    .rodape-selecao { margin-top: 28px; }
     .btn-voltar-inicio {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 12px 28px;
-      background: white;
-      border: 1.5px solid #a0b8d0;
-      border-radius: 30px;
-      color: #1a2e4a;
-      font-size: 14px;
-      font-weight: 700;
-      font-family: 'Nunito', sans-serif;
-      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 12px 28px; background: white;
+      border: 1.5px solid #a0b8d0; border-radius: 30px;
+      color: #1a2e4a; font-size: 14px; font-weight: 700;
+      font-family: 'Nunito', sans-serif; cursor: pointer;
       transition: all 0.2s;
       box-shadow: 0 2px 8px rgba(27,69,128,0.08);
     }
-
     .btn-voltar-inicio:hover { background: #eaf0f8; border-color: #1b4580; }
 
-    /* ── IFRAME ── */
-    .iframe-container {
+    /* ── TELA DO IFRAME (IGUAL AO ORIGINAL) ── */
+    .iframe-page-wrap {
       display: none;
       position: fixed;
       inset: 0;
       flex-direction: column;
-      background: white;
+      background: #f0f2f5;
+      font-family: Arial, sans-serif;
       z-index: 999;
     }
+    .iframe-page-wrap.aberto { display: flex; }
 
-    .iframe-container.aberto { display: flex; }
-
-    .iframe-topo {
+    .topo {
       display: flex;
       align-items: center;
       padding: 10px 16px;
@@ -172,32 +124,14 @@
       gap: 12px;
       flex-shrink: 0;
     }
-
-    .iframe-topo h2 {
-      color: #1b4580;
-      font-size: 15px;
-      flex: 1;
-      text-align: center;
-      margin: 0;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 800;
+    .topo h2 { color: #1b4580; font-size: 15px; flex: 1; text-align: center; margin: 0; }
+    .topo button {
+      width: auto; padding: 6px 14px; margin: 0;
+      font-size: 13px; border-radius: 8px;
+      background: none; color: #1b4580; border: none;
+      cursor: pointer; font-weight: 600;
     }
-
-    .btn-fechar-iframe {
-      width: auto;
-      padding: 6px 14px;
-      margin: 0;
-      font-size: 13px;
-      border-radius: 8px;
-      background: none;
-      color: #1b4580;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-      font-family: 'Nunito', sans-serif;
-    }
-
-    .btn-fechar-iframe:hover { text-decoration: underline; background: none; }
+    .topo button:hover { text-decoration: underline; background: none; }
 
     .iframe-wrap {
       flex: 1;
@@ -205,20 +139,14 @@
       -webkit-overflow-scrolling: touch;
       background: white;
       position: relative;
-      /* Esconde a barra de abas do Google Sheets no rodapé */
-      padding-bottom: 0;
     }
-
-
-
     iframe {
       width: 100%;
       height: calc(100% + 30px);
       border: none;
       min-width: 600px;
-      margin-top: 0px;
+      margin-top: -30px;
     }
-
     .iframe-loading {
       position: absolute;
       inset: 0;
@@ -231,26 +159,18 @@
       z-index: 10;
       transition: opacity 0.4s ease;
     }
-
     .iframe-loading.oculto { opacity: 0; pointer-events: none; }
-
     .iframe-spinner {
-      width: 38px;
-      height: 38px;
+      width: 38px; height: 38px;
       border: 3px solid #c4d4e8;
       border-top-color: #1b4580;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
     }
-
     .iframe-loading p {
-      font-size: 14px;
-      font-weight: 600;
-      color: #3a5272;
-      font-family: 'Nunito', sans-serif;
+      font-size: 14px; font-weight: 600; color: #3a5272;
       animation: pulse-txt 1.4s ease-in-out infinite;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes pulse-txt {
       0%, 100% { opacity: 1; }
@@ -259,67 +179,67 @@
 
     @media (max-width: 600px) {
       body { padding: 24px 14px; }
-      .topo h1 { font-size: 19px; }
+      .topo-selecao h1 { font-size: 19px; }
       .grade-meses { gap: 10px; }
       .btn-mes { padding: 16px 8px; border-radius: 12px; }
-      .btn-mes .icone { font-size: 24px; }
       .btn-mes .nome { font-size: 12px; }
     }
   </style>
 </head>
 <body>
 
-  <div class="topo">
+  <!-- TELA DE SELEÇÃO -->
+  <div class="topo-selecao">
     <h1>📋 Escala do Mês</h1>
   </div>
 
-  <!-- FILTRO DE ANO -->
   <div class="filtro-ano">
     <button class="btn-ano" onclick="mudarAno(-1)">‹</button>
     <span class="ano-atual" id="ano-label">2026</span>
     <button class="btn-ano" onclick="mudarAno(1)">›</button>
   </div>
 
-  <!-- GRADE DE MESES -->
   <div class="grade-meses" id="grade-meses"></div>
 
-  <!-- RODAPÉ -->
-  <div class="rodape">
+  <div class="rodape-selecao">
     <button class="btn-voltar-inicio" onclick="history.back()">← Voltar</button>
   </div>
 
-  <!-- IFRAME FULLSCREEN -->
-  <div class="iframe-container" id="iframe-container">
-    <div class="iframe-topo">
-      <button class="btn-fechar-iframe" onclick="fecharIframe()">← Voltar</button>
-      <h2 id="iframe-titulo">Escala</h2>
+  <!-- TELA DO IFRAME (CÓDIGO ORIGINAL INTACTO) -->
+  <div class="iframe-page-wrap" id="iframe-page-wrap">
+    <div class="topo">
+      <button onclick="fecharIframe()">← Voltar</button>
+      <h2 id="iframe-titulo">Escala do Mês</h2>
       <div style="width:80px"></div>
     </div>
     <div class="iframe-wrap">
-      <div class="iframe-loading" id="iframe-loading">
+      <div class="iframe-loading" id="loading">
         <div class="iframe-spinner"></div>
         <p>Carregando escala...</p>
       </div>
-      <iframe id="iframe-escala" src="" onload="document.getElementById('iframe-loading').classList.add('oculto')"></iframe>
+      <iframe
+        id="iframe-escala"
+        src=""
+        onload="document.getElementById('loading').classList.add('oculto')">
+      </iframe>
     </div>
   </div>
 
   <script>
-    // URLs publicadas de cada mês
     const ESCALAS = {
       2026: {
-        1:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=730728701&single=true&chrome=false',
-        2:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=988997767&single=true&chrome=false',
-        3:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=648709550&single=true&chrome=false',
-        4:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=2143851099&single=true&chrome=false',
-        5:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=0&single=true&chrome=false',
-        6:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=490700562&single=true&chrome=false',
-        7:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1572787071&single=true&chrome=false',
-        8:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1581535435&single=true&chrome=false',
-        9:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=421089766&single=true&chrome=false',
-        10: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1851774441&single=true&chrome=false',
-        11: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1895725809&single=true&chrome=false',
-        12: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=12955142&single=true&chrome=false',
+        1:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=730728701&single=true',
+        2:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=988997767&single=true',
+        3:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=648709550&single=true',
+        4:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=2143851099&single=true',
+        5:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=0&single=true',
+        6:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=490700562&single=true',
+        7:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1572787071&single=true',
+        8:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1581535435&single=true',
+        9:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=421089766&single=true',
+        10: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1851774441&single=true',
+        11: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=1895725809&single=true',
+        12: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTagfHmQa28E6o31u3zpBc_PukU8TasS5EaB3nmcgPSB5yorbdvegDIqZhHUBkP586uSRWJNZiTKdJ3/pubhtml?gid=12955142&single=true',
       }
     };
 
@@ -353,22 +273,15 @@
       const grade = document.getElementById('grade-meses');
 
       grade.innerHTML = MESES.map(m => {
-        // Halleluya é fixo — sempre disponível
         if (m.url) {
           return `
-            <button
-              class="btn-mes"
-              onclick="abrirEscala('${m.url}', '${m.nome}')"
-            >
+            <button class="btn-mes" onclick="abrirEscala('${m.url}', '${m.nome}')">
               <span class="nome">${m.nome}</span>
-            </button>
-          `;
+            </button>`;
         }
-
         const url = escalasDoAno[m.num];
         const temEscala = url !== null && url !== undefined;
         const ehMesAtual = m.num === mesAtual && anoAtual === new Date().getFullYear();
-
         return `
           <button
             class="btn-mes ${!temEscala ? 'sem-escala' : ''} ${ehMesAtual ? 'mes-atual' : ''}"
@@ -376,25 +289,23 @@
           >
             <span class="nome">${m.nome}</span>
             ${!temEscala ? '<span style="font-size:10px;color:#a0b8d0;">Sem escala</span>' : ''}
-          </button>
-        `;
+          </button>`;
       }).join('');
     }
 
     function abrirEscala(url, titulo) {
+      document.getElementById('loading').classList.remove('oculto');
       document.getElementById('iframe-escala').src = '';
-      document.getElementById('iframe-loading').classList.remove('oculto');
-      document.getElementById('iframe-titulo').textContent = `Escala — ${titulo}`;
+      document.getElementById('iframe-titulo').textContent = 'Escala — ' + titulo;
       document.getElementById('iframe-escala').src = url;
-      document.getElementById('iframe-container').classList.add('aberto');
+      document.getElementById('iframe-page-wrap').classList.add('aberto');
     }
 
     function fecharIframe() {
-      document.getElementById('iframe-container').classList.remove('aberto');
+      document.getElementById('iframe-page-wrap').classList.remove('aberto');
       document.getElementById('iframe-escala').src = '';
     }
 
-    // Inicia
     renderizarGrade();
   </script>
 
