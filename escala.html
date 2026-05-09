@@ -88,6 +88,20 @@
       flex: 1; overflow: hidden; -webkit-overflow-scrolling: touch;
       background: white; position: relative;
     }
+
+    @media (max-width: 768px) {
+      .iframe-wrap {
+        overflow: auto;
+      }
+      iframe {
+        min-width: unset;
+        width: 160%;
+        height: 160%;
+        transform: scale(0.62);
+        transform-origin: top left;
+        margin-top: -18px;
+      }
+    }
     iframe {
       width: 100%; height: calc(100% + 30px);
       border: none; min-width: 600px; margin-top: -30px;
