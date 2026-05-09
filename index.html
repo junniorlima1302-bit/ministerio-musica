@@ -585,13 +585,31 @@
   async function aceitarNotificacao() {
     if (!_membroNotifSelecionado) return;
     fecharPopupNotificacao();
-    await registrarPush(_membroNotifSelecionado.id);
+    const ok = await registrarPush(_membroNotifSelecionado.id);
+    if (ok) enviarBoasVindas(_membroNotifSelecionado.nome);
   }
 
   async function aceitarSemNome() {
     fecharPopupNotificacao();
-    // Registra sem vincular membro
-    await registrarPush(null);
+    const ok = await registrarPush(null);
+    if (ok) enviarBoasVindas(null);
+  }
+
+  function enviarBoasVindas(nome) {
+    const titulo = 'Bem-vindo(a) ao Música Geral! 🎵';
+    const corpo = nome
+      ? `Olá, ${nome}! aproveite o app da Música Geral.`
+      : 'Aproveite o app da Música Geral Fortaleza!';
+
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification(titulo, {
+        body: corpo,
+        icon: '/icon-192.png',
+        badge: '/icon-96.png',
+        vibrate: [200, 100, 200],
+        data: { url: '/' }
+      });
+    });
   }
 
   async function verificarPopupNotificacao() {
