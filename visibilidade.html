@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visibilidade</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#1b4580">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .secao-wrap { border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.10); margin-top: 16px; }
+    .secao-header { background: #7a9ec4; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+    .secao-header h3 { color: #1a2e4a; font-size: 14px; margin: 0; font-weight: 700; }
+    .secao-body { background: #cfd8e8; padding: 14px; }
+
+    .grade-vis {
+      display: grid !important;
+      grid-template-columns: repeat(4, 1fr) !important;
+      gap: 8px;
+    }
+
+    .btn-vis {
+      padding: 10px 4px !important;
+      border-radius: 10px !important;
+      border: 2px solid #a0b8d0 !important;
+      background: white !important;
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      color: #1a2e4a !important;
+      cursor: pointer !important;
+      transition: 0.2s;
+      text-align: center !important;
+      font-family: 'Nunito', sans-serif !important;
+      margin: 0 !important;
+      width: 100% !important;
+      min-height: 0 !important;
+      display: block !important;
+    }
+    .btn-vis:hover { border-color: #1b4580 !important; background: #eaf0f8 !important; }
+    .btn-vis.liberado {
+      background: #d8f0e0 !important;
+      border-color: #2e7d52 !important;
+      color: #1a4a2a !important;
+    }
+    .btn-vis.liberado:hover { background: #c4e8d0 !important; }
+
+    .ano-vis {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; margin-bottom: 12px;
+    }
+    .btn-ano-vis {
+      width: 30px; height: 30px; border-radius: 50%;
+      border: 1.5px solid #a0b8d0; background: white;
+      font-size: 14px; cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+      transition: 0.2s; padding: 0; margin: 0;
+    }
+    .btn-ano-vis:hover { background: #eaf0f8; }
+    .btn-ano-vis:disabled { opacity: 0.3; cursor: not-allowed; }
+    .ano-vis-label { font-size: 16px; font-weight: 800; color: #1a2e4a; min-width: 50px; text-align: center; }
+
+    .legenda { display: flex; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+    .leg-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #5a7a9a; font-weight: 600; }
+    .leg-dot { width: 12px; height: 12px; border-radius: 3px; }
+    .leg-dot.lib { background: #d8f0e0; border: 1.5px solid #2e7d52; }
+    .leg-dot.blo { background: white; border: 1.5px solid #a0b8d0; }
+  </style>
+</head>
+<body class="admin-page">
+<div class="admin-box">
+  <h2>👁️ Visibilidade</h2>
+  <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+  <p style="font-size:13px;color:#5a7a9a;margin-bottom:16px;">Clique nos meses para liberar ou bloquear a visualização.</p>
+
+  <!-- ESCALAS -->
+  <div class="secao-wrap">
+    <div class="secao-header"><h3>📋 Escalas</h3></div>
+    <div class="secao-body">
+      <div class="ano-vis">
+        <button class="btn-ano-vis" id="esc-prev" onclick="mudarAnoEsc(-1)">‹</button>
+        <span class="ano-vis-label" id="esc-ano">2026</span>
+        <button class="btn-ano-vis" onclick="mudarAnoEsc(1)">›</button>
+      </div>
+      <div class="legenda">
+        <div class="leg-item"><div class="leg-dot lib"></div> Liberado</div>
+        <div class="leg-item"><div class="leg-dot blo"></div> Bloqueado</div>
+      </div>
+      <div class="grade-vis" id="grade-escalas"></div>
+      <div style="margin-top:8px;" id="hal-escala-wrap"></div>
+    </div>
+  </div>
+
+  <!-- REPERTÓRIOS -->
+  <div class="secao-wrap">
+    <div class="secao-header"><h3>🎼 Repertórios</h3></div>
+    <div class="secao-body">
+      <div class="ano-vis">
+        <button class="btn-ano-vis" id="rep-prev" onclick="mudarAnoRep(-1)">‹</button>
+        <span class="ano-vis-label" id="rep-ano">2026</span>
+        <button class="btn-ano-vis" onclick="mudarAnoRep(1)">›</button>
+      </div>
+      <div class="legenda">
+        <div class="leg-item"><div class="leg-dot lib"></div> Liberado</div>
+        <div class="leg-item"><div class="leg-dot blo"></div> Bloqueado</div>
+      </div>
+      <div class="grade-vis" id="grade-repertorios"></div>
+      <div style="margin-top:8px;" id="hal-rep-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="supabase.js"></script>
+<script src="app.js"></script>
+
+<script>
+  const VIS_MESES_NOMES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const VIS_MESES_NUMS =  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  const ANO_MIN = 2026;
+
+  let anoEsc = new Date().getFullYear();
+  let anoRep = new Date().getFullYear();
+  let escalasLiberadas = {};
+  let repertoriosLiberados = {};
+
+  async function iniciar() {
+    const { data: sessao } = await supabase.auth.getSession();
+    if (!sessao.session) { window.location.href = 'login.html'; return; }
+
+    const { data: eu } = await supabase
+      .from('usuarios').select('papel').eq('id', sessao.session.user.id).single();
+    if (!eu || eu.papel !== 'admin') {
+      alert('Acesso restrito ao administrador.');
+      window.location.href = 'dashboard.html';
+      return;
+    }
+
+    // Tenta buscar as colunas novas
+    // Busca o registro com respostas_ativas (o principal)
+    const { data, error } = await supabase
+      .from('configuracoes')
+      .select('id, escalas_liberadas, repertorios_liberados')
+      .eq('id', 2)
+      .single();
+    
+    // Guarda o id para atualizar depois
+    window._configId = data?.id || 1;
+
+    if (error) {
+      console.warn('Colunas de visibilidade não encontradas. Rode o SQL de criação.');
+    }
+
+    escalasLiberadas = data?.escalas_liberadas || {};
+    repertoriosLiberados = data?.repertorios_liberados || {};
+
+    renderizarEscalas();
+    renderizarRepertorios();
+    renderizarHalleluya();
+  }
+
+  function mudarAnoEsc(d) {
+    const novo = anoEsc + d;
+    if (novo < ANO_MIN) return;
+    anoEsc = novo;
+    document.getElementById('esc-ano').textContent = anoEsc;
+    document.getElementById('esc-prev').disabled = anoEsc <= ANO_MIN;
+    renderizarEscalas();
+  }
+
+  function mudarAnoRep(d) {
+    const novo = anoRep + d;
+    if (novo < ANO_MIN) return;
+    anoRep = novo;
+    document.getElementById('rep-ano').textContent = anoRep;
+    document.getElementById('rep-prev').disabled = anoRep <= ANO_MIN;
+    renderizarRepertorios();
+  }
+
+  function renderizarHalleluya() {
+    // Escala Halleluya
+    const libEsc = escalasLiberadas['halleluya'] === true;
+    const bgE = libEsc ? '#d8f0e0' : 'white';
+    const borderE = libEsc ? '#2e7d52' : '#a0b8d0';
+    const colorE = libEsc ? '#1a4a2a' : '#1a2e4a';
+    document.getElementById('hal-escala-wrap').innerHTML = `
+      <button onclick="toggleHalEscala()" style="
+        padding:10px 16px;border-radius:10px;border:2px solid ${borderE};
+        background:${bgE};font-size:11px;font-weight:700;color:${colorE};
+        cursor:pointer;font-family:'Nunito',sans-serif;margin:0;width:auto;display:inline-block;
+      ">${libEsc ? '✅' : '🔒'} Halleluya</button>`;
+
+    // Repertório Halleluya
+    const libRep = repertoriosLiberados['halleluya'] === true;
+    const bgR = libRep ? '#d8f0e0' : 'white';
+    const borderR = libRep ? '#2e7d52' : '#a0b8d0';
+    const colorR = libRep ? '#1a4a2a' : '#1a2e4a';
+    document.getElementById('hal-rep-wrap').innerHTML = `
+      <button onclick="toggleHalRep()" style="
+        padding:10px 16px;border-radius:10px;border:2px solid ${borderR};
+        background:${bgR};font-size:11px;font-weight:700;color:${colorR};
+        cursor:pointer;font-family:'Nunito',sans-serif;margin:0;width:auto;display:inline-block;
+      ">${libRep ? '✅' : '🔒'} Halleluya</button>`;
+  }
+
+  async function toggleHalEscala() {
+    escalasLiberadas['halleluya'] = !escalasLiberadas['halleluya'];
+    await salvar();
+    renderizarHalleluya();
+  }
+
+  async function toggleHalRep() {
+    repertoriosLiberados['halleluya'] = !repertoriosLiberados['halleluya'];
+    await salvar();
+    renderizarHalleluya();
+  }
+
+  function renderizarEscalas() {
+    document.getElementById('esc-prev').disabled = anoEsc <= ANO_MIN;
+    const lib = escalasLiberadas[anoEsc] || {};
+    document.getElementById('grade-escalas').innerHTML = VIS_MESES_NOMES.map((n, i) => {
+      const num = VIS_MESES_NUMS[i];
+      const ok = lib[num] === true;
+      const bg = ok ? '#d8f0e0' : 'white';
+      const border = ok ? '#2e7d52' : '#a0b8d0';
+      const color = ok ? '#1a4a2a' : '#1a2e4a';
+      const label = num === 0 ? 'Hal' : n;
+      return `<button onclick="toggleEscala(${num})" style="
+        padding:10px 4px;border-radius:10px;border:2px solid ${border};
+        background:${bg};font-size:11px;font-weight:700;color:${color};
+        cursor:pointer;text-align:center;font-family:'Nunito',sans-serif;
+        margin:0;width:100%;min-height:0;display:block;
+      ">${ok ? '✅' : '🔒'} ${n}</button>`;
+    }).join('');
+  }
+
+  function renderizarRepertorios() {
+    document.getElementById('rep-prev').disabled = anoRep <= ANO_MIN;
+    const lib = repertoriosLiberados[anoRep] || {};
+    document.getElementById('grade-repertorios').innerHTML = VIS_MESES_NOMES.map((n, i) => {
+      const num = VIS_MESES_NUMS[i];
+      const ok = lib[num] === true;
+      const bg = ok ? '#d8f0e0' : 'white';
+      const border = ok ? '#2e7d52' : '#a0b8d0';
+      const color = ok ? '#1a4a2a' : '#1a2e4a';
+      const label2 = num === 0 ? 'Hal' : n;
+      return `<button onclick="toggleRepertorio(${num})" style="
+        padding:10px 4px;border-radius:10px;border:2px solid ${border};
+        background:${bg};font-size:11px;font-weight:700;color:${color};
+        cursor:pointer;text-align:center;font-family:'Nunito',sans-serif;
+        margin:0;width:100%;min-height:0;display:block;
+      ">${ok ? '✅' : '🔒'} ${n}</button>`;
+    }).join('');
+  }
+
+  async function toggleEscala(num) {
+    if (!escalasLiberadas[anoEsc]) escalasLiberadas[anoEsc] = {};
+    escalasLiberadas[anoEsc][num] = !escalasLiberadas[anoEsc][num];
+    await salvar();
+    renderizarEscalas();
+  }
+
+  async function toggleRepertorio(num) {
+    if (!repertoriosLiberados[anoRep]) repertoriosLiberados[anoRep] = {};
+    repertoriosLiberados[anoRep][num] = !repertoriosLiberados[anoRep][num];
+    await salvar();
+    renderizarRepertorios();
+  }
+
+  async function salvar() {
+    await supabase.from('configuracoes').update({
+      escalas_liberadas: escalasLiberadas,
+      repertorios_liberados: repertoriosLiberados
+    }).eq('id', 2);
+  }
+
+  iniciar();
+</script>
+</body>
+</html>

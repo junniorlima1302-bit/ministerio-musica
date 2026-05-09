@@ -11,25 +11,33 @@
 
   <style>
     .abas {
-      display: flex;
-      gap: 8px;
+      display: flex !important;
+      flex-direction: row !important;
+      gap: 6px;
       margin-bottom: 20px;
       justify-content: center;
-      flex-wrap: wrap;
+      flex-wrap: nowrap !important;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .aba {
-      padding: 8px 18px;
+      padding: 7px 10px !important;
       border-radius: 20px;
       border: 2px solid #7a9ec4;
       background: transparent;
       color: #1a2e4a;
-      font-size: 13px;
+      font-size: 11px !important;
       font-weight: 700;
       cursor: pointer;
       transition: 0.2s;
-      width: auto;
-      margin-top: 0;
+      width: auto !important;
+      min-width: 0 !important;
+      max-width: none !important;
+      margin-top: 0 !important;
+      white-space: nowrap;
+      flex-shrink: 0;
+      display: inline-block !important;
     }
 
     .aba.ativa { background: #7a9ec4; color: #1a2e4a; }

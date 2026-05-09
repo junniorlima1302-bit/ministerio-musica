@@ -212,8 +212,10 @@
     margin-top: 4px;
     letter-spacing: 1px;
   }
+</style>
 
-  /* ── POPUP NOTIFICAÇÃO EDITÁVEL ── */
+<!-- POPUP NOTIFICAÇÃO -->
+<style>
   .popup-notif {
     display: none; position: fixed; top: 0; left: 0;
     width: 100%; height: 100%; background: rgba(0,0,0,0.5);
@@ -221,39 +223,80 @@
   }
   .popup-notif.aberto { display: flex; }
   .popup-notif .caixa {
-    background: white; border-radius: 16px; padding: 28px 24px;
-    width: 100%; max-width: 400px; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-    animation: popAnim 0.25s ease;
+    background: white; border-radius: 16px; padding: 24px 20px;
+    width: 100%; max-width: 420px; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    animation: popAnim 0.25s ease; max-height: 90vh; overflow-y: auto;
   }
-  .popup-notif h3 { font-size: 16px; color: #1a2e4a; margin-bottom: 18px; text-align: center; }
+  .popup-notif h3 { font-size: 16px; color: #1a2e4a; margin-bottom: 16px; text-align: center; }
   .popup-notif .campo-label {
     font-size: 11px; font-weight: 700; color: #5a7a9a;
     text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 6px;
   }
-  .popup-notif input, .popup-notif .notif-textarea {
+  .popup-notif input, .popup-notif textarea {
     width: 100%; border: 1.5px solid #a0b8d0; border-radius: 10px;
-    padding: 12px 14px; font-size: 14px; font-family: inherit;
-    color: #1a2e4a; margin-bottom: 14px; outline: none; resize: vertical; box-sizing: border-box;
+    padding: 10px 12px; font-size: 14px; font-family: inherit;
+    color: #1a2e4a; margin-bottom: 12px; outline: none; box-sizing: border-box;
   }
-  .popup-notif input:focus, .popup-notif .notif-textarea:focus { border-color: #1b4580; }
-  .popup-notif .notif-textarea { min-height: 80px; }
+  .popup-notif textarea { min-height: 70px; resize: vertical; }
+  .popup-notif input:focus, .popup-notif textarea:focus { border-color: #1b4580; }
+  .lista-dest {
+    max-height: 200px; overflow-y: auto;
+    border: 1.5px solid #a0b8d0; border-radius: 10px;
+    margin-bottom: 12px; background: #f8fafd;
+  }
+  .dest-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-bottom: 1px solid #eaf0f8; cursor: pointer;
+  }
+  .dest-item:last-child { border-bottom: none; }
+  .dest-item:hover { background: #eaf0f8; }
+  .dest-item input[type=checkbox] {
+    width: 16px; height: 16px; cursor: pointer;
+    accent-color: #1b4580; margin: 0; display: inline; max-width: unset;
+  }
+  .dest-nome { font-size: 13px; font-weight: 600; color: #1a2e4a; flex: 1; }
+  .dest-min { font-size: 11px; color: #7a9ec4; }
+  .acoes-dest {
+    display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .btn-sel-dest {
+    padding: 5px 12px; font-size: 12px; border-radius: 8px;
+    background: #eaf0f8; color: #1a2e4a; border: 1px solid #a0b8d0;
+    cursor: pointer; width: auto; margin: 0;
+  }
+  .btn-sel-dest:hover { background: #d0e0f0; }
   .popup-notif .acoes { display: flex; gap: 10px; margin-top: 4px; }
   .popup-notif .acoes button { flex: 1; margin-top: 0; padding: 12px; font-size: 14px; border-radius: 10px; }
   .btn-enviar-notif { background: #e67e22 !important; color: white !important; }
   .btn-cancelar-notif { background: #e0e0e0 !important; color: #333 !important; }
+  .badge-count-dest {
+    background: #1b4580; color: white; font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px; margin-left: 6px;
+  }
 </style>
 
-<!-- POPUP NOTIFICAÇÃO EDITÁVEL -->
-<div id="popup-notif" class="popup-notif">
+<div id="popup-notif-comp" class="popup-notif">
   <div class="caixa">
-    <h3>📣 Enviar notificação</h3>
+    <h3>📣 Enviar Notificação</h3>
     <label class="campo-label">Título</label>
-    <input type="text" id="notif-titulo" maxlength="80">
+    <input type="text" id="notif-comp-titulo" maxlength="80" value="📅 Novas datas disponíveis!">
     <label class="campo-label">Mensagem</label>
-    <textarea class="notif-textarea" id="notif-corpo" maxlength="200"></textarea>
+    <textarea id="notif-comp-corpo" maxlength="200">Acesse o app e envie sua disponibilidade para o próximo mês.</textarea>
+    <label class="campo-label">
+      Destinatários <span class="badge-count-dest" id="count-dest">0</span>
+    </label>
+    <div class="acoes-dest">
+      <button class="btn-sel-dest" onclick="selecionarTodosDest()">✅ Todos</button>
+      <button class="btn-sel-dest" onclick="deselecionarTodosDest()">☐ Nenhum</button>
+      <button class="btn-sel-dest" onclick="selecionarMinDest('Música Geral')">🎵 Música Geral</button>
+      <button class="btn-sel-dest" onclick="selecionarMinDest('Geral Eventos')">🎙️ Geral Eventos</button>
+    </div>
+    <div class="lista-dest" id="lista-dest-notif">
+      <div style="padding:14px;text-align:center;color:#7a9ec4;font-size:13px;">Carregando...</div>
+    </div>
     <div class="acoes">
-      <button class="btn-cancelar-notif" onclick="fecharPopupNotif()">Cancelar</button>
-      <button class="btn-enviar-notif" onclick="confirmarNotif()">Enviar 📣</button>
+      <button class="btn-cancelar-notif" onclick="fecharPopupNotifComp()">Cancelar</button>
+      <button class="btn-enviar-notif" onclick="confirmarNotifComp()">Enviar 📣</button>
     </div>
   </div>
 </div>
@@ -300,7 +343,7 @@
         <option value="todos">Todos os meses</option>
       </select>
       <button onclick="resetarMes()" style="width:auto; padding:0 14px; height:36px; margin-top:0; background:#c0392b; font-size:13px;">🗑️ Resetar mês</button>
-      <button onclick="notificarMembros()" style="width:auto; padding:0 14px; height:36px; margin-top:0; background:#e67e22; font-size:13px;">📣 Notificar membros</button>
+      <button onclick="abrirPopupNotif()" style="width:auto; padding:0 14px; height:36px; margin-top:0; background:#e67e22; font-size:13px;">📣 Notificar</button>
     </div>
 
     <textarea id="entrada" placeholder="Digite os compromissos...
@@ -313,9 +356,11 @@ Exemplo:
 DIA 3 - MISSA
 DIA 10 - MISSA"></textarea>
 
-    <button onclick="abrirPopupMes()">Cadastrar</button>
-    <button onclick="limparTudo()">Limpar Tudo</button>
-    <button onclick="excluirSelecionados()">Excluir Selecionados</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+      <button onclick="abrirPopupMes()" style="flex:1;min-width:0;margin:0;padding:10px 8px;font-size:13px;">Cadastrar</button>
+      <button onclick="limparTudo()" style="flex:1;min-width:0;margin:0;padding:10px 8px;font-size:13px;background:#7f8c8d;">Limpar Tudo</button>
+      <button onclick="excluirSelecionados()" style="flex:1;min-width:0;margin:0;padding:10px 8px;font-size:13px;background:#c0392b;">Excluir Selecionados</button>
+    </div>
 
     <div id="lista-compromissos"></div>
   </div>
@@ -325,41 +370,77 @@ DIA 10 - MISSA"></textarea>
   <script src="app.js?v=2"></script>
 
   <script>
-    let _resolverNotif = null;
+    let _membrosDestino = [];
 
-    function abrirPopupNotif(tituloDefault, corpoDefault) {
-      document.getElementById("notif-titulo").value = tituloDefault || "";
-      document.getElementById("notif-corpo").value = corpoDefault || "";
-      document.getElementById("popup-notif").classList.add("aberto");
-      return new Promise(resolve => { _resolverNotif = resolve; });
+    async function abrirPopupNotif() {
+      // Carrega membros se ainda não carregou
+      if (_membrosDestino.length === 0) {
+        const { data } = await supabase
+          .from('membros').select('id, nome, ministerio').eq('ativo', true).order('nome');
+        _membrosDestino = data || [];
+      }
+      renderizarListaDest();
+      document.getElementById('popup-notif-comp').classList.add('aberto');
     }
 
-    function fecharPopupNotif() {
-      document.getElementById("popup-notif").classList.remove("aberto");
-      if (_resolverNotif) { _resolverNotif(null); _resolverNotif = null; }
+    function fecharPopupNotifComp() {
+      document.getElementById('popup-notif-comp').classList.remove('aberto');
     }
 
-    async function confirmarNotif() {
-      const titulo = document.getElementById("notif-titulo").value.trim();
-      const corpo  = document.getElementById("notif-corpo").value.trim();
-      if (!titulo || !corpo) { alert("Preencha o título e a mensagem."); return; }
-      document.getElementById("popup-notif").classList.remove("aberto");
-      if (_resolverNotif) { _resolverNotif({ titulo, corpo }); _resolverNotif = null; }
+    function renderizarListaDest() {
+      const lista = document.getElementById('lista-dest-notif');
+      lista.innerHTML = _membrosDestino.map(m => `
+        <label class="dest-item">
+          <input type="checkbox" class="chk-dest" value="${m.id}" onchange="atualizarCountDest()">
+          <span class="dest-nome">${m.nome}</span>
+          <span class="dest-min">${m.ministerio}</span>
+        </label>
+      `).join('');
+      atualizarCountDest();
     }
 
-    async function notificarMembros() {
-      const dados = await abrirPopupNotif(
-        "📅 Novas datas disponíveis!",
-        "Acesse o app e envie sua disponibilidade para o próximo mês."
-      );
-      if (!dados) return;
-      const result = await enviarPushTodos(dados.titulo, dados.corpo);
+    function atualizarCountDest() {
+      const n = document.querySelectorAll('.chk-dest:checked').length;
+      document.getElementById('count-dest').textContent = n;
+    }
+
+    function selecionarTodosDest() {
+      document.querySelectorAll('.chk-dest').forEach(c => c.checked = true);
+      atualizarCountDest();
+    }
+
+    function deselecionarTodosDest() {
+      document.querySelectorAll('.chk-dest').forEach(c => c.checked = false);
+      atualizarCountDest();
+    }
+
+    function selecionarMinDest(min) {
+      document.querySelectorAll('.chk-dest').forEach(c => c.checked = false);
+      _membrosDestino.forEach((m, i) => {
+        if (m.ministerio === min) {
+          document.querySelectorAll('.chk-dest')[i].checked = true;
+        }
+      });
+      atualizarCountDest();
+    }
+
+    async function confirmarNotifComp() {
+      const titulo = document.getElementById('notif-comp-titulo').value.trim();
+      const corpo = document.getElementById('notif-comp-corpo').value.trim();
+      if (!titulo || !corpo) { alert('Preencha o título e a mensagem.'); return; }
+
+      const selecionados = [...document.querySelectorAll('.chk-dest:checked')].map(c => c.value);
+      if (selecionados.length === 0) { alert('Selecione pelo menos um destinatário.'); return; }
+
+      fecharPopupNotifComp();
+
+      const result = await enviarPushTodos(titulo, corpo, selecionados);
       if (result?.enviados > 0) {
         alert(`✅ Notificação enviada para ${result.enviados} dispositivo(s)!`);
       } else if (result?.enviados === 0) {
-        alert("⚠️ Nenhum dispositivo encontrado. Os membros precisam abrir o app e aceitar as notificações.");
+        alert('⚠️ Nenhum dispositivo encontrado. Os membros precisam abrir o app e aceitar as notificações.');
       } else {
-        alert("Erro ao enviar. Tente novamente.");
+        alert('Erro ao enviar. Tente novamente.');
       }
     }
   </script>

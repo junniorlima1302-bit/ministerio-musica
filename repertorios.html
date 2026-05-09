@@ -2,95 +2,322 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Repertórios</title>
   <link rel="stylesheet" href="style.css">
   <meta name="theme-color" content="#1b4580">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; display: flex; flex-direction: column; background: #f0f2f5; font-family: Arial, sans-serif; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e8f0fa 0%, #c5d8f0 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start;
+      padding: 30px 20px;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .topo-selecao { text-align: center; margin-bottom: 24px; width: 100%; max-width: 700px; }
+    .topo-selecao h1 { font-size: 22px; font-weight: 800; color: #1a2e4a; letter-spacing: 1px; }
+
+    .filtro-ano {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; margin-bottom: 24px; width: 100%; max-width: 700px;
+    }
+    .btn-ano {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1.5px solid #a0b8d0; background: white; color: #1a2e4a;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: 0.2s; font-family: 'Nunito', sans-serif; padding: 0; margin: 0;
+    }
+    .btn-ano:hover { background: #eaf0f8; border-color: #1b4580; }
+    .btn-ano:disabled { opacity: 0.3; cursor: not-allowed; }
+    .ano-atual { font-size: 20px; font-weight: 800; color: #1a2e4a; min-width: 60px; text-align: center; }
+
+    .grade-meses {
+      display: grid; grid-template-columns: repeat(6, 1fr);
+      gap: 8px; width: 100%; max-width: 700px;
+    }
+    .btn-mes {
+      background: white; border: 1.5px solid #a0b8d0; border-radius: 14px;
+      padding: 22px 10px; display: flex; flex-direction: column;
+      align-items: center; gap: 6px; cursor: pointer;
+      transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(27,69,128,0.08);
+      font-family: 'Nunito', sans-serif;
+    }
+    .btn-mes:hover { background: #eaf0f8; border-color: #1b4580; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(27,69,128,0.15); }
+    .btn-mes:active { transform: translateY(0); }
+    .btn-mes .nome { font-size: 13px; font-weight: 800; color: #1a2e4a; }
+    .btn-mes.sem-escala { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+    .btn-mes.mes-atual { border-color: #1b4580; background: #eaf0f8; }
+    .btn-mes.mes-atual .nome { color: #1b4580; }
+
+    .rodape-selecao { margin-top: 28px; }
+    .btn-voltar-inicio {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 12px 28px; background: white; border: 1.5px solid #a0b8d0;
+      border-radius: 30px; color: #1a2e4a; font-size: 14px; font-weight: 700;
+      font-family: 'Nunito', sans-serif; cursor: pointer; transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(27,69,128,0.08);
+    }
+    .btn-voltar-inicio:hover { background: #eaf0f8; border-color: #1b4580; }
+
+    /* ── IFRAME ORIGINAL INTACTO ── */
+    .iframe-page-wrap {
+      display: none; position: fixed; inset: 0;
+      flex-direction: column; background: #f0f2f5;
+      font-family: Arial, sans-serif; z-index: 999;
+    }
+    .iframe-page-wrap.aberto { display: flex; }
     .topo {
-      display: flex;
-      align-items: center;
-      padding: 10px 16px;
-      background: white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      gap: 12px;
-      flex-shrink: 0;
+      display: flex; align-items: center; padding: 10px 16px;
+      background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      gap: 12px; flex-shrink: 0;
     }
     .topo h2 { color: #1b4580; font-size: 15px; flex: 1; text-align: center; margin: 0; }
     .topo button {
-      width: auto; padding: 6px 14px; margin: 0;
-      font-size: 13px; border-radius: 8px;
-      background: none; color: #1b4580; border: none;
+      width: auto; padding: 6px 14px; margin: 0; font-size: 13px;
+      border-radius: 8px; background: none; color: #1b4580; border: none;
       cursor: pointer; font-weight: 600;
     }
     .topo button:hover { text-decoration: underline; background: none; }
     .iframe-wrap {
-      flex: 1;
-      overflow: hidden;
-      -webkit-overflow-scrolling: touch;
-      background: white;
-      position: relative;
+      flex: 1; overflow: hidden; -webkit-overflow-scrolling: touch;
+      background: white; position: relative;
     }
     iframe {
-      width: 100%;
-      height: calc(100% + 30px);
-      border: none;
-      min-width: 600px;
-      margin-top: -30px;
+      width: 100%; height: calc(100% + 30px);
+      border: none; min-width: 600px; margin-top: -30px;
     }
     .iframe-loading {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background: linear-gradient(135deg, #e8f0fa 0%, #c5d8f0 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      z-index: 10;
-      transition: opacity 0.4s ease;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 14px; z-index: 10; transition: opacity 0.4s ease;
     }
-    .iframe-loading.oculto {
-      opacity: 0;
-      pointer-events: none;
-    }
+    .iframe-loading.oculto { opacity: 0; pointer-events: none; }
     .iframe-spinner {
-      width: 38px;
-      height: 38px;
-      border: 3px solid #c4d4e8;
-      border-top-color: #1b4580;
-      border-radius: 50%;
+      width: 38px; height: 38px; border: 3px solid #c4d4e8;
+      border-top-color: #1b4580; border-radius: 50%;
       animation: spin 0.7s linear infinite;
     }
     .iframe-loading p {
-      font-size: 14px;
-      font-weight: 600;
-      color: #3a5272;
+      font-size: 14px; font-weight: 600; color: #3a5272;
       animation: pulse-txt 1.4s ease-in-out infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes pulse-txt {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.4; }
+    @keyframes pulse-txt { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    .msg-bloqueio {
+      text-align: center; padding: 32px 20px;
+      background: white; border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(27,69,128,0.1);
+      max-width: 320px; width: 100%;
+    }
+    .msg-bloqueio .icone { font-size: 48px; margin-bottom: 14px; }
+    .msg-bloqueio h3 { font-size: 18px; font-weight: 800; color: #1a2e4a; margin: 0 0 8px; }
+    .msg-bloqueio p { font-size: 13px; color: #5a7a9a; line-height: 1.6; margin: 0; }
+
+    @media (max-width: 600px) {
+      body { padding: 24px 14px; }
+      .topo-selecao h1 { font-size: 19px; }
+      .grade-meses { gap: 8px; grid-template-columns: repeat(4, 1fr); }
+      .btn-mes { padding: 16px 8px; border-radius: 12px; }
+      .btn-mes .nome { font-size: 12px; }
     }
   </style>
 </head>
-<body class="iframe-page">
-  <div class="topo">
-    <button onclick="history.back()">← Voltar</button>
-    <h2>Repertórios</h2>
-    <div style="width:80px"></div>
+<body>
+
+  <div class="topo-selecao">
+    <h1>🎼 Repertórios</h1>
   </div>
-  <div class="iframe-wrap">
-    <div class="iframe-loading" id="loading">
-      <div class="iframe-spinner"></div>
-      <p>Carregando repertórios...</p>
+
+  <div class="filtro-ano" style="position:relative;justify-content:center;">
+    <button class="btn-voltar" onclick="history.back()" style="position:absolute;left:0;">← Voltar</button>
+    <button class="btn-ano" id="btn-ano-prev" onclick="mudarAno(-1)">‹</button>
+    <span class="ano-atual" id="ano-label">2026</span>
+    <button class="btn-ano" onclick="mudarAno(1)">›</button>
+  </div>
+
+  <div class="grade-meses" id="grade-meses"></div>
+
+
+  <!-- IFRAME ORIGINAL -->
+  <div class="iframe-page-wrap" id="iframe-page-wrap">
+    <div class="topo">
+      <button onclick="fecharIframe()">← Voltar</button>
+      <h2 id="iframe-titulo">Repertórios</h2>
+      <div style="width:80px"></div>
     </div>
-    <iframe
-      src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml"
-      onload="document.getElementById('loading').classList.add('oculto')">
-    </iframe>
+    <div class="iframe-wrap">
+      <div class="iframe-loading" id="iframe-loading">
+        <div class="iframe-spinner"></div>
+        <p>Carregando repertório...</p>
+      </div>
+      <iframe id="iframe-rep" src=""
+        onload="document.getElementById('iframe-loading').classList.add('oculto')">
+      </iframe>
+    </div>
   </div>
+
+  <!-- POPUP BLOQUEIO -->
+  <div id="popup-bloqueio" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+    <div class="msg-bloqueio">
+      <div class="icone" id="bloqueio-icone">🔒</div>
+      <h3 id="bloqueio-titulo">Repertório em Construção</h3>
+      <p id="bloqueio-texto">O repertório deste mês ainda está sendo preparado.</p>
+      <button onclick="document.getElementById('popup-bloqueio').style.display='none'" style="margin-top:20px;padding:12px 28px;background:#1b4580;color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;">Fechar</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+
+  <script>
+    const REPERTORIOS = {
+      2026: {
+        1:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml?gid=531544686&single=true',
+        2:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml?gid=1099452756&single=true',
+        3:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml?gid=669226356&single=true',
+        4:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml?gid=1883124743&single=true',
+        5:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml?gid=1782742187&single=true',
+        6:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml?gid=1528131779&single=true',
+        7:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml?gid=123112502&single=true',
+        8:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml?gid=718738599&single=true',
+        9:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml?gid=1239180923&single=true',
+        10: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml?gid=57333792&single=true',
+        11: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml?gid=643276376&single=true',
+        12: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml?gid=1653566941&single=true',
+      }
+    };
+
+    const MESES = [
+      { num: 1,  nome: 'Janeiro'   },
+      { num: 2,  nome: 'Fevereiro' },
+      { num: 3,  nome: 'Março'     },
+      { num: 4,  nome: 'Abril'     },
+      { num: 5,  nome: 'Maio'      },
+      { num: 6,  nome: 'Junho'     },
+      { num: 7,  nome: 'Julho'     },
+      { num: 0,  nome: 'Halleluya', url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTr65QLWl-yL_TZov0sA7vEZmuFCmjqkOogHrw5geP58Wd4IEESGToOF7YRts6yiJ1E9_GpbU56YSBK/pubhtml?gid=1424286698&single=true', fixo: true },
+      { num: 8,  nome: 'Agosto'    },
+      { num: 9,  nome: 'Setembro'  },
+      { num: 10, nome: 'Outubro'   },
+      { num: 11, nome: 'Novembro'  },
+      { num: 12, nome: 'Dezembro'  },
+    ];
+
+    const ANO_MIN = 2026;
+    let anoAtual = new Date().getFullYear();
+    const mesAtual = new Date().getMonth() + 1;
+    let repertoriosLiberados = {};
+
+    async function carregarConfig() {
+      const { data } = await supabase
+        .from('configuracoes')
+        .select('repertorios_liberados')
+        .eq('id', 2)
+        .single();
+      repertoriosLiberados = data?.repertorios_liberados || {};
+      renderizarGrade();
+    }
+
+    function mudarAno(delta) {
+      const novoAno = anoAtual + delta;
+      if (novoAno < ANO_MIN) return;
+      anoAtual = novoAno;
+      document.getElementById('btn-ano-prev').disabled = anoAtual <= ANO_MIN;
+      renderizarGrade();
+    }
+
+    function renderizarGrade() {
+      document.getElementById('ano-label').textContent = anoAtual;
+      document.getElementById('btn-ano-prev').disabled = anoAtual <= ANO_MIN;
+      const repDoAno = REPERTORIOS[anoAtual] || {};
+      const grade = document.getElementById('grade-meses');
+
+      grade.innerHTML = MESES.map(m => {
+        const url = m.fixo ? m.url : repDoAno[m.num];
+        const temUrl = !!url;
+        const ehMesAtual = m.num === mesAtual && anoAtual === new Date().getFullYear();
+        return `
+          <button
+            class="btn-mes ${!temUrl ? 'sem-escala' : ''} ${ehMesAtual ? 'mes-atual' : ''}"
+            onclick="${temUrl ? `clicarMes(${m.num}, '${url}', '${m.nome}', ${!!m.fixo})` : ''}"
+          >
+            <span class="nome">${m.nome}</span>
+            ${!temUrl ? '<span style="font-size:10px;color:#a0b8d0;">Sem repertório</span>' : ''}
+          </button>`;
+      }).join('');
+    }
+
+    function clicarMes(num, url, nome, fixo) {
+      if (fixo) {
+        const liberadoHal = repertoriosLiberados['halleluya'] === true;
+        if (liberadoHal) { abrirRepertorio(url, nome); return; }
+        mostrarBloqueioRep('🔨', 'Repertório em Construção', 'O repertório deste mês ainda está sendo preparado. Aguarde!');
+        return;
+      }
+
+      const hoje = new Date();
+      const diaHoje = hoje.getDate();
+      const anoHoje = hoje.getFullYear();
+
+      const liberadosDoAno = repertoriosLiberados[anoAtual] || {};
+      const liberado = liberadosDoAno[num] === true;
+
+      // Se admin liberou, sempre mostra
+      if (liberado) { abrirRepertorio(url, nome + ' ' + anoAtual); return; }
+
+      // Meses passados ou atual
+      const ehPassadoOuAtual = (anoAtual < anoHoje) ||
+        (anoAtual === anoHoje && num <= mesAtual);
+
+      if (ehPassadoOuAtual) {
+        // Mês atual: só libera após dia 30 automaticamente
+        if (anoAtual === anoHoje && num === mesAtual) {
+          if (diaHoje >= 30) {
+            abrirRepertorio(url, nome + ' ' + anoAtual);
+          } else {
+            mostrarBloqueioRep('🔨', 'Repertório em Construção', 'O repertório do mês está sendo finalizado. Disponível a partir do dia 30!');
+          }
+        } else {
+          // Meses passados sem liberação explícita — mostra mesmo assim
+          abrirRepertorio(url, nome + ' ' + anoAtual);
+        }
+        return;
+      }
+
+      // Meses futuros — sempre bloqueado até liberar
+      mostrarBloqueioRep('🔨', 'Repertório em Construção', 'O repertório deste mês ainda está sendo preparado. Aguarde!');
+    }
+
+    function mostrarBloqueioRep(icone, titulo, texto) {
+      document.getElementById('bloqueio-icone').textContent = icone;
+      document.getElementById('bloqueio-titulo').textContent = titulo;
+      document.getElementById('bloqueio-texto').textContent = texto;
+      document.getElementById('popup-bloqueio').style.display = 'flex';
+    }
+
+    function abrirRepertorio(url, titulo) {
+      document.getElementById('iframe-loading').classList.remove('oculto');
+      document.getElementById('iframe-rep').src = '';
+      document.getElementById('iframe-titulo').textContent = 'Repertório — ' + titulo;
+      document.getElementById('iframe-rep').src = url;
+      document.getElementById('iframe-page-wrap').classList.add('aberto');
+    }
+
+    function fecharIframe() {
+      document.getElementById('iframe-page-wrap').classList.remove('aberto');
+      document.getElementById('iframe-rep').src = '';
+    }
+
+    carregarConfig();
+  </script>
+
 </body>
 </html>
