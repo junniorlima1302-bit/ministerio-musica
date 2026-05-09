@@ -493,6 +493,12 @@
         opacity:0.7;
       " disabled>Ativar</button>
     </div>
+    <button onclick="aceitarSemNome()" style="
+      width:100%;margin-top:10px;padding:10px;
+      background:none;border:none;
+      color:#7a9ec4;font-size:12px;font-weight:600;
+      font-family:'Nunito',sans-serif;cursor:pointer;
+    ">Não sou membro, mas quero receber notificações</button>
   </div>
 </div>
 
@@ -578,8 +584,13 @@
   async function aceitarNotificacao() {
     if (!_membroNotifSelecionado) return;
     fecharPopupNotificacao();
-    // Registra vinculando ao membro selecionado
     await registrarPush(_membroNotifSelecionado.id);
+  }
+
+  async function aceitarSemNome() {
+    fecharPopupNotificacao();
+    // Registra sem vincular membro
+    await registrarPush(null);
   }
 
   async function verificarPopupNotificacao() {
