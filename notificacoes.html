@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notificações</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#1b4580">
+  <style>
+    .secao-wrap { border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.10); margin-top: 16px; }
+    .secao-header { background: #7a9ec4; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+    .secao-header h3 { color: #1a2e4a; font-size: 14px; margin: 0; font-weight: 700; }
+    .secao-body { background: #cfd8e8; padding: 16px; }
+
+    .secao-body input[type=text],
+    .secao-body textarea {
+      width: 100%; max-width: 100%; padding: 10px 12px;
+      border-radius: 8px; border: 1px solid #a0b8d0;
+      background: rgba(255,255,255,0.8); color: #1a2e4a;
+      font-size: 14px; font-family: inherit;
+      display: block; margin-bottom: 10px; box-sizing: border-box;
+      outline: none;
+    }
+    .secao-body textarea { min-height: 80px; resize: vertical; }
+    .secao-body input:focus, .secao-body textarea:focus { border-color: #1b4580; }
+
+    .lista-dest {
+      max-height: 260px; overflow-y: auto;
+      background: rgba(255,255,255,0.5);
+      border-radius: 8px; border: 1px solid #a0b8d0;
+      margin-bottom: 12px;
+    }
+    .dest-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.6);
+      cursor: pointer; transition: background 0.15s;
+    }
+    .dest-item:last-child { border-bottom: none; }
+    .dest-item:hover { background: rgba(255,255,255,0.4); }
+    .dest-item input[type=checkbox] {
+      width: 18px; height: 18px; cursor: pointer;
+      accent-color: #1b4580; margin: 0; display: inline;
+      max-width: unset; border-radius: 0;
+    }
+    .dest-nome { font-size: 13px; font-weight: 600; color: #1a2e4a; flex: 1; }
+    .dest-min { font-size: 11px; color: #7a9ec4; }
+    .dest-push { font-size: 11px; font-weight: 700; }
+    .dest-push.ok { color: #2e7d52; }
+    .dest-push.no { color: #c0392b; }
+
+    .acoes-sel {
+      display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;
+    }
+    .btn-sel {
+      width: auto; padding: 6px 14px; margin-top: 0;
+      font-size: 12px; border-radius: 8px;
+      background: #7a9ec4; color: #1a2e4a; font-weight: 600;
+    }
+    .btn-sel:hover { background: #6a8eb4; }
+
+    .badge-count {
+      background: #1b4580; color: white;
+      font-size: 11px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+    }
+
+    .resultado-notif {
+      margin-top: 12px; padding: 12px 14px;
+      border-radius: 10px; font-size: 13px; font-weight: 600;
+      display: none;
+    }
+    .resultado-ok { background: #d8f0e0; color: #1a4a2a; }
+    .resultado-erro { background: #fce8d8; color: #8b3a00; }
+
+    .btn-enviar-notif {
+      background: #e67e22;
+      width: 100%;
+      margin-top: 4px;
+    }
+    .btn-enviar-notif:hover { background: #ca6f1e; }
+  </style>
+</head>
+<body class="admin-page">
+<div class="admin-box">
+  <h2>🔔 Notificações</h2>
+  <button class="btn-voltar" onclick="voltarPagina()">← Voltar</button>
+
+  <!-- MENSAGEM -->
+  <div class="secao-wrap">
+    <div class="secao-header"><h3>✉️ Mensagem</h3></div>
+    <div class="secao-body">
+      <input type="text" id="notif-titulo" placeholder="Título (ex: Novas datas disponíveis!)">
+      <textarea id="notif-corpo" placeholder="Mensagem (ex: Acesse o app e envie sua disponibilidade!)"></textarea>
+    </div>
+  </div>
+
+  <!-- DESTINATÁRIOS -->
+  <div class="secao-wrap">
+    <div class="secao-header">
+      <h3>👥 Destinatários</h3>
+      <span class="badge-count" id="count-sel">0 selecionados</span>
+    </div>
+    <div class="secao-body">
+      <div class="acoes-sel">
+        <button class="btn-sel" onclick="selecionarTodos()">✅ Todos</button>
+        <button class="btn-sel" onclick="deselecionarTodos()">☐ Nenhum</button>
+        <button class="btn-sel" onclick="selecionarMin('Música Geral')">🎵 Música Geral</button>
+        <button class="btn-sel" onclick="selecionarMin('Geral Eventos')">🎙️ Geral Eventos</button>
+        <button class="btn-sel" onclick="selecionarSoPush()">📲 Só com push</button>
+      </div>
+      <div class="lista-dest" id="lista-dest">
+        <div style="padding:16px;text-align:center;color:#7a9ec4;font-size:13px;">Carregando...</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-enviar-notif" onclick="enviarNotificacao()">📣 Enviar Notificação</button>
+  <div class="resultado-notif" id="resultado-notif"></div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="supabase.js"></script>
+<script src="app.js"></script>
+
+<script>
+  let membrosNotif = [];
+  let subscriptionsMap = {};
+
+  async function iniciar() {
+    const { data: sessao } = await supabase.auth.getSession();
+    if (!sessao.session) { window.location.href = 'login.html'; return; }
+
+    const { data: eu } = await supabase
+      .from('usuarios').select('papel').eq('id', sessao.session.user.id).single();
+    if (!eu || eu.papel !== 'admin') {
+      alert('Acesso restrito ao administrador.');
+      window.location.href = 'dashboard.html';
+      return;
+    }
+
+    await carregarDados();
+  }
+
+  async function carregarDados() {
+    const { data: membros } = await supabase
+      .from('membros').select('*').eq('ativo', true).order('nome');
+
+    const { data: subs } = await supabase
+      .from('push_tokens').select('membro_id');
+
+    subscriptionsMap = {};
+    (subs || []).forEach(s => {
+      if (s.membro_id) subscriptionsMap[s.membro_id] = true;
+    });
+
+    membrosNotif = membros || [];
+    renderizarLista();
+  }
+
+  function renderizarLista() {
+    const lista = document.getElementById('lista-dest');
+    if (membrosNotif.length === 0) {
+      lista.innerHTML = '<div style="padding:16px;text-align:center;color:#7a9ec4;">Nenhum membro encontrado.</div>';
+      return;
+    }
+
+    lista.innerHTML = membrosNotif.map(m => {
+      const temPush = !!subscriptionsMap[m.id];
+      return `
+        <label class="dest-item">
+          <input type="checkbox" class="chk-dest" value="${m.id}"
+            onchange="atualizarCount()" ${!temPush ? 'disabled' : ''}>
+          <span class="dest-nome">${m.nome}</span>
+          <span class="dest-min">${m.ministerio}</span>
+          <span class="dest-push ${temPush ? 'ok' : 'no'}">${temPush ? '📲' : '⚠️'}</span>
+        </label>`;
+    }).join('');
+
+    atualizarCount();
+  }
+
+  function atualizarCount() {
+    const n = document.querySelectorAll('.chk-dest:checked').length;
+    document.getElementById('count-sel').textContent = n + ' selecionados';
+  }
+
+  function selecionarTodos() {
+    document.querySelectorAll('.chk-dest:not(:disabled)').forEach(c => c.checked = true);
+    atualizarCount();
+  }
+
+  function deselecionarTodos() {
+    document.querySelectorAll('.chk-dest').forEach(c => c.checked = false);
+    atualizarCount();
+  }
+
+  function selecionarMin(min) {
+    document.querySelectorAll('.chk-dest').forEach(c => c.checked = false);
+    membrosNotif.forEach((m, i) => {
+      const chks = document.querySelectorAll('.chk-dest');
+      if (m.ministerio === min && !chks[i].disabled) chks[i].checked = true;
+    });
+    atualizarCount();
+  }
+
+  function selecionarSoPush() {
+    document.querySelectorAll('.chk-dest:not(:disabled)').forEach(c => c.checked = true);
+    atualizarCount();
+  }
+
+  async function enviarNotificacao() {
+    const titulo = document.getElementById('notif-titulo').value.trim();
+    const corpo = document.getElementById('notif-corpo').value.trim();
+
+    if (!titulo || !corpo) { alert('Preencha o título e a mensagem.'); return; }
+
+    const selecionados = [...document.querySelectorAll('.chk-dest:checked')].map(c => c.value);
+    if (selecionados.length === 0) { alert('Selecione pelo menos um destinatário.'); return; }
+
+    const btn = document.querySelector('.btn-enviar-notif');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    const result = await enviarPushTodos(titulo, corpo, selecionados);
+
+    btn.disabled = false;
+    btn.textContent = '📣 Enviar Notificação';
+
+    const res = document.getElementById('resultado-notif');
+    res.style.display = 'block';
+
+    if (result?.enviados > 0) {
+      res.className = 'resultado-notif resultado-ok';
+      res.textContent = `✅ Notificação enviada para ${result.enviados} dispositivo(s)!`;
+    } else if (result?.enviados === 0) {
+      res.className = 'resultado-notif resultado-erro';
+      res.textContent = '⚠️ Nenhum dispositivo encontrado. Os membros precisam aceitar as notificações.';
+    } else {
+      res.className = 'resultado-notif resultado-erro';
+      res.textContent = 'Erro ao enviar. Tente novamente.';
+    }
+  }
+
+  iniciar();
+</script>
+</body>
+</html>
