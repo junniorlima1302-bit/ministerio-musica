@@ -316,7 +316,7 @@ async function carregarCompromissos() {
 
   mostrarLoading("lista-compromissos", "Carregando compromissos...");
 
-  let query = supabase.from("compromissos").select("*").order("ordem_grupo", { ascending: true, nullsFirst: true }).order("nome");
+  let query = supabase.from("compromissos").select("*").order("ordem_grupo", { ascending: true, nullsFirst: true }).order("ordem_item", { ascending: true, nullsFirst: true });
 
   if (mesSelecionado !== "todos") {
     query = query.eq("mes_ref", mesSelecionado);
@@ -784,21 +784,19 @@ async function salvarOrdemGrupos(lista) {
   const grupos = [...lista.querySelectorAll(".grupo")];
   if (grupos.length < 2) return;
 
-  const mesSelecionado = document.getElementById("filtro-mes")?.value || "todos";
-
-  // Para cada grupo, atualiza o campo `ordem` de todos os seus itens
+  // Para cada grupo, atualiza ordem_grupo de todos os seus itens
   const updates = [];
   grupos.forEach((divGrupo, ordemGrupo) => {
     const itens = [...divGrupo.querySelectorAll(".item-compromisso")];
-    itens.forEach(el => {
-      updates.push({ id: el.dataset.id, ordem_grupo: ordemGrupo });
+    itens.forEach((el, ordemItem) => {
+      updates.push({ id: el.dataset.id, ordem_grupo: ordemGrupo, ordem_item: ordemItem });
     });
   });
 
   // Atualiza em paralelo
   await Promise.all(
     updates.map(u =>
-      supabase.from("compromissos").update({ ordem_grupo: u.ordem_grupo }).eq("id", u.id)
+      supabase.from("compromissos").update({ ordem_grupo: u.ordem_grupo, ordem_item: u.ordem_item }).eq("id", u.id)
     )
   );
 }
@@ -808,51 +806,12 @@ async function salvarOrdemGrupo(container) {
   const itens = [...container.querySelectorAll(".item-compromisso")];
   if (itens.length < 2) return;
 
-  // dataset.turno contém o valor original de cada card (definido no render)
-  // Após o drag, os cards estão em nova ordem DOM mas seus dataset.turno
-  // ainda refletem os valores originais. Queremos persistir a nova ordem:
-  // o card na posição i deve "guardar" o turno do card que estava na posição i antes.
-  //
-  // Estratégia simples: pegar os IDs na nova ordem e os turnos na nova ordem,
-  // então atualizar cada ID com seu respectivo turno já correto (pois dataset.turno
-  // é o valor real do banco para aquele card, e ele está agora na posição desejada).
-  const updates = itens.map(el => ({
-    id: el.dataset.id,
-    turno: el.dataset.turno
-  }));
-
-  // Coleta os turnos que estão no banco na ordem ORIGINAL (por ID)
-  const ids = updates.map(u => u.id);
-  const { data: dadosBanco, error } = await supabase
-    .from("compromissos").select("id, turno").in("id", ids);
-  if (error) { console.error(error); return; }
-
-  // Os turnos originais em ordem de banco
-  const mapaId = {};
-  dadosBanco.forEach(r => { mapaId[r.id] = r.turno; });
-
-  // Turnos na nova ordem visual (pelo dataset, que reflete o valor de banco do card)
-  const turnosNovaOrdem = updates.map(u => mapaId[u.id]);
-
-  // Atualiza cada ID com o turno que agora lhe corresponde na nova posição
+  // Salva a posição (ordem_item) de cada item pelo seu ID
   await Promise.all(
-    updates.map((u, i) =>
-      supabase.from("compromissos").update({ turno: turnosNovaOrdem[i] }).eq("id", u.id)
+    itens.map((el, i) =>
+      supabase.from("compromissos").update({ ordem_item: i }).eq("id", el.dataset.id)
     )
   );
-
-  // Atualiza o dataset e texto dos spans para a nova realidade
-  itens.forEach((el, i) => {
-    el.dataset.turno = turnosNovaOrdem[i];
-    const span = el.querySelector(".texto-turno");
-    if (span) span.textContent = turnosNovaOrdem[i];
-    // Atualiza o botão editar com o novo texto
-    const btnEditar = el.querySelector(".btn-editar-item");
-    if (btnEditar) {
-      btnEditar.setAttribute("onclick",
-        `editarCompromisso('${updates[i].id}', '${turnosNovaOrdem[i].replace(/'/g, "\\'")}')` );
-    }
-  });
 }
 
 //////////////////////////////////////////////////////
