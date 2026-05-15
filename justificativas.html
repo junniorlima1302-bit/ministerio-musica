@@ -91,13 +91,7 @@
       </select>
       <button class="btn-limpar-filtro" onclick="limparFiltro()">✕ Limpar</button>
     </div>
-    <div style="margin-bottom:10px;text-align:center;">
-      <button id="btn-halleluya-just" onclick="toggleHalleluyaJust()" style="
-        width:auto;padding:7px 16px;margin:0;font-size:13px;font-weight:700;
-        border-radius:20px;border:2px solid #a0b8d0;background:white;
-        color:#1a2e4a;cursor:pointer;transition:0.2s;
-      ">🎵 Halleluya</button>
-    </div>
+
 
     <div id="conteudo-justificativas"></div>
   </div>
@@ -126,8 +120,6 @@
 
       await carregarJustificativas();
     }
-
-    let _filtroHalleluyaJust = false;
 
     async function carregarJustificativas() {
       const { data, error } = await supabase
@@ -169,20 +161,7 @@
       renderizar();
     }
 
-    function toggleHalleluyaJust() {
-      _filtroHalleluyaJust = !_filtroHalleluyaJust;
-      const btn = document.getElementById("btn-halleluya-just");
-      if (_filtroHalleluyaJust) {
-        btn.style.background = "#1b4580";
-        btn.style.color = "white";
-        btn.style.borderColor = "#1b4580";
-      } else {
-        btn.style.background = "white";
-        btn.style.color = "#1a2e4a";
-        btn.style.borderColor = "#a0b8d0";
-      }
-      renderizar();
-    }
+
 
     function popularFiltroNomes(data) {
       const select = document.getElementById("filtro-nome-just");
@@ -203,17 +182,13 @@
       return dadosJustificativas.filter(d => {
         const nomeOk = nomeSelecionado === "todos" || d.nome_pessoa === nomeSelecionado;
         const mesOk = mesSelecionado === "todos" || d.mes_ref === mesSelecionado;
-        const halOk = !_filtroHalleluyaJust || (d.evento && d.evento.toUpperCase().includes("HALLELUYA"));
-        return nomeOk && mesOk && halOk;
+        return nomeOk && mesOk;
       });
     }
 
     function limparFiltro() {
       document.getElementById("filtro-nome-just").value = "todos";
       document.getElementById("filtro-mes-just").value = "todos";
-      _filtroHalleluyaJust = false;
-      const btn = document.getElementById("btn-halleluya-just");
-      if (btn) { btn.style.background = "white"; btn.style.color = "#1a2e4a"; btn.style.borderColor = "#a0b8d0"; }
       popularFiltroNomes(dadosJustificativas);
       renderizar();
     }
