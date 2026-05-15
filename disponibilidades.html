@@ -202,7 +202,7 @@
 </div>
 </head>
 
-<body class="admin-page" onload="carregarRespostas()">
+<body class="admin-page" onload="iniciarDisponibilidades()">
 
   <div class="admin-box">
     <h2>Disponibilidades dos Membros</h2>
@@ -210,6 +210,10 @@
     <button onclick="voltarPagina()" class="btn-voltar">← Voltar</button>
 
     <div id="filtros">
+      <select id="filtroMesDisp" onchange="trocarMesDisp()" style="height:36px; padding:0 10px; border-radius:8px; border:1px solid #a0b8d0; font-size:13px; background:white; color:#1a2e4a;">
+        <option value="todos">Todos os meses</option>
+      </select>
+
       <select id="filtroMinisterio" onchange="aplicarBusca()">
         <option value="todos">Todos Ministérios</option>
         <option value="Música Geral">Música Geral</option>
@@ -269,7 +273,15 @@
     function popularFiltroEventosPorMes(compromissos) {
       const select = document.getElementById("filtroEvento");
       if (!select) return;
-      const eventos = [...new Set((compromissos || []).map(c => c.nome).filter(Boolean))].sort();
+      // Mantém a ordem de cadastro (ordem_grupo), sem sort()
+      const vistos = new Set();
+      const eventos = [];
+      (compromissos || []).forEach(c => {
+        if (c.nome && !vistos.has(c.nome)) {
+          vistos.add(c.nome);
+          eventos.push(c.nome);
+        }
+      });
       select.innerHTML = `<option value="todos">Todos os eventos</option>`;
       eventos.forEach(e => {
         const opt = document.createElement("option");
@@ -277,6 +289,66 @@
         opt.textContent = e;
         select.appendChild(opt);
       });
+    }
+
+    async function iniciarDisponibilidades() {
+      const { data } = await supabase
+        .from("disponibilidades")
+        .select("mes_ref")
+        .not("mes_ref", "is", null);
+
+      const select = document.getElementById("filtroMesDisp");
+      const meses = [...new Set((data || []).map(d => d.mes_ref).filter(Boolean))].sort().reverse();
+
+      select.innerHTML = `<option value="todos">Todos os meses</option>`;
+      meses.forEach(mes => {
+        const [ano, m] = mes.split("-");
+        const label = new Date(ano, m - 1).toLocaleString("pt-BR", { month: "long", year: "numeric" });
+        const opt = document.createElement("option");
+        opt.value = mes;
+        opt.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+        select.appendChild(opt);
+      });
+
+      if (meses.length > 0) {
+        _mesDispAtivo = meses[0];
+        select.value = meses[0];
+      }
+
+      await carregarRespostasComMes();
+    }
+
+    async function trocarMesDisp() {
+      _mesDispAtivo = document.getElementById("filtroMesDisp").value;
+      _statusCarregado = false;
+      document.getElementById("filtroEvento").value = "todos";
+      await carregarRespostasComMes();
+    }
+
+    async function carregarRespostasComMes() {
+      const mesParaUsar = (_mesDispAtivo && _mesDispAtivo !== "todos") ? _mesDispAtivo : null;
+      const container = document.getElementById("lista-respostas");
+      if (container) mostrarLoading("lista-respostas", "Carregando disponibilidades...");
+
+      let compQuery = supabase.from("compromissos").select("*")
+        .order("ordem_grupo", { ascending: true, nullsFirst: true })
+        .order("ordem_item", { ascending: true, nullsFirst: true });
+      if (mesParaUsar) compQuery = compQuery.eq("mes_ref", mesParaUsar);
+
+      let dispQuery = supabase.from("disponibilidades").select("*");
+      if (mesParaUsar) dispQuery = dispQuery.eq("mes_ref", mesParaUsar);
+
+      try {
+        const [resComps, resDisp] = await Promise.all([compQuery, dispQuery]);
+        compromissosGlobais = resComps.data || [];
+        respostasGlobais = resDisp.data || [];
+      } catch (err) {
+        console.error(err);
+        return;
+      }
+
+      popularFiltroEventosPorMes(compromissosGlobais);
+      renderizarRespostas(respostasGlobais);
     }
 
     async function abrirModalStatus() {
