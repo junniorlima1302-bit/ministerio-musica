@@ -401,7 +401,6 @@
       <select id="filtro-mes" onchange="carregarCompromissos()" style="height:36px; padding:0 10px; border-radius:8px; border:1px solid #ccc; font-size:13px;">
         <option value="todos">Todos os meses</option>
       </select>
-      <button onclick="resetarMes()" style="width:auto; padding:0 14px; height:36px; margin-top:0; background:#c0392b; font-size:13px;">🗑️ Resetar mês</button>
       <button onclick="abrirPopupNotif()" style="width:auto; padding:0 14px; height:36px; margin-top:0; background:#e67e22; font-size:13px;">📣 Notificar</button>
     </div>
 
@@ -429,6 +428,199 @@ DIA 10 - MISSA"></textarea>
   <script src="app.js?v=2"></script>
 
   <script>
+    // ── DRAG & DROP GRUPOS E ITENS ──
+    let _dragGrupo = null;
+    let _dragItem = null;
+    let _dragItemOriginalGrupo = null;
+
+    function iniciarDragDrop() {
+      const lista = document.getElementById('lista-compromissos');
+      if (!lista) return;
+
+      // ── GRUPOS ──
+      lista.addEventListener('dragstart', e => {
+        const handle = e.target.closest('.drag-handle-grupo');
+        const item = e.target.closest('.drag-handle');
+
+        if (handle) {
+          _dragGrupo = handle.closest('.grupo');
+          setTimeout(() => _dragGrupo?.classList.add('dragging-grupo'), 0);
+          e.dataTransfer.effectAllowed = 'move';
+        } else if (item) {
+          _dragItem = item.closest('.item-compromisso');
+          _dragItemOriginalGrupo = _dragItem?.closest('.lista-itens');
+          setTimeout(() => _dragItem?.classList.add('dragging'), 0);
+          e.dataTransfer.effectAllowed = 'move';
+        }
+      });
+
+      lista.addEventListener('dragend', e => {
+        if (_dragGrupo) {
+          _dragGrupo.classList.remove('dragging-grupo');
+          lista.querySelectorAll('.grupo').forEach(g => g.classList.remove('drag-over-grupo'));
+          salvarOrdemCompleta();
+          _dragGrupo = null;
+        }
+        if (_dragItem) {
+          _dragItem.classList.remove('dragging');
+          lista.querySelectorAll('.item-compromisso').forEach(i => i.classList.remove('drag-over'));
+          salvarOrdemCompleta();
+          _dragItem = null;
+          _dragItemOriginalGrupo = null;
+        }
+      });
+
+      lista.addEventListener('dragover', e => {
+        e.preventDefault();
+        if (_dragGrupo) {
+          const alvoGrupo = e.target.closest('.grupo');
+          if (!alvoGrupo || alvoGrupo === _dragGrupo) return;
+          lista.querySelectorAll('.grupo').forEach(g => g.classList.remove('drag-over-grupo'));
+          alvoGrupo.classList.add('drag-over-grupo');
+          const rect = alvoGrupo.getBoundingClientRect();
+          if (e.clientY < rect.top + rect.height / 2) {
+            lista.insertBefore(_dragGrupo, alvoGrupo);
+          } else {
+            lista.insertBefore(_dragGrupo, alvoGrupo.nextSibling);
+          }
+        } else if (_dragItem) {
+          const alvoItem = e.target.closest('.item-compromisso');
+          const alvoLista = e.target.closest('.lista-itens');
+          lista.querySelectorAll('.item-compromisso').forEach(i => i.classList.remove('drag-over'));
+
+          if (alvoItem && alvoItem !== _dragItem) {
+            alvoItem.classList.add('drag-over');
+            const rect = alvoItem.getBoundingClientRect();
+            if (e.clientY < rect.top + rect.height / 2) {
+              alvoItem.parentNode.insertBefore(_dragItem, alvoItem);
+            } else {
+              alvoItem.parentNode.insertBefore(_dragItem, alvoItem.nextSibling);
+            }
+          } else if (alvoLista && alvoLista !== _dragItemOriginalGrupo && alvoLista.children.length === 0) {
+            alvoLista.appendChild(_dragItem);
+          }
+        }
+      });
+
+      // ── TOUCH GRUPOS ──
+      let _touchGrupo = null;
+      let _touchItem = null;
+
+      lista.addEventListener('touchstart', e => {
+        const handle = e.target.closest('.drag-handle-grupo');
+        const itemHandle = e.target.closest('.drag-handle');
+        if (handle) {
+          _touchGrupo = handle.closest('.grupo');
+          _touchGrupo?.classList.add('dragging-grupo');
+          e.preventDefault();
+        } else if (itemHandle) {
+          _touchItem = itemHandle.closest('.item-compromisso');
+          _touchItem?.classList.add('dragging');
+          e.preventDefault();
+        }
+      }, { passive: false });
+
+      lista.addEventListener('touchmove', e => {
+        if (!_touchGrupo && !_touchItem) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        const el = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        if (_touchGrupo) {
+          const alvo = el?.closest('.grupo');
+          if (alvo && alvo !== _touchGrupo) {
+            const rect = alvo.getBoundingClientRect();
+            if (touch.clientY < rect.top + rect.height / 2) {
+              lista.insertBefore(_touchGrupo, alvo);
+            } else {
+              lista.insertBefore(_touchGrupo, alvo.nextSibling);
+            }
+          }
+        } else if (_touchItem) {
+          const alvo = el?.closest('.item-compromisso');
+          if (alvo && alvo !== _touchItem) {
+            const rect = alvo.getBoundingClientRect();
+            if (touch.clientY < rect.top + rect.height / 2) {
+              alvo.parentNode.insertBefore(_touchItem, alvo);
+            } else {
+              alvo.parentNode.insertBefore(_touchItem, alvo.nextSibling);
+            }
+          }
+        }
+      }, { passive: false });
+
+      lista.addEventListener('touchend', e => {
+        if (_touchGrupo) {
+          _touchGrupo.classList.remove('dragging-grupo');
+          salvarOrdemCompleta();
+          _touchGrupo = null;
+        }
+        if (_touchItem) {
+          _touchItem.classList.remove('dragging');
+          salvarOrdemCompleta();
+          _touchItem = null;
+        }
+      });
+    }
+
+    // Sobrescreve carregarCompromissos para adicionar handles e iniciar drag
+    const _origCarregarComp = window.carregarCompromissos;
+    window.carregarCompromissos = async function(...args) {
+      await _origCarregarComp?.(...args);
+
+      // Adiciona handle e draggable nos grupos
+      document.querySelectorAll('#lista-compromissos .grupo').forEach(g => {
+        g.draggable = true;
+        if (!g.querySelector('.drag-handle-grupo')) {
+          const handle = document.createElement('span');
+          handle.className = 'drag-handle-grupo';
+          handle.title = 'Arrastar grupo';
+          handle.textContent = '⠿';
+          handle.style.cssText = 'cursor:grab;color:#a0b8d0;font-size:18px;padding:0 8px 0 0;flex-shrink:0;user-select:none;';
+          const tituloLinha = g.querySelector('.linha-grupo-titulo');
+          if (tituloLinha) tituloLinha.insertBefore(handle, tituloLinha.firstChild);
+        }
+      });
+
+      // Adiciona handle e draggable nos itens
+      document.querySelectorAll('#lista-compromissos .item-compromisso').forEach(item => {
+        item.draggable = true;
+        if (!item.querySelector('.drag-handle')) {
+          const handle = document.createElement('span');
+          handle.className = 'drag-handle';
+          handle.title = 'Arrastar item';
+          handle.textContent = '⠿';
+          handle.style.cssText = 'cursor:grab;color:#a0b8d0;font-size:16px;padding:0 6px 0 0;flex-shrink:0;user-select:none;';
+          item.insertBefore(handle, item.firstChild);
+        }
+      });
+
+      iniciarDragDrop();
+    };
+
+    async function salvarOrdemCompleta() {
+      const lista = document.getElementById('lista-compromissos');
+      if (!lista) return;
+      const grupos = [...lista.querySelectorAll('.grupo')];
+      const updates = [];
+      grupos.forEach((divGrupo, ordemGrupo) => {
+        const itens = [...divGrupo.querySelectorAll('.item-compromisso')];
+        itens.forEach((el, ordemItem) => {
+          if (el.dataset.id) {
+            updates.push({ id: el.dataset.id, ordem_grupo: ordemGrupo, ordem_item: ordemItem });
+          }
+        });
+      });
+      await Promise.all(
+        updates.map(u =>
+          supabase.from('compromissos').update({ ordem_grupo: u.ordem_grupo, ordem_item: u.ordem_item }).eq('id', u.id)
+        )
+      );
+    }
+
+    // Inicializa drag após carregarCompromissos
+    const _origIniciarComp = window.iniciarCompromissos;
+
     let _membrosDestino = [];
 
     async function abrirPopupNotif() {
