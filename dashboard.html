@@ -45,10 +45,10 @@
 
     .grade {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 14px;
       width: 100%;
-      max-width: 560px;
+      max-width: 760px;
     }
 
     .bloco {
@@ -158,7 +158,7 @@
     <p id="info-usuario">Carregando...</p>
   </div>
 
-  <div id="area-botoes" style="display:none; width:100%; max-width:560px;">
+  <div id="area-botoes" style="display:none; width:100%; max-width:760px;">
 
     <div class="grade" id="grade-botoes">
       <a class="bloco" onclick="irPara('disponibilidades.html')">
@@ -225,16 +225,6 @@
             <div class="icone">⚙️</div>
             <div class="label">Gerenciar</div>
             <div class="desc">Usuários e ministros</div>
-          </a>
-          <a class="bloco" onclick="irPara('visibilidade.html')">
-            <div class="icone">🎛️</div>
-            <div class="label">Visibilidade</div>
-            <div class="desc">Escalas e Repertórios</div>
-          </a>
-          <a class="bloco" onclick="irPara('notificacoes.html')">
-            <div class="icone">🔔</div>
-            <div class="label">Notificações</div>
-            <div class="desc">Enviar para membros</div>
           </a>
         `;
       }
