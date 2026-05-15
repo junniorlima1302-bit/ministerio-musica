@@ -202,7 +202,7 @@
 </div>
 </head>
 
-<body class="admin-page" onload="carregarRespostas()">
+<body class="admin-page" onload="iniciarDisponibilidades()">
 
   <div class="admin-box">
     <h2>Disponibilidades dos Membros</h2>
@@ -210,6 +210,10 @@
     <button onclick="voltarPagina()" class="btn-voltar">← Voltar</button>
 
     <div id="filtros">
+      <select id="filtroMesDisp" onchange="trocarMesDisp()" style="height:36px; padding:0 10px; border-radius:8px; border:1px solid #a0b8d0; font-size:13px; background:white; color:#1a2e4a;">
+        <option value="todos">Todos os meses</option>
+      </select>
+
       <select id="filtroMinisterio" onchange="aplicarBusca()">
         <option value="todos">Todos Ministérios</option>
         <option value="Música Geral">Música Geral</option>
@@ -229,7 +233,6 @@
       <button class="btn-respostas-status" onclick="abrirModalStatus()">👥 Quem respondeu</button>
       <button class="btn-lembrar-push" onclick="lembrarPendentes()" style="background:#e67e22;color:white;">🔔 Lembrar pendentes</button>
       <button class="btn-excluir-selecionados-disp" onclick="excluirSelecionadosDisp()">🗑️ Excluir selecionados</button>
-      <button class="btn-resetar-disp" onclick="resetarTodasDisponibilidades()">⚠️ Resetar tudo</button>
     </div>
 
     <div id="lista-respostas"></div>
@@ -264,8 +267,67 @@
   <script>
     let _statusPendentes = [];
     let _statusOk = [];
-    let _statusFiltro = "todos"; // "todos" | "pendentes" | "responderam"
+    let _statusFiltro = "todos";
     let _statusCarregado = false;
+    let _mesDispAtivo = null;
+
+    // ── Popula o filtro de mês e já carrega o mês mais recente ──
+    async function iniciarDisponibilidades() {
+      const { data } = await supabase
+        .from("disponibilidades")
+        .select("mes_ref")
+        .not("mes_ref", "is", null);
+
+      const select = document.getElementById("filtroMesDisp");
+      const meses = [...new Set((data || []).map(d => d.mes_ref).filter(Boolean))].sort().reverse();
+
+      select.innerHTML = `<option value="todos">Todos os meses</option>`;
+      meses.forEach(mes => {
+        const [ano, m] = mes.split("-");
+        const label = new Date(ano, m - 1).toLocaleString("pt-BR", { month: "long", year: "numeric" });
+        const opt = document.createElement("option");
+        opt.value = mes;
+        opt.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+        select.appendChild(opt);
+      });
+
+      if (meses.length > 0) {
+        _mesDispAtivo = meses[0];
+        select.value = meses[0];
+      }
+
+      await carregarRespostasComMes();
+    }
+
+    async function trocarMesDisp() {
+      _mesDispAtivo = document.getElementById("filtroMesDisp").value;
+      _statusCarregado = false;
+      await carregarRespostasComMes();
+    }
+
+    async function carregarRespostasComMes() {
+      const mesParaUsar = (_mesDispAtivo && _mesDispAtivo !== "todos") ? _mesDispAtivo : null;
+      const container = document.getElementById("lista-respostas");
+      if (container) mostrarLoading("lista-respostas", "Carregando disponibilidades...");
+
+      let compQuery = supabase.from("compromissos").select("*");
+      if (mesParaUsar) compQuery = compQuery.eq("mes_ref", mesParaUsar);
+
+      let dispQuery = supabase.from("disponibilidades").select("*");
+      if (mesParaUsar) dispQuery = dispQuery.eq("mes_ref", mesParaUsar);
+
+      try {
+        const [resComps, resDisp] = await Promise.all([compQuery, dispQuery]);
+        compromissosGlobais = resComps.data || [];
+        respostasGlobais = resDisp.data || [];
+      } catch (err) {
+        console.error(err);
+        return;
+      }
+
+      popularFiltroEventos(compromissosGlobais);
+      renderizarRespostas(respostasGlobais);
+    }
 
     async function abrirModalStatus() {
       document.getElementById("modal-status").classList.add("aberto");
@@ -289,9 +351,11 @@
         .eq("ativo", true)
         .order("nome");
 
-      const { data: respostas } = await supabase
-        .from("disponibilidades")
-        .select("nome_pessoa");
+      let dispQuery = supabase.from("disponibilidades").select("nome_pessoa");
+      if (_mesDispAtivo && _mesDispAtivo !== "todos") {
+        dispQuery = dispQuery.eq("mes_ref", _mesDispAtivo);
+      }
+      const { data: respostas } = await dispQuery;
 
       if (!membros) {
         document.getElementById("conteudo-status").innerHTML = `<div class="sem-status">Erro ao carregar dados.</div>`;

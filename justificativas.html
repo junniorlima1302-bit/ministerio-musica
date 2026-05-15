@@ -83,6 +83,9 @@
     </div>
 
     <div class="filtros-just">
+      <select id="filtro-mes-just" onchange="trocarMesJust()" style="height:36px; padding:0 10px; border-radius:8px; border:1px solid #a0b8d0; font-size:13px; background:white; color:#1a2e4a; min-width:180px;">
+        <option value="todos">Todos os meses</option>
+      </select>
       <select id="filtro-nome-just" onchange="renderizar()">
         <option value="todos">Todas as pessoas</option>
       </select>
@@ -99,6 +102,7 @@
   <script>
     let modoAtual = "pessoa";
     let dadosJustificativas = [];
+    let _mesJustAtivo = null;
 
     async function iniciar() {
       const { data: sessao } = await supabase.auth.getSession();
@@ -114,16 +118,55 @@
         return;
       }
 
+      await popularFiltroMesJust();
+      await carregarJustificativas();
+    }
+
+    async function popularFiltroMesJust() {
+      const { data } = await supabase
+        .from("disponibilidades")
+        .select("mes_ref")
+        .not("mes_ref", "is", null)
+        .not("justificativa", "is", null)
+        .neq("justificativa", "");
+
+      const select = document.getElementById("filtro-mes-just");
+      const meses = [...new Set((data || []).map(d => d.mes_ref).filter(Boolean))].sort().reverse();
+
+      select.innerHTML = `<option value="todos">Todos os meses</option>`;
+      meses.forEach(mes => {
+        const [ano, m] = mes.split("-");
+        const label = new Date(ano, m - 1).toLocaleString("pt-BR", { month: "long", year: "numeric" });
+        const opt = document.createElement("option");
+        opt.value = mes;
+        opt.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+        select.appendChild(opt);
+      });
+
+      if (meses.length > 0) {
+        _mesJustAtivo = meses[0];
+        select.value = meses[0];
+      }
+    }
+
+    async function trocarMesJust() {
+      _mesJustAtivo = document.getElementById("filtro-mes-just").value;
       await carregarJustificativas();
     }
 
     async function carregarJustificativas() {
-      const { data, error } = await supabase
+      let query = supabase
         .from("disponibilidades")
         .select("*")
         .eq("ministerio", "Música Geral")
         .not("justificativa", "is", null)
         .neq("justificativa", "");
+
+      if (_mesJustAtivo && _mesJustAtivo !== "todos") {
+        query = query.eq("mes_ref", _mesJustAtivo);
+      }
+
+      const { data, error } = await query;
 
       if (error) { console.error(error); return; }
 
