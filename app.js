@@ -350,6 +350,7 @@ async function carregarCompromissos() {
     acoesGrupo.innerHTML = `
       <button class="btn-editar-grupo" onclick="editarGrupo('${nome.replace(/'/g, "\\'")}')">✏️ Renomear</button>
       <button class="btn-adicionar-item" onclick="adicionarItemGrupo('${nome.replace(/'/g, "\\'")}')">➕ Adicionar</button>
+      <button class="btn-excluir-grupo" onclick="excluirGrupoCompleto('${nome.replace(/'/g, "\\'")}')">🗑️ Excluir Grupo</button>
     `;
 
     tituloLinha.appendChild(titulo);
@@ -362,7 +363,11 @@ async function carregarCompromissos() {
     grupos[nome].forEach(item => {
       const div = document.createElement("div");
       div.className = "item-compromisso";
+      div.draggable = true;
+      div.dataset.id = item.id;
+      div.dataset.turno = item.turno;
       div.innerHTML = `
+        <span class="drag-handle" title="Arrastar para reordenar">⠿</span>
         <label class="linha-compromisso">
           <input type="checkbox" value="${item.id}">
           <span class="texto-turno" id="texto-${item.id}">${item.turno}</span>
@@ -374,6 +379,8 @@ async function carregarCompromissos() {
       `;
       container.appendChild(div);
     });
+
+    ativarDragDrop(container);
 
     divGrupo.appendChild(container);
     lista.appendChild(divGrupo);
@@ -571,6 +578,162 @@ async function excluirCompromissoUnico(id) {
   }
 
   carregarCompromissos();
+}
+
+//////////////////////////////////////////////////////
+// EXCLUIR GRUPO COMPLETO
+//////////////////////////////////////////////////////
+
+async function excluirGrupoCompleto(nomeGrupo) {
+  const confirmar = confirm(`Excluir o grupo "${nomeGrupo}" e todos os seus itens?`);
+  if (!confirmar) return;
+
+  const mesSelecionado = document.getElementById("filtro-mes")?.value || "todos";
+
+  let query = supabase.from("compromissos").delete().eq("nome", nomeGrupo);
+  if (mesSelecionado !== "todos") {
+    query = query.eq("mes_ref", mesSelecionado);
+  }
+
+  const { error } = await query;
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao excluir grupo.");
+    return;
+  }
+
+  invalidarCacheMesRef();
+  carregarCompromissos();
+}
+
+//////////////////////////////////////////////////////
+// DRAG & DROP — REORDENAR ITENS
+//////////////////////////////////////////////////////
+
+function ativarDragDrop(container) {
+  let dragEl = null;
+
+  container.addEventListener("dragstart", e => {
+    const item = e.target.closest(".item-compromisso");
+    if (!item) return;
+    dragEl = item;
+    setTimeout(() => item.classList.add("dragging"), 0);
+    e.dataTransfer.effectAllowed = "move";
+  });
+
+  container.addEventListener("dragend", e => {
+    const item = e.target.closest(".item-compromisso");
+    if (item) item.classList.remove("dragging");
+    container.querySelectorAll(".item-compromisso").forEach(el => el.classList.remove("drag-over"));
+    salvarOrdemGrupo(container);
+    dragEl = null;
+  });
+
+  container.addEventListener("dragover", e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    const alvo = e.target.closest(".item-compromisso");
+    if (!alvo || alvo === dragEl) return;
+    container.querySelectorAll(".item-compromisso").forEach(el => el.classList.remove("drag-over"));
+    alvo.classList.add("drag-over");
+
+    const rect = alvo.getBoundingClientRect();
+    const meio = rect.top + rect.height / 2;
+    if (e.clientY < meio) {
+      container.insertBefore(dragEl, alvo);
+    } else {
+      container.insertBefore(dragEl, alvo.nextSibling);
+    }
+  });
+
+  // Touch support
+  let touchEl = null, touchClone = null;
+
+  container.addEventListener("touchstart", e => {
+    const item = e.target.closest(".item-compromisso");
+    if (!e.target.closest(".drag-handle")) return;
+    touchEl = item;
+    touchEl.classList.add("dragging");
+    e.preventDefault();
+  }, { passive: false });
+
+  container.addEventListener("touchmove", e => {
+    if (!touchEl) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const alvo = document.elementFromPoint(touch.clientX, touch.clientY)?.closest(".item-compromisso");
+    if (!alvo || alvo === touchEl) return;
+    container.querySelectorAll(".item-compromisso").forEach(el => el.classList.remove("drag-over"));
+    alvo.classList.add("drag-over");
+    const rect = alvo.getBoundingClientRect();
+    const meio = rect.top + rect.height / 2;
+    if (touch.clientY < meio) {
+      container.insertBefore(touchEl, alvo);
+    } else {
+      container.insertBefore(touchEl, alvo.nextSibling);
+    }
+  }, { passive: false });
+
+  container.addEventListener("touchend", e => {
+    if (!touchEl) return;
+    touchEl.classList.remove("dragging");
+    container.querySelectorAll(".item-compromisso").forEach(el => el.classList.remove("drag-over"));
+    salvarOrdemGrupo(container);
+    touchEl = null;
+  });
+}
+
+async function salvarOrdemGrupo(container) {
+  // Pega os itens na nova ordem visual
+  const itens = [...container.querySelectorAll(".item-compromisso")];
+  if (itens.length < 2) return;
+
+  // dataset.turno contém o valor original de cada card (definido no render)
+  // Após o drag, os cards estão em nova ordem DOM mas seus dataset.turno
+  // ainda refletem os valores originais. Queremos persistir a nova ordem:
+  // o card na posição i deve "guardar" o turno do card que estava na posição i antes.
+  //
+  // Estratégia simples: pegar os IDs na nova ordem e os turnos na nova ordem,
+  // então atualizar cada ID com seu respectivo turno já correto (pois dataset.turno
+  // é o valor real do banco para aquele card, e ele está agora na posição desejada).
+  const updates = itens.map(el => ({
+    id: el.dataset.id,
+    turno: el.dataset.turno
+  }));
+
+  // Coleta os turnos que estão no banco na ordem ORIGINAL (por ID)
+  const ids = updates.map(u => u.id);
+  const { data: dadosBanco, error } = await supabase
+    .from("compromissos").select("id, turno").in("id", ids);
+  if (error) { console.error(error); return; }
+
+  // Os turnos originais em ordem de banco
+  const mapaId = {};
+  dadosBanco.forEach(r => { mapaId[r.id] = r.turno; });
+
+  // Turnos na nova ordem visual (pelo dataset, que reflete o valor de banco do card)
+  const turnosNovaOrdem = updates.map(u => mapaId[u.id]);
+
+  // Atualiza cada ID com o turno que agora lhe corresponde na nova posição
+  await Promise.all(
+    updates.map((u, i) =>
+      supabase.from("compromissos").update({ turno: turnosNovaOrdem[i] }).eq("id", u.id)
+    )
+  );
+
+  // Atualiza o dataset e texto dos spans para a nova realidade
+  itens.forEach((el, i) => {
+    el.dataset.turno = turnosNovaOrdem[i];
+    const span = el.querySelector(".texto-turno");
+    if (span) span.textContent = turnosNovaOrdem[i];
+    // Atualiza o botão editar com o novo texto
+    const btnEditar = el.querySelector(".btn-editar-item");
+    if (btnEditar) {
+      btnEditar.setAttribute("onclick",
+        `editarCompromisso('${updates[i].id}', '${turnosNovaOrdem[i].replace(/'/g, "\\'")}')` );
+    }
+  });
 }
 
 //////////////////////////////////////////////////////

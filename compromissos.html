@@ -112,6 +112,55 @@
   margin-top:0;
   margin-bottom:12px;
 }
+
+  /* ── Drag & Drop para reordenar itens ── */
+  .item-compromisso {
+    transition: opacity 0.15s, transform 0.15s;
+    position: relative;
+  }
+  .item-compromisso.dragging {
+    opacity: 0.45;
+    transform: scale(0.97);
+    cursor: grabbing !important;
+  }
+  .item-compromisso.drag-over {
+    border-top: 2px dashed #1b4580 !important;
+  }
+  .drag-handle {
+    cursor: grab;
+    color: #a0b8d0;
+    font-size: 16px;
+    padding: 0 6px 0 0;
+    flex-shrink: 0;
+    user-select: none;
+    touch-action: none;
+  }
+  .drag-handle:active { cursor: grabbing; }
+
+  /* ── Botão excluir grupo completo ── */
+  .btn-excluir-grupo {
+    background: #c0392b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    width: auto;
+    margin: 0;
+    min-height: 0;
+    transition: background 0.15s;
+  }
+  .btn-excluir-grupo:hover { background: #a93226; }
+
+  @media (max-width: 600px) {
+    .btn-excluir-grupo {
+      padding: 7px 10px;
+      font-size: 12px;
+      min-height: 34px;
+    }
+  }
   </style>
 </head>
 
