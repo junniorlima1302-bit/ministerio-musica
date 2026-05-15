@@ -445,19 +445,43 @@ DIA 10 - MISSA"></textarea>
       const lista = document.getElementById('lista-compromissos');
       if (!lista) return;
 
+      // ── DESKTOP: ativa draggable ao pressionar o handle ──
+      lista.addEventListener('mousedown', e => {
+        const handleGrupo = e.target.closest('.drag-handle-grupo');
+        const handleItem = e.target.closest('.drag-handle');
+        // Desativa draggable em tudo primeiro
+        lista.querySelectorAll('.grupo, .item-compromisso').forEach(el => el.removeAttribute('draggable'));
+        if (handleGrupo) {
+          const grupo = handleGrupo.closest('.grupo');
+          if (grupo) grupo.setAttribute('draggable', 'true');
+        } else if (handleItem) {
+          const item = handleItem.closest('.item-compromisso');
+          if (item) item.setAttribute('draggable', 'true');
+        }
+      });
+
+      lista.addEventListener('mouseup', e => {
+        // Remove draggable após soltar para não interferir com cliques
+        setTimeout(() => {
+          lista.querySelectorAll('.grupo, .item-compromisso').forEach(el => el.removeAttribute('draggable'));
+        }, 100);
+      });
+
       // ── DESKTOP: drag events ──
       lista.addEventListener('dragstart', e => {
-        const handle = e.target.closest('.drag-handle-grupo');
-        const itemHandle = e.target.closest('.drag-handle');
-        if (handle) {
-          _dragGrupo = handle.closest('.grupo');
+        const grupo = e.target.closest('.grupo[draggable="true"]');
+        const item = e.target.closest('.item-compromisso[draggable="true"]');
+        if (grupo && !item) {
+          _dragGrupo = grupo;
           setTimeout(() => _dragGrupo?.classList.add('dragging-grupo'), 0);
           e.dataTransfer.effectAllowed = 'move';
-        } else if (itemHandle) {
-          _dragItem = itemHandle.closest('.item-compromisso');
+        } else if (item) {
+          _dragItem = item;
           _dragItemOriginalGrupo = _dragItem?.closest('.lista-itens');
           setTimeout(() => _dragItem?.classList.add('dragging'), 0);
           e.dataTransfer.effectAllowed = 'move';
+        } else {
+          e.preventDefault();
         }
       });
 
@@ -591,9 +615,8 @@ DIA 10 - MISSA"></textarea>
       document.querySelectorAll('#lista-compromissos .btn-adicionar-item').forEach(b => b.textContent = '➕');
       document.querySelectorAll('#lista-compromissos .btn-excluir-grupo').forEach(b => b.textContent = '🗑️');
 
-      // Adiciona handle e draggable nos grupos
+      // Adiciona handle nos grupos (draggable ativado só via mousedown)
       document.querySelectorAll('#lista-compromissos .grupo').forEach(g => {
-        g.draggable = true;
         if (!g.querySelector('.drag-handle-grupo')) {
           const handle = document.createElement('span');
           handle.className = 'drag-handle-grupo';
@@ -605,9 +628,8 @@ DIA 10 - MISSA"></textarea>
         }
       });
 
-      // Adiciona handle e draggable nos itens
+      // Adiciona handle nos itens (draggable ativado só via mousedown)
       document.querySelectorAll('#lista-compromissos .item-compromisso').forEach(item => {
-        item.draggable = true;
         if (!item.querySelector('.drag-handle')) {
           const handle = document.createElement('span');
           handle.className = 'drag-handle';
