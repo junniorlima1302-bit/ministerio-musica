@@ -138,9 +138,6 @@
   .drag-handle:active { cursor: grabbing; }
 
   /* ── Drag & Drop para reordenar GRUPOS ── */
-  .grupo {
-    transition: opacity 0.15s, transform 0.15s;
-  }
   .grupo.dragging-grupo {
     opacity: 0.45;
     transform: scale(0.98);
@@ -149,17 +146,6 @@
   .grupo.drag-over-grupo {
     border-top: 2.5px dashed #8e44ad !important;
   }
-  .drag-handle-grupo {
-    cursor: grab;
-    color: #7a9ec4;
-    font-size: 18px;
-    padding: 0 8px 0 0;
-    flex-shrink: 0;
-    user-select: none;
-    touch-action: none;
-    line-height: 1;
-  }
-  .drag-handle-grupo:active { cursor: grabbing; }
 
   /* ── Botão excluir grupo completo ── */
   .btn-excluir-grupo {

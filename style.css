@@ -721,6 +721,21 @@ textarea {
   gap: 8px;
 }
 
+.drag-handle-grupo {
+  cursor: grab;
+  color: #1a2e4a;
+  font-size: 20px;
+  padding: 0 6px 0 0;
+  flex-shrink: 0;
+  user-select: none;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  opacity: 0.6;
+}
+.drag-handle-grupo:hover { opacity: 1; }
+.drag-handle-grupo:active { cursor: grabbing; }
+
 .compromissos-page .linha-grupo-titulo h3 {
   color: #1a2e4a;
   font-size: 14px;
@@ -890,11 +905,11 @@ body.iframe-page {
     padding: 16px;
   }
 
-  /* Botões de ação dos grupos empilhados */
+  /* Botões de ação dos grupos empilhados — mantém linha-grupo-titulo em row para o handle aparecer */
   .compromissos-page .linha-grupo-titulo {
-    flex-direction: column;
-    align-items: stretch;
-    text-align: center;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
   }
 
   .acoes-grupo {
