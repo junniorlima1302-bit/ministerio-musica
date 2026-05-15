@@ -316,7 +316,7 @@ async function carregarCompromissos() {
 
   mostrarLoading("lista-compromissos", "Carregando compromissos...");
 
-  let query = supabase.from("compromissos").select("*").order("nome");
+  let query = supabase.from("compromissos").select("*").order("ordem_grupo", { ascending: true, nullsFirst: true }).order("nome");
 
   if (mesSelecionado !== "todos") {
     query = query.eq("mes_ref", mesSelecionado);
@@ -328,16 +328,22 @@ async function carregarCompromissos() {
 
   lista.innerHTML = "";
 
+  // Agrupa preservando a ordem de aparição (ordem_grupo já foi aplicada pela query)
   let grupos = {};
+  let ordemGrupos = [];
   data.forEach(item => {
-    if (!grupos[item.nome]) grupos[item.nome] = [];
+    if (!grupos[item.nome]) {
+      grupos[item.nome] = [];
+      ordemGrupos.push(item.nome);
+    }
     grupos[item.nome].push(item);
   });
 
-  Object.keys(grupos).forEach(nome => {
+  ordemGrupos.forEach(nome => {
 
     const divGrupo = document.createElement("div");
     divGrupo.className = "grupo";
+    divGrupo.draggable = true;
 
     const tituloLinha = document.createElement("div");
     tituloLinha.className = "linha-grupo-titulo";
@@ -353,6 +359,13 @@ async function carregarCompromissos() {
       <button class="btn-excluir-grupo" onclick="excluirGrupoCompleto('${nome.replace(/'/g, "\\'")}')">🗑️ Excluir Grupo</button>
     `;
 
+    // Handle de arrastar grupo
+    const grupoHandle = document.createElement("span");
+    grupoHandle.className = "drag-handle-grupo";
+    grupoHandle.title = "Arrastar para reordenar grupo";
+    grupoHandle.textContent = "⠿";
+
+    tituloLinha.insertBefore(grupoHandle, tituloLinha.firstChild);
     tituloLinha.appendChild(titulo);
     tituloLinha.appendChild(acoesGrupo);
     divGrupo.appendChild(tituloLinha);
@@ -385,6 +398,8 @@ async function carregarCompromissos() {
     divGrupo.appendChild(container);
     lista.appendChild(divGrupo);
   });
+
+  ativarDragDropGrupos(lista);
 }
 
 async function editarGrupo(nomeAtual) {
@@ -682,6 +697,110 @@ function ativarDragDrop(container) {
     salvarOrdemGrupo(container);
     touchEl = null;
   });
+}
+
+//////////////////////////////////////////////////////
+// DRAG & DROP — REORDENAR GRUPOS
+//////////////////////////////////////////////////////
+
+function ativarDragDropGrupos(lista) {
+  let dragGrupo = null;
+
+  lista.addEventListener("dragstart", e => {
+    const grupo = e.target.closest(".grupo");
+    if (!e.target.closest(".drag-handle-grupo")) return;
+    dragGrupo = grupo;
+    setTimeout(() => grupo.classList.add("dragging-grupo"), 0);
+    e.dataTransfer.effectAllowed = "move";
+    e.stopPropagation();
+  });
+
+  lista.addEventListener("dragend", e => {
+    const grupo = e.target.closest(".grupo");
+    if (grupo) grupo.classList.remove("dragging-grupo");
+    lista.querySelectorAll(".grupo").forEach(g => g.classList.remove("drag-over-grupo"));
+    if (dragGrupo) salvarOrdemGrupos(lista);
+    dragGrupo = null;
+  });
+
+  lista.addEventListener("dragover", e => {
+    if (!dragGrupo) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    const alvo = e.target.closest(".grupo");
+    if (!alvo || alvo === dragGrupo) return;
+    lista.querySelectorAll(".grupo").forEach(g => g.classList.remove("drag-over-grupo"));
+    alvo.classList.add("drag-over-grupo");
+    const rect = alvo.getBoundingClientRect();
+    const meio = rect.top + rect.height / 2;
+    if (e.clientY < meio) {
+      lista.insertBefore(dragGrupo, alvo);
+    } else {
+      lista.insertBefore(dragGrupo, alvo.nextSibling);
+    }
+    e.stopPropagation();
+  });
+
+  // Touch support para grupos
+  let touchGrupo = null;
+
+  lista.addEventListener("touchstart", e => {
+    if (!e.target.closest(".drag-handle-grupo")) return;
+    touchGrupo = e.target.closest(".grupo");
+    if (!touchGrupo) return;
+    touchGrupo.classList.add("dragging-grupo");
+    e.preventDefault();
+    e.stopPropagation();
+  }, { passive: false });
+
+  lista.addEventListener("touchmove", e => {
+    if (!touchGrupo) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const touch = e.touches[0];
+    const alvo = document.elementFromPoint(touch.clientX, touch.clientY)?.closest(".grupo");
+    if (!alvo || alvo === touchGrupo) return;
+    lista.querySelectorAll(".grupo").forEach(g => g.classList.remove("drag-over-grupo"));
+    alvo.classList.add("drag-over-grupo");
+    const rect = alvo.getBoundingClientRect();
+    const meio = rect.top + rect.height / 2;
+    if (touch.clientY < meio) {
+      lista.insertBefore(touchGrupo, alvo);
+    } else {
+      lista.insertBefore(touchGrupo, alvo.nextSibling);
+    }
+  }, { passive: false });
+
+  lista.addEventListener("touchend", e => {
+    if (!touchGrupo) return;
+    touchGrupo.classList.remove("dragging-grupo");
+    lista.querySelectorAll(".grupo").forEach(g => g.classList.remove("drag-over-grupo"));
+    salvarOrdemGrupos(lista);
+    touchGrupo = null;
+  });
+}
+
+async function salvarOrdemGrupos(lista) {
+  const grupos = [...lista.querySelectorAll(".grupo")];
+  if (grupos.length < 2) return;
+
+  const mesSelecionado = document.getElementById("filtro-mes")?.value || "todos";
+
+  // Para cada grupo, atualiza o campo `ordem` de todos os seus itens
+  const updates = [];
+  grupos.forEach((divGrupo, ordemGrupo) => {
+    const itens = [...divGrupo.querySelectorAll(".item-compromisso")];
+    itens.forEach(el => {
+      updates.push({ id: el.dataset.id, ordem_grupo: ordemGrupo });
+    });
+  });
+
+  // Atualiza em paralelo
+  await Promise.all(
+    updates.map(u =>
+      supabase.from("compromissos").update({ ordem_grupo: u.ordem_grupo }).eq("id", u.id)
+    )
+  );
 }
 
 async function salvarOrdemGrupo(container) {
