@@ -376,11 +376,9 @@ async function carregarCompromissos() {
     grupos[nome].forEach(item => {
       const div = document.createElement("div");
       div.className = "item-compromisso";
-      div.draggable = true;
       div.dataset.id = item.id;
       div.dataset.turno = item.turno;
       div.innerHTML = `
-        <span class="drag-handle" title="Arrastar para reordenar">⠿</span>
         <label class="linha-compromisso">
           <input type="checkbox" value="${item.id}">
           <span class="texto-turno" id="texto-${item.id}">${item.turno}</span>
@@ -623,80 +621,11 @@ async function excluirGrupoCompleto(nomeGrupo) {
 }
 
 //////////////////////////////////////////////////////
-// DRAG & DROP — REORDENAR ITENS
+// DRAG & DROP — REORDENAR ITENS (desativado)
 //////////////////////////////////////////////////////
 
 function ativarDragDrop(container) {
-  let dragEl = null;
-
-  container.addEventListener("dragstart", e => {
-    const item = e.target.closest(".item-compromisso");
-    if (!item) return;
-    dragEl = item;
-    setTimeout(() => item.classList.add("dragging"), 0);
-    e.dataTransfer.effectAllowed = "move";
-  });
-
-  container.addEventListener("dragend", e => {
-    const item = e.target.closest(".item-compromisso");
-    if (item) item.classList.remove("dragging");
-    container.querySelectorAll(".item-compromisso").forEach(el => el.classList.remove("drag-over"));
-    salvarOrdemGrupo(container);
-    dragEl = null;
-  });
-
-  container.addEventListener("dragover", e => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    const alvo = e.target.closest(".item-compromisso");
-    if (!alvo || alvo === dragEl) return;
-    container.querySelectorAll(".item-compromisso").forEach(el => el.classList.remove("drag-over"));
-    alvo.classList.add("drag-over");
-
-    const rect = alvo.getBoundingClientRect();
-    const meio = rect.top + rect.height / 2;
-    if (e.clientY < meio) {
-      container.insertBefore(dragEl, alvo);
-    } else {
-      container.insertBefore(dragEl, alvo.nextSibling);
-    }
-  });
-
-  // Touch support
-  let touchEl = null, touchClone = null;
-
-  container.addEventListener("touchstart", e => {
-    const item = e.target.closest(".item-compromisso");
-    if (!e.target.closest(".drag-handle")) return;
-    touchEl = item;
-    touchEl.classList.add("dragging");
-    e.preventDefault();
-  }, { passive: false });
-
-  container.addEventListener("touchmove", e => {
-    if (!touchEl) return;
-    e.preventDefault();
-    const touch = e.touches[0];
-    const alvo = document.elementFromPoint(touch.clientX, touch.clientY)?.closest(".item-compromisso");
-    if (!alvo || alvo === touchEl) return;
-    container.querySelectorAll(".item-compromisso").forEach(el => el.classList.remove("drag-over"));
-    alvo.classList.add("drag-over");
-    const rect = alvo.getBoundingClientRect();
-    const meio = rect.top + rect.height / 2;
-    if (touch.clientY < meio) {
-      container.insertBefore(touchEl, alvo);
-    } else {
-      container.insertBefore(touchEl, alvo.nextSibling);
-    }
-  }, { passive: false });
-
-  container.addEventListener("touchend", e => {
-    if (!touchEl) return;
-    touchEl.classList.remove("dragging");
-    container.querySelectorAll(".item-compromisso").forEach(el => el.classList.remove("drag-over"));
-    salvarOrdemGrupo(container);
-    touchEl = null;
-  });
+  // Drag de itens individuais removido — apenas grupos são reordenáveis.
 }
 
 //////////////////////////////////////////////////////
@@ -801,18 +730,7 @@ async function salvarOrdemGrupos(lista) {
   );
 }
 
-async function salvarOrdemGrupo(container) {
-  // Pega os itens na nova ordem visual
-  const itens = [...container.querySelectorAll(".item-compromisso")];
-  if (itens.length < 2) return;
 
-  // Salva a posição (ordem_item) de cada item pelo seu ID
-  await Promise.all(
-    itens.map((el, i) =>
-      supabase.from("compromissos").update({ ordem_item: i }).eq("id", el.dataset.id)
-    )
-  );
-}
 
 //////////////////////////////////////////////////////
 // EXCLUIR SELECIONADOS
