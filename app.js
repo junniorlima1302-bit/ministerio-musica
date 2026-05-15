@@ -121,7 +121,11 @@ async function carregarDisponibilidades() {
   // 🔥 busca apenas compromissos do mês ativo (usa cache)
   const mesRef = await obterMesRefAtivo();
 
-  let query = supabase.from("compromissos").select("*").order("nome");
+  let query = supabase
+  .from("compromissos")
+  .select("*")
+  .order("ordem_grupo", { ascending: true, nullsFirst: true })
+  .order("ordem_item", { ascending: true, nullsFirst: true });
   if (mesRef) {
     query = query.eq("mes_ref", mesRef);
   }
