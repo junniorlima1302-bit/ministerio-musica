@@ -432,22 +432,29 @@ DIA 10 - MISSA"></textarea>
     let _dragGrupo = null;
     let _dragItem = null;
     let _dragItemOriginalGrupo = null;
+    let _dragInitialized = false;
+    let _touchGrupo = null;
+    let _touchItem = null;
+    let _touchClone = null;
 
     function iniciarDragDrop() {
+      // Evita duplicar listeners
+      if (_dragInitialized) return;
+      _dragInitialized = true;
+
       const lista = document.getElementById('lista-compromissos');
       if (!lista) return;
 
-      // ── GRUPOS ──
+      // ── DESKTOP: drag events ──
       lista.addEventListener('dragstart', e => {
         const handle = e.target.closest('.drag-handle-grupo');
-        const item = e.target.closest('.drag-handle');
-
+        const itemHandle = e.target.closest('.drag-handle');
         if (handle) {
           _dragGrupo = handle.closest('.grupo');
           setTimeout(() => _dragGrupo?.classList.add('dragging-grupo'), 0);
           e.dataTransfer.effectAllowed = 'move';
-        } else if (item) {
-          _dragItem = item.closest('.item-compromisso');
+        } else if (itemHandle) {
+          _dragItem = itemHandle.closest('.item-compromisso');
           _dragItemOriginalGrupo = _dragItem?.closest('.lista-itens');
           setTimeout(() => _dragItem?.classList.add('dragging'), 0);
           e.dataTransfer.effectAllowed = 'move';
@@ -487,7 +494,6 @@ DIA 10 - MISSA"></textarea>
           const alvoItem = e.target.closest('.item-compromisso');
           const alvoLista = e.target.closest('.lista-itens');
           lista.querySelectorAll('.item-compromisso').forEach(i => i.classList.remove('drag-over'));
-
           if (alvoItem && alvoItem !== _dragItem) {
             alvoItem.classList.add('drag-over');
             const rect = alvoItem.getBoundingClientRect();
@@ -496,26 +502,23 @@ DIA 10 - MISSA"></textarea>
             } else {
               alvoItem.parentNode.insertBefore(_dragItem, alvoItem.nextSibling);
             }
-          } else if (alvoLista && alvoLista !== _dragItemOriginalGrupo && alvoLista.children.length === 0) {
+          } else if (alvoLista && !alvoLista.contains(_dragItem)) {
             alvoLista.appendChild(_dragItem);
           }
         }
       });
 
-      // ── TOUCH GRUPOS ──
-      let _touchGrupo = null;
-      let _touchItem = null;
-
+      // ── MOBILE: touch events ──
       lista.addEventListener('touchstart', e => {
         const handle = e.target.closest('.drag-handle-grupo');
         const itemHandle = e.target.closest('.drag-handle');
         if (handle) {
           _touchGrupo = handle.closest('.grupo');
-          _touchGrupo?.classList.add('dragging-grupo');
+          _touchGrupo.classList.add('dragging-grupo');
           e.preventDefault();
         } else if (itemHandle) {
           _touchItem = itemHandle.closest('.item-compromisso');
-          _touchItem?.classList.add('dragging');
+          _touchItem.classList.add('dragging');
           e.preventDefault();
         }
       }, { passive: false });
@@ -523,8 +526,17 @@ DIA 10 - MISSA"></textarea>
       lista.addEventListener('touchmove', e => {
         if (!_touchGrupo && !_touchItem) return;
         e.preventDefault();
+
         const touch = e.touches[0];
+
+        // Esconde temporariamente o elemento arrastado para elementFromPoint funcionar
+        if (_touchGrupo) _touchGrupo.style.visibility = 'hidden';
+        if (_touchItem) _touchItem.style.visibility = 'hidden';
+
         const el = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        if (_touchGrupo) _touchGrupo.style.visibility = '';
+        if (_touchItem) _touchItem.style.visibility = '';
 
         if (_touchGrupo) {
           const alvo = el?.closest('.grupo');
@@ -538,6 +550,7 @@ DIA 10 - MISSA"></textarea>
           }
         } else if (_touchItem) {
           const alvo = el?.closest('.item-compromisso');
+          const alvoLista = el?.closest('.lista-itens');
           if (alvo && alvo !== _touchItem) {
             const rect = alvo.getBoundingClientRect();
             if (touch.clientY < rect.top + rect.height / 2) {
@@ -545,6 +558,8 @@ DIA 10 - MISSA"></textarea>
             } else {
               alvo.parentNode.insertBefore(_touchItem, alvo.nextSibling);
             }
+          } else if (alvoLista && !alvoLista.contains(_touchItem)) {
+            alvoLista.appendChild(_touchItem);
           }
         }
       }, { passive: false });
@@ -566,7 +581,15 @@ DIA 10 - MISSA"></textarea>
     // Sobrescreve carregarCompromissos para adicionar handles e iniciar drag
     const _origCarregarComp = window.carregarCompromissos;
     window.carregarCompromissos = async function(...args) {
+      _dragInitialized = false; // Reseta para re-registrar listeners na nova lista
       await _origCarregarComp?.(...args);
+
+      // Remove texto dos botões, deixa só ícones
+      document.querySelectorAll('#lista-compromissos .btn-editar-item').forEach(b => b.textContent = '✏️');
+      document.querySelectorAll('#lista-compromissos .btn-excluir-item').forEach(b => b.textContent = '🗑️');
+      document.querySelectorAll('#lista-compromissos .btn-editar-grupo').forEach(b => b.textContent = '✏️');
+      document.querySelectorAll('#lista-compromissos .btn-adicionar-item').forEach(b => b.textContent = '➕');
+      document.querySelectorAll('#lista-compromissos .btn-excluir-grupo').forEach(b => b.textContent = '🗑️');
 
       // Adiciona handle e draggable nos grupos
       document.querySelectorAll('#lista-compromissos .grupo').forEach(g => {
