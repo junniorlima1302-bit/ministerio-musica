@@ -639,14 +639,20 @@ function ativarDragDropGrupos(lista) {
     const grupo = e.target.closest(".grupo");
     if (!e.target.closest(".drag-handle-grupo")) return;
     dragGrupo = grupo;
-    setTimeout(() => grupo.classList.add("dragging-grupo"), 0);
+    setTimeout(() => {
+      grupo.classList.add("dragging-grupo");
+      // Desativa pointer-events nos filhos para o dragover enxergar o .grupo corretamente
+      grupo.querySelectorAll("*").forEach(el => el.style.pointerEvents = "none");
+    }, 0);
     e.dataTransfer.effectAllowed = "move";
-    e.stopPropagation();
   });
 
   lista.addEventListener("dragend", e => {
-    const grupo = e.target.closest(".grupo");
-    if (grupo) grupo.classList.remove("dragging-grupo");
+    if (dragGrupo) {
+      dragGrupo.classList.remove("dragging-grupo");
+      // Restaura pointer-events
+      dragGrupo.querySelectorAll("*").forEach(el => el.style.pointerEvents = "");
+    }
     lista.querySelectorAll(".grupo").forEach(g => g.classList.remove("drag-over-grupo"));
     if (dragGrupo) salvarOrdemGrupos(lista);
     dragGrupo = null;
@@ -667,7 +673,6 @@ function ativarDragDropGrupos(lista) {
     } else {
       lista.insertBefore(dragGrupo, alvo.nextSibling);
     }
-    e.stopPropagation();
   });
 
   // Touch support para grupos
